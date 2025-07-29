@@ -1,0 +1,3030 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروشگاه زیبایی - محصولات آرایشی و بهداشتی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .theme-bg {
+            background: white;
+        }
+        
+        .theme-bg-secondary {
+            background: #f8fafc;
+        }
+        
+        .theme-text-secondary {
+            color: #64748b;
+        }
+        
+        .theme-border {
+            border-color: #e2e8f0;
+        }
+        
+        .theme-input {
+            background: white;
+            color: #1f2937;
+        }
+        
+        .dark .theme-bg {
+            background: #1e293b;
+        }
+        
+        .dark .theme-bg-secondary {
+            background: #0f172a;
+        }
+        
+        .dark .theme-text-secondary {
+            color: #94a3b8;
+        }
+        
+        .dark .theme-border {
+            border-color: #334155;
+        }
+        
+        .dark .theme-input {
+            background: #374151;
+            color: white;
+            border-color: #4b5563;
+        }
+        
+        .dark {
+            background: #0f172a;
+            color: white;
+        }
+        
+        .dark .text-gray-800 {
+            color: white !important;
+        }
+        
+        .dark .bg-gray-200 {
+            background: #374151 !important;
+        }
+        
+        .dark .hover\:bg-gray-300:hover {
+            background: #4b5563 !important;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-btn.active {
+            border-color: #7c3aed !important;
+            color: #7c3aed !important;
+        }
+        
+        .product-tab-btn.active {
+            border-color: #7c3aed !important;
+            color: #7c3aed !important;
+        }
+        
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            z-index: 50;
+            display: none;
+        }
+        
+        .dark .mobile-nav {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        
+        /* Promotional Banner Styles */
+        .promotional-slider {
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .promotional-track {
+            display: flex;
+            animation: scroll-left 30s linear infinite;
+            width: calc(300px * 7); /* 7 banners * 300px width */
+        }
+        
+        .promotional-banner {
+            flex: 0 0 300px;
+            height: 100px;
+            margin-right: 16px;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-300px * 5 - 80px)); /* Move by 5 banners + margins */
+            }
+        }
+        
+        .promotional-track:hover {
+            animation-play-state: paused;
+        }
+        
+        @media (max-width: 768px) {
+            .promotional-banner {
+                flex: 0 0 280px;
+                height: 80px;
+                padding: 16px;
+            }
+            
+            .promotional-banner h3 {
+                font-size: 16px;
+            }
+            
+            .promotional-banner p {
+                font-size: 12px;
+            }
+            
+            .promotional-banner i {
+                font-size: 24px !important;
+            }
+            
+            .promotional-track {
+                width: calc(280px * 7);
+            }
+            
+            @keyframes scroll-left {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(calc(-280px * 5 - 80px));
+                }
+            }
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: block;
+            }
+            
+            .desktop-nav {
+                display: none;
+            }
+            
+            body {
+                padding-bottom: 80px;
+            }
+            
+            /* Mobile Header */
+            .mobile-header {
+                padding: 12px 16px !important;
+            }
+            
+            .mobile-header h1 {
+                font-size: 18px !important;
+            }
+            
+            .mobile-header p {
+                font-size: 11px !important;
+            }
+            
+            /* Mobile Hero */
+            .mobile-hero {
+                padding: 40px 16px !important;
+                text-align: center;
+            }
+            
+            .mobile-hero h2 {
+                font-size: 28px !important;
+                line-height: 1.2;
+                margin-bottom: 16px !important;
+            }
+            
+            .mobile-hero p {
+                font-size: 16px !important;
+                margin-bottom: 24px !important;
+            }
+            
+            /* Mobile Sections */
+            .mobile-section {
+                padding: 40px 16px !important;
+            }
+            
+            .mobile-section h3 {
+                font-size: 24px !important;
+                margin-bottom: 24px !important;
+            }
+            
+            /* Mobile Horizontal Scroll */
+            .mobile-scroll {
+                display: flex !important;
+                overflow-x: auto !important;
+                gap: 16px !important;
+                padding: 0 16px !important;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .mobile-scroll::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .mobile-scroll-item {
+                flex: 0 0 280px !important;
+                scroll-snap-align: start;
+            }
+            
+            /* Mobile Features */
+            .mobile-features {
+                flex: 0 0 250px !important;
+                margin-bottom: 0 !important;
+            }
+            
+            /* Mobile Products */
+            .mobile-products {
+                width: 100% !important;
+            }
+            
+            .mobile-products-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 8px !important;
+                padding: 0 16px !important;
+            }
+            
+            .mobile-product-card {
+                width: 100% !important;
+                min-height: 180px !important;
+            }
+            
+            .mobile-product-image {
+                height: 60px !important;
+            }
+            
+            .mobile-product-content {
+                padding: 8px !important;
+            }
+            
+            /* Mobile Blog Cards */
+            .mobile-blog {
+                flex: 0 0 180px !important;
+            }
+            
+            .mobile-blog-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 12px !important;
+                padding: 0 16px !important;
+            }
+            
+            /* Mobile Cart */
+            .mobile-cart-grid {
+                grid-template-columns: 1fr !important;
+                gap: 24px !important;
+            }
+            
+            .mobile-cart-summary {
+                order: -1;
+            }
+            
+            /* Mobile Product Detail */
+            .mobile-product-detail {
+                grid-template-columns: 1fr !important;
+                gap: 24px !important;
+            }
+            
+            .mobile-product-images {
+                order: 1;
+            }
+            
+            .mobile-product-info {
+                order: 2;
+                padding: 0 16px;
+            }
+            
+            /* Mobile Contact */
+            .mobile-contact {
+                grid-template-columns: 1fr !important;
+                gap: 24px !important;
+            }
+            
+            /* Mobile Footer */
+            .mobile-footer {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 32px !important;
+                text-align: right;
+            }
+            
+            /* Mobile Buttons */
+            .mobile-btn {
+                padding: 12px 20px !important;
+                font-size: 14px !important;
+            }
+            
+            .mobile-btn-lg {
+                padding: 16px 24px !important;
+                font-size: 16px !important;
+            }
+            
+            /* Mobile Form */
+            .mobile-form input,
+            .mobile-form textarea,
+            .mobile-form select {
+                padding: 14px 16px !important;
+                font-size: 16px !important;
+            }
+            
+            /* Mobile Modal */
+            .mobile-modal {
+                margin: 16px !important;
+                padding: 24px !important;
+                max-height: calc(100vh - 32px) !important;
+            }
+            
+            /* Mobile Spacing */
+            .mobile-space-y-4 > * + * {
+                margin-top: 16px !important;
+            }
+            
+            .mobile-space-y-6 > * + * {
+                margin-top: 24px !important;
+            }
+            
+            .mobile-space-y-8 > * + * {
+                margin-top: 32px !important;
+            }
+            
+            /* Mobile Text Sizes */
+            .mobile-text-sm {
+                font-size: 14px !important;
+            }
+            
+            .mobile-text-base {
+                font-size: 16px !important;
+            }
+            
+            .mobile-text-lg {
+                font-size: 18px !important;
+            }
+            
+            .mobile-text-xl {
+                font-size: 20px !important;
+            }
+            
+            .mobile-text-2xl {
+                font-size: 24px !important;
+            }
+            
+            /* Mobile Scroll Indicators */
+            .scroll-indicator {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 16px;
+                padding: 0 16px;
+            }
+            
+            .scroll-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #d1d5db;
+                transition: background 0.3s;
+            }
+            
+            .scroll-dot.active {
+                background: #7c3aed;
+            }
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            color: #6b7280;
+            transition: color 0.3s;
+        }
+        
+        .mobile-nav-item.active {
+            color: #7c3aed;
+        }
+        
+        .mobile-nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .mobile-nav-item span {
+            font-size: 12px;
+        }
+        
+        /* Auth Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .dark .modal-content {
+            background: #1e293b;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 24px;
+                margin: 16px;
+                max-height: calc(100vh - 32px);
+            }
+        }
+        
+        /* Filter Sidebar Mobile */
+        .filter-sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            z-index: 60;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .filter-sidebar.active {
+            right: 0;
+        }
+        
+        .dark .filter-sidebar {
+            background: #1e293b;
+        }
+        
+        .filter-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 50;
+        }
+        
+        .filter-overlay.active {
+            display: block;
+        }
+        
+        @media (max-width: 1024px) {
+            .desktop-filters {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="theme-bg-secondary">
+    <!-- Header -->
+    <header class="theme-bg shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto mobile-header">
+            <div class="flex items-center justify-between py-4">
+                <!-- Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-gem text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">زیبایی شاپ</h1>
+                        <p class="text-xs theme-text-secondary">فروشگاه آرایشی و بهداشتی</p>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="desktop-nav hidden md:flex items-center gap-8">
+                    <a href="#" onclick="showPage('home')" class="nav-link hover:text-purple-600 transition-colors">خانه</a>
+                    <a href="#" onclick="showPage('products')" class="nav-link hover:text-purple-600 transition-colors">محصولات</a>
+                    <a href="#" onclick="showPage('blog')" class="nav-link hover:text-purple-600 transition-colors">وبلاگ</a>
+                    <a href="#" onclick="showPage('contact')" class="nav-link hover:text-purple-600 transition-colors">تماس با ما</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <i id="theme-icon" class="fas fa-moon"></i>
+                    </button>
+                    <button id="auth-button" onclick="handleAuthClick()" class="hidden md:flex items-center gap-2 text-purple-600 hover:text-purple-700 transition-colors">
+                        <i class="fas fa-user"></i>
+                        <span id="auth-text">ورود</span>
+                    </button>
+                    <button onclick="showPage('cart')" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <div class="flex justify-around">
+            <button onclick="showPage('home')" class="mobile-nav-item active" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>خانه</span>
+            </button>
+            <button onclick="showPage('products')" class="mobile-nav-item" data-page="products">
+                <i class="fas fa-shopping-bag"></i>
+                <span>محصولات</span>
+            </button>
+            <button onclick="showPage('blog')" class="mobile-nav-item" data-page="blog">
+                <i class="fas fa-newspaper"></i>
+                <span>وبلاگ</span>
+            </button>
+            <button onclick="showPage('cart')" class="mobile-nav-item" data-page="cart">
+                <i class="fas fa-shopping-cart"></i>
+                <span>سبد خرید</span>
+            </button>
+            <button onclick="handleAuthClick()" class="mobile-nav-item" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span id="mobile-auth-text">پروفایل</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="min-h-screen">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+
+
+            <!-- Promotional Banner -->
+            <section class="bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 py-8 mobile-section">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row items-center justify-between text-white">
+                        <div class="text-center md:text-right mb-4 md:mb-0">
+                            <h2 class="text-2xl md:text-3xl font-bold mb-2">🎉 فروش ویژه بهاری!</h2>
+                            <p class="text-lg opacity-90">تا ۵۰٪ تخفیف روی محصولات آرایشی</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 items-center">
+                            <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-full text-sm">
+                                <i class="fas fa-shipping-fast"></i>
+                                <span>ارسال رایگان</span>
+                            </div>
+                            <button onclick="showPage('products')" class="bg-white text-purple-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors shadow-lg">
+                                خرید کنید
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- Popular Products -->
+            <section class="py-20 theme-bg-secondary mobile-section">
+                <div class="container mx-auto">
+                    <div class="flex justify-center mb-8 px-4">
+                        <div class="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1 overflow-x-auto">
+                            <button onclick="showProductSection('popular')" class="product-tab-btn px-4 md:px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-transparent active whitespace-nowrap" data-tab="popular">پرفروش‌ترین</button>
+                            <button onclick="showProductSection('newest')" class="product-tab-btn px-4 md:px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-transparent whitespace-nowrap" data-tab="newest">جدیدترین</button>
+                            <button onclick="showProductSection('bestseller')" class="product-tab-btn px-4 md:px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-transparent whitespace-nowrap" data-tab="bestseller">پیشنهاد ویژه</button>
+                        </div>
+                    </div>
+                    <div id="desktop-home-products" class="hidden md:grid md:grid-cols-4 gap-6 px-4">
+                        <!-- Products will be rendered here by JavaScript -->
+                    </div>
+                    <!-- Mobile Grid -->
+                    <div id="mobile-popular-products" class="md:hidden mobile-products-grid">
+                        <!-- Products will be rendered here by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="py-20 mobile-section">
+                <div class="container mx-auto">
+                    <h3 class="text-3xl font-bold text-center mb-12 px-4">چرا ما را انتخاب کنید؟</h3>
+                    <div class="hidden md:grid md:grid-cols-3 gap-8 px-4">
+                        <div class="text-center p-8 theme-bg rounded-2xl shadow-lg card-hover">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-shipping-fast text-2xl text-purple-600"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">ارسال سریع</h4>
+                            <p class="theme-text-secondary">ارسال رایگان برای خریدهای بالای ۵۰۰ هزار تومان</p>
+                        </div>
+                        <div class="text-center p-8 theme-bg rounded-2xl shadow-lg card-hover">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-shield-alt text-2xl text-green-600"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">ضمانت اصالت</h4>
+                            <p class="theme-text-secondary">تمام محصولات ما اصل و دارای ضمانت هستند</p>
+                        </div>
+                        <div class="text-center p-8 theme-bg rounded-2xl shadow-lg card-hover">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-headset text-2xl text-blue-600"></i>
+                            </div>
+                            <h4 class="text-xl font-bold mb-4">پشتیبانی ۲۴/۷</h4>
+                            <p class="theme-text-secondary">تیم پشتیبانی ما همیشه در خدمت شماست</p>
+                        </div>
+                    </div>
+                    <!-- Mobile Horizontal Scroll -->
+                    <div class="md:hidden mobile-scroll">
+                        <div class="text-center p-6 theme-bg rounded-2xl shadow-lg card-hover mobile-features">
+                            <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shipping-fast text-xl text-purple-600"></i>
+                            </div>
+                            <h4 class="text-lg font-bold mb-3">ارسال سریع</h4>
+                            <p class="theme-text-secondary text-sm">ارسال رایگان برای خریدهای بالای ۵۰۰ هزار تومان</p>
+                        </div>
+                        <div class="text-center p-6 theme-bg rounded-2xl shadow-lg card-hover mobile-features">
+                            <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shield-alt text-xl text-green-600"></i>
+                            </div>
+                            <h4 class="text-lg font-bold mb-3">ضمانت اصالت</h4>
+                            <p class="theme-text-secondary text-sm">تمام محصولات ما اصل و دارای ضمانت هستند</p>
+                        </div>
+                        <div class="text-center p-6 theme-bg rounded-2xl shadow-lg card-hover mobile-features">
+                            <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-headset text-xl text-blue-600"></i>
+                            </div>
+                            <h4 class="text-lg font-bold mb-3">پشتیبانی ۲۴/۷</h4>
+                            <p class="theme-text-secondary text-sm">تیم پشتیبانی ما همیشه در خدمت شماست</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Products Page -->
+        <div id="products" class="page">
+            <div class="container mx-auto px-4 py-8">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    <!-- Filters Sidebar -->
+                    <div class="desktop-filters lg:w-1/4">
+                        <div class="theme-bg rounded-2xl shadow-lg p-6 sticky top-24">
+                            <h3 class="text-xl font-bold mb-6">فیلترها</h3>
+                            
+                            <!-- Category Filter -->
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-3">دسته‌بندی</h4>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                                        <span>گیره مو</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                                        <span>رژ لب</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                                        <span>کرم</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                                        <span>عطر</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Price Filter -->
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-3">محدوده قیمت</h4>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="price" class="rounded theme-input" onchange="filterProducts()">
+                                        <span>زیر ۱۰۰ هزار تومان</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="price" class="rounded theme-input" onchange="filterProducts()">
+                                        <span>۱۰۰ تا ۲۰۰ هزار تومان</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="price" class="rounded theme-input" onchange="filterProducts()">
+                                        <span>بالای ۲۰۰ هزار تومان</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Rating Filter -->
+                            <div class="mb-6">
+                                <h4 class="font-semibold mb-3">امتیاز</h4>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="far fa-star text-sm"></i>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button onclick="clearFilters()" class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white py-2 rounded-xl font-semibold transition-colors">
+                                پاک کردن فیلترها
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="lg:w-3/4">
+                        <!-- Search and Sort -->
+                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                            <div class="flex-1">
+                                <div class="relative">
+                                    <input type="text" placeholder="جستجو در محصولات..." class="w-full p-4 pr-12 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <i class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 theme-text-secondary"></i>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="toggleMobileFilters()" class="lg:hidden bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors flex items-center gap-2">
+                                    <i class="fas fa-filter"></i>
+                                    فیلتر
+                                </button>
+                                <select class="p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" onchange="sortProducts(this.value)">
+                                    <option value="default">مرتب‌سازی</option>
+                                    <option value="price-low">قیمت: کم به زیاد</option>
+                                    <option value="price-high">قیمت: زیاد به کم</option>
+                                    <option value="rating">بالاترین امتیاز</option>
+                                    <option value="newest">جدیدترین</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Products Grid -->
+                        <div id="products-grid" class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                            <!-- Product cards will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Page -->
+        <div id="blog" class="page">
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-3xl font-bold text-center mb-12">وبلاگ زیبایی</h2>
+                
+                <!-- Blog Tabs -->
+                <div class="flex justify-center mb-8">
+                    <div class="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
+                        <button onclick="showBlogTab('skincare')" class="tab-btn px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-transparent" data-tab="skincare">مراقبت از پوست</button>
+                        <button onclick="showBlogTab('makeup')" class="tab-btn px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-transparent" data-tab="makeup">آرایش</button>
+                        <button onclick="showBlogTab('haircare')" class="tab-btn px-6 py-3 rounded-lg font-semibold transition-colors border-2 border-transparent" data-tab="haircare">مراقبت از مو</button>
+                    </div>
+                </div>
+
+                <!-- Blog Content -->
+                <div id="skincare" class="tab-content active">
+                    <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-green-200 to-blue-200 flex items-center justify-center">
+                                <i class="fas fa-leaf text-4xl text-green-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">روتین مراقبت از پوست در زمستان</h3>
+                                <p class="theme-text-secondary mb-4">نکات مهم برای حفظ سلامت پوست در فصل سرد</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۵ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
+                                <i class="fas fa-sun text-4xl text-yellow-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">اهمیت استفاده از ضد آفتاب</h3>
+                                <p class="theme-text-secondary mb-4">چرا باید هر روز از ضد آفتاب استفاده کنیم؟</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۲ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center">
+                                <i class="fas fa-tint text-4xl text-blue-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">بهترین مرطوب کننده‌ها برای پوست خشک</h3>
+                                <p class="theme-text-secondary mb-4">راهنمای انتخاب مرطوب کننده مناسب</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۰ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <!-- Mobile Grid -->
+                    <div class="md:hidden mobile-blog-grid">
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-green-200 to-blue-200 flex items-center justify-center">
+                                <i class="fas fa-leaf text-xl text-green-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">روتین مراقبت از پوست در زمستان</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نکات مهم برای حفظ سلامت پوست</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۵ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
+                                <i class="fas fa-sun text-xl text-yellow-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">اهمیت استفاده از ضد آفتاب</h3>
+                                <p class="theme-text-secondary text-xs mb-2">چرا باید هر روز از ضد آفتاب استفاده کنیم؟</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۲ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center">
+                                <i class="fas fa-tint text-xl text-blue-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">بهترین مرطوب کننده‌ها</h3>
+                                <p class="theme-text-secondary text-xs mb-2">راهنمای انتخاب مرطوب کننده مناسب</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۰ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-purple-200 to-indigo-200 flex items-center justify-center">
+                                <i class="fas fa-palette text-xl text-purple-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">آرایش طبیعی روزانه</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نکات آرایش ساده و شیک</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۸ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center">
+                                <i class="fas fa-cut text-xl text-amber-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">مراقبت از موهای رنگ شده</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نگهداری از رنگ مو و سلامت آن</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۵ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-teal-200 to-green-200 flex items-center justify-center">
+                                <i class="fas fa-spa text-xl text-teal-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">ماسک‌های طبیعی برای مو</h3>
+                                <p class="theme-text-secondary text-xs mb-2">دستور تهیه ماسک‌های خانگی مفید</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۳ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div id="makeup" class="tab-content">
+                    <div class="hidden md:grid md:grid-cols-3 gap-8 px-4">
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-red-200 to-pink-200 flex items-center justify-center">
+                                <i class="fas fa-lipstick text-4xl text-red-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">آرایش طبیعی برای روزهای کاری</h3>
+                                <p class="theme-text-secondary mb-4">نکات آرایش ساده و شیک برای محیط کار</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۸ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-purple-200 to-indigo-200 flex items-center justify-center">
+                                <i class="fas fa-eye text-4xl text-purple-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">تکنیک‌های آرایش چشم</h3>
+                                <p class="theme-text-secondary mb-4">آموزش گام به گام آرایش چشم</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۶ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-orange-200 to-yellow-200 flex items-center justify-center">
+                                <i class="fas fa-palette text-4xl text-orange-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">انتخاب رنگ مناسب برای پوست</h3>
+                                <p class="theme-text-secondary mb-4">راهنمای انتخاب رنگ‌های مناسب</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۴ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-pink-200 to-rose-200 flex items-center justify-center">
+                                <i class="fas fa-magic text-4xl text-pink-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">آرایش مجلسی</h3>
+                                <p class="theme-text-secondary mb-4">نکات آرایش برای مناسبات خاص</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۲ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-emerald-200 to-green-200 flex items-center justify-center">
+                                <i class="fas fa-leaf text-4xl text-emerald-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">آرایش طبیعی و ارگانیک</h3>
+                                <p class="theme-text-secondary mb-4">استفاده از محصولات طبیعی</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۰ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
+                                <i class="fas fa-brush text-4xl text-violet-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">ابزارهای آرایش</h3>
+                                <p class="theme-text-secondary mb-4">راهنمای انتخاب و نگهداری</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۸ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <!-- Mobile Grid -->
+                    <div class="md:hidden mobile-blog-grid">
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-red-200 to-pink-200 flex items-center justify-center">
+                                <i class="fas fa-lipstick text-xl text-red-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">آرایش طبیعی روزانه</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نکات آرایش ساده و شیک</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۸ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-purple-200 to-indigo-200 flex items-center justify-center">
+                                <i class="fas fa-eye text-xl text-purple-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">تکنیک‌های آرایش چشم</h3>
+                                <p class="theme-text-secondary text-xs mb-2">آموزش گام به گام آرایش چشم</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۶ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-orange-200 to-yellow-200 flex items-center justify-center">
+                                <i class="fas fa-palette text-xl text-orange-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">انتخاب رنگ مناسب</h3>
+                                <p class="theme-text-secondary text-xs mb-2">راهنمای انتخاب رنگ‌های مناسب</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۴ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-pink-200 to-rose-200 flex items-center justify-center">
+                                <i class="fas fa-magic text-xl text-pink-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">آرایش مجلسی</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نکات آرایش برای مناسبات خاص</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۲ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-emerald-200 to-green-200 flex items-center justify-center">
+                                <i class="fas fa-leaf text-xl text-emerald-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">آرایش طبیعی و ارگانیک</h3>
+                                <p class="theme-text-secondary text-xs mb-2">استفاده از محصولات طبیعی</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۰ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
+                                <i class="fas fa-brush text-xl text-violet-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">ابزارهای آرایش</h3>
+                                <p class="theme-text-secondary text-xs mb-2">راهنمای انتخاب و نگهداری</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۸ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div id="haircare" class="tab-content">
+                    <div class="hidden md:grid md:grid-cols-3 gap-8 px-4">
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center">
+                                <i class="fas fa-cut text-4xl text-amber-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">مراقبت از موهای رنگ شده</h3>
+                                <p class="theme-text-secondary mb-4">نگهداری از رنگ مو و سلامت آن</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۲۰ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-teal-200 to-green-200 flex items-center justify-center">
+                                <i class="fas fa-spa text-4xl text-teal-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">ماسک‌های طبیعی برای مو</h3>
+                                <p class="theme-text-secondary mb-4">دستور تهیه ماسک‌های خانگی مفید</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۷ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-indigo-200 to-blue-200 flex items-center justify-center">
+                                <i class="fas fa-pump-soap text-4xl text-indigo-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">انتخاب شامپو مناسب</h3>
+                                <p class="theme-text-secondary mb-4">راهنمای انتخاب شامپو برای انواع مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۵ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-rose-200 to-pink-200 flex items-center justify-center">
+                                <i class="fas fa-wind text-4xl text-rose-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">خشک کردن صحیح مو</h3>
+                                <p class="theme-text-secondary mb-4">نکات مهم برای خشک کردن مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۳ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-lime-200 to-green-200 flex items-center justify-center">
+                                <i class="fas fa-seedling text-4xl text-lime-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">تقویت موهای ضعیف</h3>
+                                <p class="theme-text-secondary mb-4">روش‌های طبیعی تقویت مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۱۱ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover">
+                            <div class="h-48 bg-gradient-to-br from-sky-200 to-blue-200 flex items-center justify-center">
+                                <i class="fas fa-scissors text-4xl text-sky-600"></i>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-3">کوتاه کردن مو در خانه</h3>
+                                <p class="theme-text-secondary mb-4">نکات ایمنی برای کوتاه کردن مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm theme-text-secondary">۹ آذر ۱۴۰۲</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold">ادامه مطلب</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <!-- Mobile Grid -->
+                    <div class="md:hidden mobile-blog-grid">
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-amber-200 to-orange-200 flex items-center justify-center">
+                                <i class="fas fa-cut text-xl text-amber-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">مراقبت از موهای رنگ شده</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نگهداری از رنگ مو و سلامت آن</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۲۰ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-teal-200 to-green-200 flex items-center justify-center">
+                                <i class="fas fa-spa text-xl text-teal-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">ماسک‌های طبیعی برای مو</h3>
+                                <p class="theme-text-secondary text-xs mb-2">دستور تهیه ماسک‌های خانگی مفید</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۷ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-indigo-200 to-blue-200 flex items-center justify-center">
+                                <i class="fas fa-pump-soap text-xl text-indigo-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">انتخاب شامپو مناسب</h3>
+                                <p class="theme-text-secondary text-xs mb-2">راهنمای انتخاب شامپو برای انواع مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۵ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-rose-200 to-pink-200 flex items-center justify-center">
+                                <i class="fas fa-wind text-xl text-rose-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">خشک کردن صحیح مو</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نکات مهم برای خشک کردن مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۳ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-lime-200 to-green-200 flex items-center justify-center">
+                                <i class="fas fa-seedling text-xl text-lime-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">تقویت موهای ضعیف</h3>
+                                <p class="theme-text-secondary text-xs mb-2">روش‌های طبیعی تقویت مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۱۱ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover mobile-blog">
+                            <div class="h-24 bg-gradient-to-br from-sky-200 to-blue-200 flex items-center justify-center">
+                                <i class="fas fa-scissors text-xl text-sky-600"></i>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="text-xs font-bold mb-1">کوتاه کردن مو در خانه</h3>
+                                <p class="theme-text-secondary text-xs mb-2">نکات ایمنی برای کوتاه کردن مو</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs theme-text-secondary">۹ آذر</span>
+                                    <button onclick="showBlogDetail('skincare-winter')" class="text-purple-600 hover:text-purple-700 font-semibold text-xs">بیشتر</button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Page -->
+        <div id="cart" class="page">
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-3xl font-bold mb-8">سبد خرید</h2>
+                
+                <div class="grid lg:grid-cols-3 gap-8 mobile-cart-grid">
+                    <!-- Cart Items -->
+                    <div class="lg:col-span-2">
+                        <div class="theme-bg rounded-2xl shadow-lg p-6 mobile-space-y-6">
+                            <h3 class="text-xl font-bold mb-6 mobile-text-lg">محصولات انتخابی شما</h3>
+                            
+                            <div id="cart-items" class="space-y-4 mobile-space-y-4">
+                                <!-- Cart items will be rendered here -->
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 pt-6 border-t theme-border gap-4">
+                                <button onclick="clearCart()" class="text-red-600 hover:text-red-700 font-semibold mobile-btn">
+                                    <i class="fas fa-trash ml-2"></i>
+                                    پاک کردن سبد خرید
+                                </button>
+                                <button onclick="showPage('products')" class="text-purple-600 hover:text-purple-700 font-semibold mobile-btn">
+                                    <i class="fas fa-plus ml-2"></i>
+                                    افزودن محصول جدید
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Summary -->
+                    <div class="lg:col-span-1 mobile-cart-summary">
+                        <div class="theme-bg rounded-2xl shadow-lg p-6 lg:sticky lg:top-24">
+                            <h3 class="text-xl font-bold mb-6 mobile-text-lg">خلاصه سفارش</h3>
+                            
+                            <div class="space-y-4 mb-6 mobile-space-y-4">
+                                <div class="flex justify-between mobile-text-sm">
+                                    <span>قیمت کالاها:</span>
+                                    <span id="subtotal">۰ تومان</span>
+                                </div>
+                                <div class="flex justify-between mobile-text-sm">
+                                    <span>هزینه ارسال:</span>
+                                    <span id="shipping">۲۵,۰۰۰ تومان</span>
+                                </div>
+                                <div class="flex justify-between text-green-600 mobile-text-sm">
+                                    <span>تخفیف:</span>
+                                    <span id="discount">-۱۰,۰۰۰ تومان</span>
+                                </div>
+                                <hr class="theme-border">
+                                <div class="flex justify-between text-lg font-bold mobile-text-base">
+                                    <span>مجموع:</span>
+                                    <span id="total" class="text-purple-600">۰ تومان</span>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-3 mobile-space-y-4 mobile-form">
+                                <input type="text" placeholder="کد تخفیف" class="w-full p-3 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <button class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white py-3 rounded-xl font-semibold transition-colors mobile-btn">
+                                    اعمال کد تخفیف
+                                </button>
+                                <button onclick="checkout()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors mobile-btn-lg">
+                                    ادامه خرید
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Detail Page -->
+        <div id="product-detail" class="page">
+            <div class="container mx-auto px-4 py-8">
+                <button onclick="showPage('products')" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-6 transition-colors">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>بازگشت به محصولات</span>
+                </button>
+                
+                <div id="product-detail-content" class="grid lg:grid-cols-2 gap-12">
+                    <!-- Product detail content will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Detail Page -->
+        <div id="blog-detail" class="page">
+            <div class="container mx-auto px-4 py-8">
+                <button onclick="showPage('blog')" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-6 transition-colors">
+                    <i class="fas fa-arrow-right"></i>
+                    <span>بازگشت به وبلاگ</span>
+                </button>
+                
+                <div id="blog-detail-content" class="max-w-4xl mx-auto">
+                    <!-- Blog detail content will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contact" class="page">
+            <div class="container mx-auto px-4 py-8">
+                <h2 class="text-3xl font-bold text-center mb-12">تماس با ما</h2>
+                
+                <div class="grid lg:grid-cols-2 gap-12 mobile-contact">
+                    <!-- Contact Form -->
+                    <div class="theme-bg rounded-2xl shadow-lg p-8 mobile-space-y-6">
+                        <h3 class="text-2xl font-bold mb-6 mobile-text-xl">پیام خود را ارسال کنید</h3>
+                        <form class="space-y-6 mobile-space-y-4 mobile-form">
+                            <div>
+                                <label class="block font-semibold mb-2 mobile-text-sm">نام و نام خانوادگی</label>
+                                <input type="text" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="نام خود را وارد کنید">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-2 mobile-text-sm">ایمیل</label>
+                                <input type="email" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="ایمیل خود را وارد کنید">
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-2 mobile-text-sm">موضوع</label>
+                                <select class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option>انتخاب موضوع</option>
+                                    <option>سوال درباره محصولات</option>
+                                    <option>شکایت</option>
+                                    <option>پیشنهاد</option>
+                                    <option>سایر</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-2 mobile-text-sm">پیام</label>
+                                <textarea rows="5" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="پیام خود را بنویسید"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors mobile-btn-lg">
+                                ارسال پیام
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="space-y-8">
+                        <div class="theme-bg rounded-2xl shadow-lg p-8">
+                            <h3 class="text-2xl font-bold mb-6">اطلاعات تماس</h3>
+                            <div class="space-y-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-phone text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">تلفن</h4>
+                                        <p class="theme-text-secondary">۰۲۱-۱۲۳۴۵۶۷۸</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fab fa-whatsapp text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">واتساپ</h4>
+                                        <p class="theme-text-secondary">۰۹۱۲۳۴۵۶۷۸۹</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-envelope text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">ایمیل</h4>
+                                        <p class="theme-text-secondary">info@beautyshop.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-map-marker-alt text-red-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">آدرس</h4>
+                                        <p class="theme-text-secondary">تهران، خیابان ولیعصر، پلاک ۱۲۳</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg rounded-2xl shadow-lg p-8">
+                            <h3 class="text-2xl font-bold mb-6">ساعات کاری</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between">
+                                    <span>شنبه تا چهارشنبه</span>
+                                    <span class="theme-text-secondary">۹:۰۰ - ۱۸:۰۰</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>پنج‌شنبه</span>
+                                    <span class="theme-text-secondary">۹:۰۰ - ۱۳:۰۰</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>جمعه</span>
+                                    <span class="text-red-500">تعطیل</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Filter Sidebar -->
+    <div class="filter-overlay" onclick="toggleMobileFilters()"></div>
+    <div class="filter-sidebar" id="mobile-filters">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold">فیلترها</h3>
+            <button onclick="toggleMobileFilters()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="mb-6">
+            <h4 class="font-semibold mb-3">دسته‌بندی</h4>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                    <span>گیره مو</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                    <span>رژ لب</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                    <span>کرم</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                    <span>عطر</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Price Filter -->
+        <div class="mb-6">
+            <h4 class="font-semibold mb-3">محدوده قیمت</h4>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="mobile-price" class="rounded theme-input" onchange="filterProducts()">
+                    <span>زیر ۱۰۰ هزار تومان</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="mobile-price" class="rounded theme-input" onchange="filterProducts()">
+                    <span>۱۰۰ تا ۲۰۰ هزار تومان</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="mobile-price" class="rounded theme-input" onchange="filterProducts()">
+                    <span>بالای ۲۰۰ هزار تومان</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Rating Filter -->
+        <div class="mb-6">
+            <h4 class="font-semibold mb-3">امتیاز</h4>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="fas fa-star text-sm"></i>
+                    </div>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" class="rounded theme-input" onchange="filterProducts()">
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="fas fa-star text-sm"></i>
+                        <i class="far fa-star text-sm"></i>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="flex gap-3">
+            <button onclick="clearFilters()" class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white py-3 rounded-xl font-semibold transition-colors">
+                پاک کردن
+            </button>
+            <button onclick="toggleMobileFilters()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-semibold transition-colors">
+                اعمال فیلتر
+            </button>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="auth-title" class="text-2xl font-bold">ورود به حساب کاربری</h2>
+                <button onclick="closeAuthModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form">
+                <form class="space-y-4" onsubmit="handleLogin(event)">
+                    <div>
+                        <label class="block font-semibold mb-2">ایمیل یا شماره موبایل</label>
+                        <input id="login-email" type="text" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="ایمیل یا شماره موبایل خود را وارد کنید" required>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">رمز عبور</label>
+                        <div class="relative">
+                            <input id="login-password" type="password" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="رمز عبور خود را وارد کنید" required>
+                            <button type="button" onclick="togglePassword('login-password')" class="absolute left-4 top-1/2 transform -translate-y-1/2 theme-text-secondary hover:text-purple-600">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" class="rounded theme-input">
+                            <span class="text-sm">مرا به خاطر بسپار</span>
+                        </label>
+                        <a href="#" class="text-sm text-purple-600 hover:text-purple-700">فراموشی رمز عبور؟</a>
+                    </div>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors">
+                        ورود
+                    </button>
+                </form>
+                <div class="text-center mt-6">
+                    <span class="theme-text-secondary">حساب کاربری ندارید؟</span>
+                    <button onclick="showAuthForm('register')" class="text-purple-600 hover:text-purple-700 font-semibold mr-2">
+                        ثبت نام کنید
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="register-form" class="auth-form hidden">
+                <form class="space-y-4" onsubmit="handleRegister(event)">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-semibold mb-2">نام</label>
+                            <input id="register-firstname" type="text" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="نام" required>
+                        </div>
+                        <div>
+                            <label class="block font-semibold mb-2">نام خانوادگی</label>
+                            <input id="register-lastname" type="text" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="نام خانوادگی" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">ایمیل</label>
+                        <input id="register-email" type="email" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="ایمیل خود را وارد کنید" required>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">شماره موبایل</label>
+                        <input id="register-phone" type="tel" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="شماره موبایل خود را وارد کنید" required>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">رمز عبور</label>
+                        <div class="relative">
+                            <input id="register-password" type="password" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="رمز عبور خود را وارد کنید" required>
+                            <button type="button" onclick="togglePassword('register-password')" class="absolute left-4 top-1/2 transform -translate-y-1/2 theme-text-secondary hover:text-purple-600">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-2">تکرار رمز عبور</label>
+                        <div class="relative">
+                            <input id="register-confirm-password" type="password" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="رمز عبور خود را مجدداً وارد کنید" required>
+                            <button type="button" onclick="togglePassword('register-confirm-password')" class="absolute left-4 top-1/2 transform -translate-y-1/2 theme-text-secondary hover:text-purple-600">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="flex items-start gap-2 cursor-pointer">
+                            <input id="register-terms" type="checkbox" class="rounded theme-input mt-1" required>
+                            <span class="text-sm leading-relaxed">
+                                با <a href="#" class="text-purple-600 hover:text-purple-700">قوانین و مقررات</a> و 
+                                <a href="#" class="text-purple-600 hover:text-purple-700">حریم خصوصی</a> موافقم
+                            </span>
+                        </label>
+                    </div>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors">
+                        ثبت نام
+                    </button>
+                </form>
+                <div class="text-center mt-6">
+                    <span class="theme-text-secondary">قبلاً ثبت نام کرده‌اید؟</span>
+                    <button onclick="showAuthForm('login')" class="text-purple-600 hover:text-purple-700 font-semibold mr-2">
+                        وارد شوید
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Profile Form -->
+            <div id="profile-form" class="auth-form hidden">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user text-3xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">سارا احمدی</h3>
+                    <p class="theme-text-secondary">sara@example.com</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <button onclick="closeAuthModal(); showNotification('صفحه سفارشات در حال توسعه است', 'info')" class="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors">
+                        <i class="fas fa-shopping-bag text-purple-600"></i>
+                        <span>سفارشات من</span>
+                        <i class="fas fa-chevron-left mr-auto"></i>
+                    </button>
+                    <button onclick="closeAuthModal(); showNotification('صفحه علاقه‌مندی‌ها در حال توسعه است', 'info')" class="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors">
+                        <i class="fas fa-heart text-red-500"></i>
+                        <span>علاقه‌مندی‌ها</span>
+                        <i class="fas fa-chevron-left mr-auto"></i>
+                    </button>
+                    <button onclick="closeAuthModal(); showNotification('صفحه آدرس‌ها در حال توسعه است', 'info')" class="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors">
+                        <i class="fas fa-map-marker-alt text-green-600"></i>
+                        <span>آدرس‌های من</span>
+                        <i class="fas fa-chevron-left mr-auto"></i>
+                    </button>
+                    <button onclick="closeAuthModal(); showNotification('صفحه تنظیمات در حال توسعه است', 'info')" class="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors">
+                        <i class="fas fa-cog text-gray-600"></i>
+                        <span>تنظیمات</span>
+                        <i class="fas fa-chevron-left mr-auto"></i>
+                    </button>
+                    <button onclick="logoutUser()" class="w-full flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors text-red-600">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>خروج از حساب</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="theme-bg border-t theme-border py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mobile-footer">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-gem text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold mobile-text-base">زیبایی شاپ</h3>
+                        </div>
+                    </div>
+                    <p class="theme-text-secondary mb-4 mobile-text-sm">فروشگاه آنلاین محصولات آرایشی و بهداشتی با بهترین کیفیت و قیمت</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white hover:bg-pink-700 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white hover:bg-green-700 transition-colors">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 mobile-text-sm">دسته‌بندی محصولات</h4>
+                    <ul class="space-y-2 theme-text-secondary mobile-text-sm">
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">آرایش صورت</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">مراقبت از پوست</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">مراقبت از مو</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">عطر و ادکلن</a></li>
+                        <li><a href="#" class="hover:text-purple-600 transition-colors">لوازم جانبی</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 mobile-text-sm">اطلاعات تماس</h4>
+                    <ul class="space-y-3 theme-text-secondary mobile-text-sm">
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-phone text-purple-600"></i>
+                            <span>۰۲۱-۱۲۳۴۵۶۷۸</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-envelope text-purple-600"></i>
+                            <span>info@beautyshop.com</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="fas fa-map-marker-alt text-purple-600"></i>
+                            <span>تهران، خیابان ولیعصر</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t theme-border mt-8 pt-8 text-center theme-text-secondary">
+                <p>&copy; ۱۴۰۲ زیبایی شاپ. تمامی حقوق محفوظ است.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // User authentication state
+        let isLoggedIn = false;
+        let currentUser = null;
+
+        // Cart data
+        let cart = [
+            { id: 1, name: 'رژ لب مات قرمز', price: 125000, quantity: 2, image: 'fas fa-lipstick', color: 'from-red-200 to-pink-200', iconColor: 'text-red-600' },
+            { id: 2, name: 'کرم مرطوب کننده', price: 85000, quantity: 1, image: 'fas fa-tint', color: 'from-blue-200 to-cyan-200', iconColor: 'text-blue-600' }
+        ];
+
+        // Blog articles data
+        const blogArticles = {
+            'skincare-winter': {
+                title: 'روتین مراقبت از پوست در زمستان',
+                date: '۱۵ آذر ۱۴۰۲',
+                category: 'مراقبت از پوست',
+                image: 'fas fa-leaf',
+                color: 'from-green-200 to-blue-200',
+                iconColor: 'text-green-600',
+                content: `
+                    <p class="text-lg leading-relaxed mb-6">زمستان فصلی است که پوست ما بیشتر در معرض خشکی و آسیب قرار می‌گیرد. هوای سرد و خشک، باد و تغییرات دمایی می‌تواند باعث کاهش رطوبت پوست شود.</p>
+                    
+                    <h3 class="text-2xl font-bold mb-4">نکات مهم برای مراقبت از پوست در زمستان:</h3>
+                    
+                    <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl mb-6">
+                        <h4 class="font-bold text-lg mb-3">۱. استفاده از مرطوب کننده مناسب</h4>
+                        <p>در زمستان باید از مرطوب کننده‌های غنی‌تر استفاده کنید. کرم‌هایی که حاوی سرامید، هیالورونیک اسید و گلیسیرین هستند بهترین گزینه‌ها محسوب می‌شوند.</p>
+                    </div>
+                    
+                    <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-xl mb-6">
+                        <h4 class="font-bold text-lg mb-3">۲. حفاظت از آفتاب</h4>
+                        <p>حتی در زمستان هم باید از ضد آفتاب استفاده کنید. برف می‌تواند اشعه UV را منعکس کند و آسیب بیشتری به پوست برساند.</p>
+                    </div>
+                    
+                    <div class="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-xl mb-6">
+                        <h4 class="font-bold text-lg mb-3">۳. پاکسازی ملایم</h4>
+                        <p>از شوینده‌های ملایم و بدون سولفات استفاده کنید. پاکسازی بیش از حد می‌تواند روغن‌های طبیعی پوست را از بین ببرد.</p>
+                    </div>
+                    
+                    <h3 class="text-2xl font-bold mb-4">روتین پیشنهادی:</h3>
+                    <ul class="list-disc list-inside space-y-2 mb-6">
+                        <li>صبح: پاکسازی ملایم + تونر + سرم ویتامین C + مرطوب کننده + ضد آفتاب</li>
+                        <li>شب: پاکسازی + تونر + سرم مرطوب کننده + کرم شب</li>
+                        <li>هفته‌ای ۲-۳ بار: ماسک مرطوب کننده</li>
+                    </ul>
+                `
+            }
+        };
+
+        // Sample products data
+        const products = [
+            {
+                id: 1,
+                name: 'رژ لب مات قرمز',
+                category: 'رژ لب',
+                price: 125000,
+                rating: 4.8,
+                image: 'fas fa-lipstick',
+                color: 'from-red-200 to-pink-200',
+                iconColor: 'text-red-600',
+                type: 'popular',
+                isNew: false
+            },
+            {
+                id: 2,
+                name: 'کرم مرطوب کننده',
+                category: 'کرم',
+                price: 85000,
+                rating: 4.6,
+                image: 'fas fa-tint',
+                color: 'from-blue-200 to-cyan-200',
+                iconColor: 'text-blue-600',
+                type: 'popular',
+                isNew: false
+            },
+            {
+                id: 3,
+                name: 'عطر زنانه گل یاس',
+                category: 'عطر',
+                price: 250000,
+                rating: 4.9,
+                image: 'fas fa-spray-can',
+                color: 'from-purple-200 to-indigo-200',
+                iconColor: 'text-purple-600',
+                type: 'bestseller',
+                isNew: false
+            },
+            {
+                id: 4,
+                name: 'گیره مو طلایی',
+                category: 'گیره مو',
+                price: 35000,
+                rating: 4.3,
+                image: 'fas fa-cut',
+                color: 'from-yellow-200 to-orange-200',
+                iconColor: 'text-yellow-600',
+                type: 'popular',
+                isNew: false
+            },
+            {
+                id: 5,
+                name: 'رژ لب صورتی',
+                category: 'رژ لب',
+                price: 110000,
+                rating: 4.7,
+                image: 'fas fa-lipstick',
+                color: 'from-pink-200 to-rose-200',
+                iconColor: 'text-pink-600',
+                type: 'newest',
+                isNew: true
+            },
+            {
+                id: 6,
+                name: 'کرم ضد آفتاب',
+                category: 'کرم',
+                price: 95000,
+                rating: 4.5,
+                image: 'fas fa-sun',
+                color: 'from-orange-200 to-yellow-200',
+                iconColor: 'text-orange-600',
+                type: 'bestseller',
+                isNew: false
+            },
+            {
+                id: 7,
+                name: 'عطر مردانه',
+                category: 'عطر',
+                price: 180000,
+                rating: 4.4,
+                image: 'fas fa-spray-can',
+                color: 'from-gray-200 to-slate-200',
+                iconColor: 'text-gray-600',
+                type: 'newest',
+                isNew: true
+            },
+            {
+                id: 8,
+                name: 'گیره مو نقره‌ای',
+                category: 'گیره مو',
+                price: 45000,
+                rating: 4.2,
+                image: 'fas fa-cut',
+                color: 'from-slate-200 to-gray-200',
+                iconColor: 'text-slate-600',
+                type: 'bestseller',
+                isNew: false
+            },
+            {
+                id: 9,
+                name: 'ماسکارا ضد آب',
+                category: 'آرایش چشم',
+                price: 75000,
+                rating: 4.6,
+                image: 'fas fa-eye',
+                color: 'from-indigo-200 to-purple-200',
+                iconColor: 'text-indigo-600',
+                type: 'newest',
+                isNew: true
+            },
+            {
+                id: 10,
+                name: 'پودر فیکس کننده',
+                category: 'آرایش صورت',
+                price: 65000,
+                rating: 4.4,
+                image: 'fas fa-palette',
+                color: 'from-amber-200 to-yellow-200',
+                iconColor: 'text-amber-600',
+                type: 'newest',
+                isNew: true
+            },
+            {
+                id: 11,
+                name: 'سرم ویتامین C',
+                category: 'مراقبت پوست',
+                price: 145000,
+                rating: 4.8,
+                image: 'fas fa-flask',
+                color: 'from-emerald-200 to-teal-200',
+                iconColor: 'text-emerald-600',
+                type: 'bestseller',
+                isNew: false
+            },
+            {
+                id: 12,
+                name: 'شامپو مغذی',
+                category: 'مراقبت مو',
+                price: 55000,
+                rating: 4.3,
+                image: 'fas fa-pump-soap',
+                color: 'from-cyan-200 to-blue-200',
+                iconColor: 'text-cyan-600',
+                type: 'bestseller',
+                isNew: false
+            }
+        ];
+
+        let filteredProducts = [...products];
+
+        // Page Navigation
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-purple-600', 'font-semibold');
+            });
+            
+            // Update mobile navigation
+            updateMobileNav(pageId);
+            
+            // Close mobile filters if open
+            const sidebar = document.getElementById('mobile-filters');
+            const overlay = document.querySelector('.filter-overlay');
+            if (sidebar && overlay) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Mobile Navigation
+        function updateMobileNav(activePageId) {
+            document.querySelectorAll('.mobile-nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === activePageId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Mobile Filters
+        function toggleMobileFilters() {
+            const sidebar = document.getElementById('mobile-filters');
+            const overlay = document.querySelector('.filter-overlay');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Auth Modal Functions
+        function handleAuthClick() {
+            if (isLoggedIn) {
+                showAuthModal('profile');
+            } else {
+                showAuthModal('login');
+            }
+        }
+
+        function showAuthModal(type = 'login') {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('active');
+            showAuthForm(type);
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('active');
+        }
+
+        function showAuthForm(type) {
+            // Hide all forms
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.add('hidden');
+            });
+            
+            // Show selected form and update title
+            const titles = {
+                login: 'ورود به حساب کاربری',
+                register: 'ثبت نام',
+                profile: 'پروفایل کاربری'
+            };
+            
+            document.getElementById('auth-title').textContent = titles[type];
+            document.getElementById(`${type}-form`).classList.remove('hidden');
+        }
+
+        function loginUser(userData) {
+            isLoggedIn = true;
+            currentUser = userData;
+            updateAuthUI();
+            closeAuthModal();
+            showNotification('با موفقیت وارد شدید!', 'success');
+        }
+
+        function logoutUser() {
+            isLoggedIn = false;
+            currentUser = null;
+            updateAuthUI();
+            closeAuthModal();
+            showNotification('با موفقیت خارج شدید', 'success');
+        }
+
+        function updateAuthUI() {
+            const authButton = document.getElementById('auth-button');
+            const authText = document.getElementById('auth-text');
+            const mobileAuthText = document.getElementById('mobile-auth-text');
+            
+            if (isLoggedIn && currentUser) {
+                authText.textContent = currentUser.name;
+                mobileAuthText.textContent = 'پروفایل';
+                authButton.innerHTML = `
+                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-purple-600 text-sm"></i>
+                    </div>
+                    <span>${currentUser.name}</span>
+                `;
+            } else {
+                authText.textContent = 'ورود';
+                mobileAuthText.textContent = 'ورود';
+                authButton.innerHTML = `
+                    <i class="fas fa-user"></i>
+                    <span>ورود</span>
+                `;
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            
+            body.classList.toggle('dark');
+            
+            if (body.classList.contains('dark')) {
+                icon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Blog Tabs
+        function showBlogTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        // Products Functions
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            
+            filteredProducts.forEach(product => {
+                const productCard = `
+                    <div class="theme-bg rounded-xl md:rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="showProductDetail(${product.id})">
+                        <div class="h-32 sm:h-40 md:h-48 bg-gradient-to-br ${product.color} flex items-center justify-center">
+                            <i class="${product.image} text-2xl sm:text-3xl md:text-4xl ${product.iconColor}"></i>
+                        </div>
+                        <div class="p-3 sm:p-4 md:p-6">
+                            <h3 class="font-bold text-sm sm:text-base md:text-lg mb-1 md:mb-2 leading-tight">${product.name}</h3>
+                            <p class="theme-text-secondary text-xs sm:text-sm mb-2 md:mb-3">${product.category}</p>
+                            <div class="flex items-center mb-2 md:mb-4">
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                    <i class="fas fa-star text-xs"></i>
+                                </div>
+                                <span class="mr-1 text-xs theme-text-secondary">(${product.rating})</span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                                <span class="text-sm sm:text-base md:text-xl font-bold text-purple-600">${(product.price / 1000).toFixed(0)}K تومان</span>
+                                <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 rounded-lg transition-colors text-xs sm:text-sm">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += productCard;
+            });
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            let starsHtml = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += '<i class="fas fa-star text-yellow-400 text-sm"></i>';
+            }
+            
+            if (hasHalfStar) {
+                starsHtml += '<i class="fas fa-star-half-alt text-yellow-400 text-sm"></i>';
+            }
+            
+            const emptyStars = 5 - Math.ceil(rating);
+            for (let i = 0; i < emptyStars; i++) {
+                starsHtml += '<i class="far fa-star text-yellow-400 text-sm"></i>';
+            }
+            
+            return starsHtml;
+        }
+
+        function filterProducts() {
+            // Get selected categories
+            const selectedCategories = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                const label = checkbox.parentElement.textContent.trim();
+                if (['گیره مو', 'رژ لب', 'کرم', 'عطر'].includes(label)) {
+                    selectedCategories.push(label);
+                }
+            });
+            
+            // Get selected price range
+            const selectedPrice = document.querySelector('input[name="price"]:checked') || 
+                                 document.querySelector('input[name="mobile-price"]:checked');
+            
+            // Filter products
+            filteredProducts = products.filter(product => {
+                let matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
+                let matchesPrice = true;
+                
+                if (selectedPrice) {
+                    const priceText = selectedPrice.parentElement.textContent.trim();
+                    if (priceText.includes('زیر ۱۰۰')) {
+                        matchesPrice = product.price < 100000;
+                    } else if (priceText.includes('۱۰۰ تا ۲۰۰')) {
+                        matchesPrice = product.price >= 100000 && product.price <= 200000;
+                    } else if (priceText.includes('بالای ۲۰۰')) {
+                        matchesPrice = product.price > 200000;
+                    }
+                }
+                
+                return matchesCategory && matchesPrice;
+            });
+            
+            renderProducts();
+        }
+
+        function sortProducts(sortBy) {
+            switch (sortBy) {
+                case 'price-low':
+                    filteredProducts.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProducts.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProducts.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'newest':
+                    filteredProducts.sort((a, b) => b.id - a.id);
+                    break;
+                default:
+                    filteredProducts = [...products];
+            }
+            renderProducts();
+        }
+
+        function clearFilters() {
+            // Clear all checkboxes and radio buttons
+            document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+                input.checked = false;
+            });
+            
+            // Reset products
+            filteredProducts = [...products];
+            renderProducts();
+        }
+
+        // Cart Functions
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1,
+                    image: product.image,
+                    color: product.color,
+                    iconColor: product.iconColor
+                });
+            }
+            
+            updateCartCount();
+            renderCart();
+            
+            // Show success message
+            showNotification('محصول به سبد خرید اضافه شد!', 'success');
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            renderCart();
+        }
+
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                updateCartCount();
+                renderCart();
+            }
+        }
+
+        function clearCart() {
+            cart = [];
+            updateCartCount();
+            renderCart();
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').textContent = count;
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cart-items');
+            if (!cartItems) return;
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2">سبد خرید شما خالی است</h3>
+                        <p class="theme-text-secondary mb-6">برای خرید محصولات به صفحه محصولات بروید</p>
+                        <button onclick="showPage('products')" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+                            مشاهده محصولات
+                        </button>
+                    </div>
+                `;
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center gap-4 p-4 border theme-border rounded-xl">
+                        <div class="w-16 h-16 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center">
+                            <i class="${item.image} text-xl ${item.iconColor}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold">${item.name}</h4>
+                            <p class="text-purple-600 font-semibold">${item.price.toLocaleString()} تومان</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-minus text-sm"></i>
+                            </button>
+                            <span class="w-8 text-center font-semibold">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-plus text-sm"></i>
+                            </button>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-red-600 hover:text-red-700 p-2">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            updateCartSummary();
+        }
+
+        function updateCartSummary() {
+            const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+            const shipping = subtotal > 500000 ? 0 : 25000;
+            const discount = 10000;
+            const total = subtotal + shipping - discount;
+            
+            const subtotalEl = document.getElementById('subtotal');
+            const shippingEl = document.getElementById('shipping');
+            const totalEl = document.getElementById('total');
+            
+            if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString() + ' تومان';
+            if (shippingEl) shippingEl.textContent = shipping === 0 ? 'رایگان' : shipping.toLocaleString() + ' تومان';
+            if (totalEl) totalEl.textContent = total.toLocaleString() + ' تومان';
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('سبد خرید شما خالی است!', 'error');
+                return;
+            }
+            showNotification('در حال انتقال به درگاه پرداخت...', 'info');
+        }
+
+        // Product Detail Functions
+        function showProductDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const content = document.getElementById('product-detail-content');
+            content.innerHTML = `
+                <!-- Product Image -->
+                <div class="space-y-6">
+                    <div class="h-96 bg-gradient-to-br ${product.color} rounded-2xl flex items-center justify-center">
+                        <i class="${product.image} text-8xl ${product.iconColor}"></i>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="h-20 bg-gradient-to-br ${product.color} rounded-xl flex items-center justify-center border-2 border-purple-500">
+                            <i class="${product.image} text-2xl ${product.iconColor}"></i>
+                        </div>
+                        <div class="h-20 bg-gradient-to-br ${product.color} rounded-xl flex items-center justify-center opacity-60">
+                            <i class="${product.image} text-2xl ${product.iconColor}"></i>
+                        </div>
+                        <div class="h-20 bg-gradient-to-br ${product.color} rounded-xl flex items-center justify-center opacity-60">
+                            <i class="${product.image} text-2xl ${product.iconColor}"></i>
+                        </div>
+                        <div class="h-20 bg-gradient-to-br ${product.color} rounded-xl flex items-center justify-center opacity-60">
+                            <i class="${product.image} text-2xl ${product.iconColor}"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Info -->
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">${product.category}</span>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">موجود</span>
+                        </div>
+                        <h1 class="text-3xl font-bold mb-4">${product.name}</h1>
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="flex items-center">
+                                ${generateStars(product.rating)}
+                                <span class="mr-2 font-semibold">${product.rating}</span>
+                            </div>
+                            <span class="theme-text-secondary">|</span>
+                            <span class="theme-text-secondary">۱۲۳ نظر</span>
+                            <span class="theme-text-secondary">|</span>
+                            <span class="theme-text-secondary">۴۵۶ فروش</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-2xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-3xl font-bold text-purple-600">${product.price.toLocaleString()} تومان</span>
+                            <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">۱۵% تخفیف</span>
+                        </div>
+                        <p class="text-sm theme-text-secondary line-through">${(product.price * 1.15).toLocaleString()} تومان</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold">ویژگی‌های محصول:</h3>
+                        <ul class="space-y-2">
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-check text-green-600"></i>
+                                <span>کیفیت بالا و مقاوم</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-check text-green-600"></i>
+                                <span>مناسب برای انواع پوست</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-check text-green-600"></i>
+                                <span>ضد حساسیت و طبیعی</span>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <i class="fas fa-check text-green-600"></i>
+                                <span>ماندگاری بالا</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <button onclick="addToCart(${product.id})" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-cart-plus"></i>
+                            افزودن به سبد خرید
+                        </button>
+                        <button class="w-14 h-14 border-2 border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors flex items-center justify-center">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <button class="w-14 h-14 border-2 border-blue-300 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors flex items-center justify-center">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-truck text-blue-600"></i>
+                            <span class="font-semibold">ارسال رایگان</span>
+                        </div>
+                        <p class="text-sm theme-text-secondary">برای خریدهای بالای ۵۰۰ هزار تومان</p>
+                    </div>
+                </div>
+            `;
+            
+            // Add comments section
+            content.innerHTML += `
+                <!-- Comments Section -->
+                <div class="mt-12 theme-bg rounded-2xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold mb-6">نظرات کاربران</h3>
+                    
+                    <!-- Add Comment Form -->
+                    <div class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl mb-8">
+                        <h4 class="font-bold mb-4">نظر خود را بنویسید</h4>
+                        <form class="space-y-4" onsubmit="addComment(event, ${product.id})">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="font-semibold">امتیاز شما:</span>
+                                <div class="flex gap-1" id="rating-stars">
+                                    <i class="fas fa-star text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" onclick="setRating(1)"></i>
+                                    <i class="fas fa-star text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" onclick="setRating(2)"></i>
+                                    <i class="fas fa-star text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" onclick="setRating(3)"></i>
+                                    <i class="fas fa-star text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" onclick="setRating(4)"></i>
+                                    <i class="fas fa-star text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors" onclick="setRating(5)"></i>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" placeholder="نام شما" class="p-3 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                                <input type="email" placeholder="ایمیل شما" class="p-3 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                            </div>
+                            <textarea rows="4" placeholder="نظر خود را بنویسید..." class="w-full p-3 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" required></textarea>
+                            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+                                ارسال نظر
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Comments List -->
+                    <div class="space-y-6" id="comments-list">
+                        <!-- Sample Comments -->
+                        <div class="border-b theme-border pb-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-4 mb-2">
+                                        <h5 class="font-bold">مریم احمدی</h5>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                        </div>
+                                        <span class="text-sm theme-text-secondary">۲ روز پیش</span>
+                                    </div>
+                                    <p class="theme-text-secondary mb-3">محصول فوق‌العاده‌ای بود! کیفیت عالی و ماندگاری بالا. حتماً دوباره خریداری می‌کنم.</p>
+                                    <div class="flex items-center gap-4">
+                                        <button class="flex items-center gap-1 text-green-600 hover:text-green-700 transition-colors">
+                                            <i class="fas fa-thumbs-up text-sm"></i>
+                                            <span class="text-sm">مفید (۱۲)</span>
+                                        </button>
+                                        <button class="text-purple-600 hover:text-purple-700 text-sm transition-colors">
+                                            پاسخ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b theme-border pb-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-blue-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-4 mb-2">
+                                        <h5 class="font-bold">علی رضایی</h5>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="far fa-star text-sm"></i>
+                                        </div>
+                                        <span class="text-sm theme-text-secondary">۱ هفته پیش</span>
+                                    </div>
+                                    <p class="theme-text-secondary mb-3">خوب بود ولی انتظار بیشتری داشتم. قیمت کمی بالا به نظر می‌رسد.</p>
+                                    <div class="flex items-center gap-4">
+                                        <button class="flex items-center gap-1 text-green-600 hover:text-green-700 transition-colors">
+                                            <i class="fas fa-thumbs-up text-sm"></i>
+                                            <span class="text-sm">مفید (۵)</span>
+                                        </button>
+                                        <button class="text-purple-600 hover:text-purple-700 text-sm transition-colors">
+                                            پاسخ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b theme-border pb-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-green-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-4 mb-2">
+                                        <h5 class="font-bold">زهرا محمدی</h5>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                        </div>
+                                        <span class="text-sm theme-text-secondary">۲ هفته پیش</span>
+                                    </div>
+                                    <p class="theme-text-secondary mb-3">عالی! دقیقاً همان چیزی بود که می‌خواستم. ارسال هم سریع بود.</p>
+                                    <div class="flex items-center gap-4">
+                                        <button class="flex items-center gap-1 text-green-600 hover:text-green-700 transition-colors">
+                                            <i class="fas fa-thumbs-up text-sm"></i>
+                                            <span class="text-sm">مفید (۸)</span>
+                                        </button>
+                                        <button class="text-purple-600 hover:text-purple-700 text-sm transition-colors">
+                                            پاسخ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Load More Comments -->
+                    <div class="text-center mt-8">
+                        <button class="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
+                            مشاهده نظرات بیشتر
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            showPage('product-detail');
+        }
+
+        // Blog Detail Functions
+        function showBlogDetail(articleId) {
+            const article = blogArticles[articleId];
+            if (!article) return;
+            
+            const content = document.getElementById('blog-detail-content');
+            content.innerHTML = `
+                <article class="theme-bg rounded-2xl shadow-lg overflow-hidden">
+                    <!-- Article Header -->
+                    <div class="h-64 bg-gradient-to-br ${article.color} flex items-center justify-center">
+                        <i class="${article.image} text-6xl ${article.iconColor}"></i>
+                    </div>
+                    
+                    <div class="p-8">
+                        <!-- Article Meta -->
+                        <div class="flex items-center gap-4 mb-6">
+                            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">${article.category}</span>
+                            <span class="theme-text-secondary">${article.date}</span>
+                            <span class="theme-text-secondary">|</span>
+                            <span class="theme-text-secondary">۵ دقیقه مطالعه</span>
+                        </div>
+                        
+                        <!-- Article Title -->
+                        <h1 class="text-4xl font-bold mb-8">${article.title}</h1>
+                        
+                        <!-- Article Content -->
+                        <div class="prose prose-lg max-w-none">
+                            ${article.content}
+                        </div>
+                        
+                        <!-- Article Footer -->
+                        <div class="flex items-center justify-between mt-12 pt-8 border-t theme-border">
+                            <div class="flex items-center gap-4">
+                                <button class="flex items-center gap-2 text-red-600 hover:text-red-700 transition-colors">
+                                    <i class="fas fa-heart"></i>
+                                    <span>۲۳</span>
+                                </button>
+                                <button class="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors">
+                                    <i class="fas fa-share"></i>
+                                    <span>اشتراک‌گذاری</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="theme-text-secondary">نویسنده:</span>
+                                <span class="font-semibold">دکتر سارا احمدی</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Related Articles -->
+                <div class="mt-12">
+                    <h2 class="text-2xl font-bold mb-6">مقالات مرتبط</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="theme-bg rounded-xl p-6 card-hover cursor-pointer">
+                            <div class="h-32 bg-gradient-to-br from-pink-200 to-purple-200 rounded-xl flex items-center justify-center mb-4">
+                                <i class="fas fa-sun text-3xl text-yellow-600"></i>
+                            </div>
+                            <h3 class="font-bold mb-2">اهمیت استفاده از ضد آفتاب</h3>
+                            <p class="theme-text-secondary text-sm">چرا باید هر روز از ضد آفتاب استفاده کنیم؟</p>
+                        </div>
+                        <div class="theme-bg rounded-xl p-6 card-hover cursor-pointer">
+                            <div class="h-32 bg-gradient-to-br from-blue-200 to-cyan-200 rounded-xl flex items-center justify-center mb-4">
+                                <i class="fas fa-tint text-3xl text-blue-600"></i>
+                            </div>
+                            <h3 class="font-bold mb-2">بهترین مرطوب کننده‌ها</h3>
+                            <p class="theme-text-secondary text-sm">راهنمای انتخاب مرطوب کننده مناسب</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            showPage('blog-detail');
+        }
+
+        // Notification Function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transition-all duration-300 transform translate-x-full`;
+            
+            const colors = {
+                success: 'bg-green-500 text-white',
+                error: 'bg-red-500 text-white',
+                info: 'bg-blue-500 text-white'
+            };
+            
+            notification.className += ` ${colors[type]}`;
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Authentication Functions
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Simple validation (in real app, this would be server-side)
+            if (email && password) {
+                const userData = {
+                    name: 'سارا احمدی',
+                    email: email,
+                    phone: '09123456789'
+                };
+                
+                loginUser(userData);
+            } else {
+                showNotification('لطفاً تمام فیلدها را پر کنید', 'error');
+            }
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const firstName = document.getElementById('register-firstname').value;
+            const lastName = document.getElementById('register-lastname').value;
+            const email = document.getElementById('register-email').value;
+            const phone = document.getElementById('register-phone').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const terms = document.getElementById('register-terms').checked;
+            
+            if (!terms) {
+                showNotification('لطفاً قوانین و مقررات را بپذیرید', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showNotification('رمز عبور و تکرار آن یکسان نیستند', 'error');
+                return;
+            }
+            
+            if (firstName && lastName && email && phone && password) {
+                const userData = {
+                    name: `${firstName} ${lastName}`,
+                    email: email,
+                    phone: phone
+                };
+                
+                loginUser(userData);
+                showNotification('حساب کاربری با موفقیت ایجاد شد!', 'success');
+            } else {
+                showNotification('لطفاً تمام فیلدها را پر کنید', 'error');
+            }
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // Product Section Functions
+        let currentProductSection = 'popular';
+
+        function showProductSection(sectionType) {
+            currentProductSection = sectionType;
+            
+            // Update tab buttons
+            document.querySelectorAll('.product-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === sectionType) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Render products for both desktop and mobile
+            renderHomeProducts();
+        }
+
+        function renderHomeProducts() {
+            const desktopContainer = document.getElementById('desktop-home-products');
+            const mobileContainer = document.getElementById('mobile-popular-products');
+            
+            if (!desktopContainer || !mobileContainer) return;
+            
+            // Filter products based on current section
+            let sectionProducts = [];
+            switch (currentProductSection) {
+                case 'popular':
+                    sectionProducts = products.filter(p => p.type === 'popular').slice(0, 4);
+                    break;
+                case 'newest':
+                    sectionProducts = products.filter(p => p.type === 'newest').slice(0, 6);
+                    break;
+                case 'bestseller':
+                    sectionProducts = products.filter(p => p.type === 'bestseller').slice(0, 6);
+                    break;
+                default:
+                    sectionProducts = products.slice(0, 6);
+            }
+            
+            // Render desktop products
+            desktopContainer.innerHTML = sectionProducts.map(product => `
+                <div class="theme-bg rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="showProductDetail(${product.id})">
+                    ${product.isNew ? '<div class="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold z-10">جدید</div>' : ''}
+                    <div class="h-48 bg-gradient-to-br ${product.color} flex items-center justify-center relative">
+                        <i class="${product.image} text-4xl ${product.iconColor}"></i>
+                    </div>
+                    <div class="p-6">
+                        <h4 class="font-bold mb-2">${product.name}</h4>
+                        <p class="theme-text-secondary text-sm mb-4">${product.category}</p>
+                        <div class="flex items-center mb-4">
+                            ${generateStars(product.rating)}
+                            <span class="mr-2 text-sm theme-text-secondary">(${product.rating})</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-bold text-purple-600">${product.price.toLocaleString()} تومان</span>
+                            <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Render mobile products
+            mobileContainer.innerHTML = sectionProducts.map(product => `
+                <div class="theme-bg rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer mobile-product-card relative" onclick="showProductDetail(${product.id})">
+                    ${product.isNew ? '<div class="absolute top-1 right-1 bg-red-500 text-white px-1 py-0.5 rounded-full text-xs font-bold z-10">جدید</div>' : ''}
+                    <div class="mobile-product-image bg-gradient-to-br ${product.color} flex items-center justify-center">
+                        <i class="${product.image} text-lg ${product.iconColor}"></i>
+                    </div>
+                    <div class="mobile-product-content">
+                        <h4 class="font-bold mb-1 text-xs leading-tight">${product.name}</h4>
+                        <p class="theme-text-secondary text-xs mb-1">${product.category}</p>
+                        <div class="flex items-center mb-1">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                                <i class="fas fa-star text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-bold text-purple-600">${(product.price / 1000).toFixed(0)}K</span>
+                            <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 text-white px-1 py-1 rounded text-xs hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Comment Functions
+        let selectedRating = 0;
+        
+        function setRating(rating) {
+            selectedRating = rating;
+            const stars = document.querySelectorAll('#rating-stars i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.className = 'fas fa-star text-yellow-400 cursor-pointer hover:text-yellow-400 transition-colors';
+                } else {
+                    star.className = 'fas fa-star text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors';
+                }
+            });
+        }
+        
+        function addComment(event, productId) {
+            event.preventDefault();
+            
+            if (selectedRating === 0) {
+                showNotification('لطفاً امتیاز خود را انتخاب کنید', 'error');
+                return;
+            }
+            
+            const form = event.target;
+            const name = form.querySelector('input[type="text"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const comment = form.querySelector('textarea').value;
+            
+            if (name && email && comment) {
+                // Create new comment element
+                const commentsList = document.getElementById('comments-list');
+                const newComment = document.createElement('div');
+                newComment.className = 'border-b theme-border pb-6';
+                
+                const starsHtml = Array.from({length: 5}, (_, i) => 
+                    i < selectedRating 
+                        ? '<i class="fas fa-star text-sm"></i>' 
+                        : '<i class="far fa-star text-sm"></i>'
+                ).join('');
+                
+                newComment.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-purple-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-4 mb-2">
+                                <h5 class="font-bold">${name}</h5>
+                                <div class="flex text-yellow-400">
+                                    ${starsHtml}
+                                </div>
+                                <span class="text-sm theme-text-secondary">همین الان</span>
+                            </div>
+                            <p class="theme-text-secondary mb-3">${comment}</p>
+                            <div class="flex items-center gap-4">
+                                <button class="flex items-center gap-1 text-green-600 hover:text-green-700 transition-colors">
+                                    <i class="fas fa-thumbs-up text-sm"></i>
+                                    <span class="text-sm">مفید (۰)</span>
+                                </button>
+                                <button class="text-purple-600 hover:text-purple-700 text-sm transition-colors">
+                                    پاسخ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add to top of comments list
+                commentsList.insertBefore(newComment, commentsList.firstChild);
+                
+                // Reset form
+                form.reset();
+                selectedRating = 0;
+                setRating(0);
+                
+                showNotification('نظر شما با موفقیت ثبت شد!', 'success');
+            } else {
+                showNotification('لطفاً تمام فیلدها را پر کنید', 'error');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                document.getElementById('theme-icon').className = 'fas fa-sun';
+            }
+            
+            // Initialize blog tabs
+            showBlogTab('skincare');
+            
+            // Render products
+            renderProducts();
+            
+            // Initialize home products
+            renderHomeProducts();
+            
+            // Initialize cart
+            updateCartCount();
+            renderCart();
+            
+            // Initialize auth UI
+            updateAuthUI();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96237132b4ad3681',t:'MTc1MzAyNDgyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
