@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}پروفایل کاربری - زیبایی شاپ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 animate-bounce" style="animation-delay: 0s;">
+            <div class="text-purple-300 text-4xl">💎</div>
+        </div>
+        <div class="absolute top-40 right-20 animate-bounce" style="animation-delay: 1s;">
+            <div class="text-pink-300 text-3xl">✨</div>
+        </div>
+        <div class="absolute bottom-20 left-20 animate-bounce" style="animation-delay: 2s;">
+            <div class="text-purple-200 text-2xl">🌸</div>
+        </div>
+        <div class="absolute bottom-40 right-10 animate-bounce" style="animation-delay: 3s;">
+            <div class="text-pink-200 text-3xl">💖</div>
+        </div>
+        
+        <!-- Gradient Orbs -->
+        <div class="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="max-w-4xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                پروفایل کاربری
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">
+                اطلاعات حساب کاربری شما
+            </p>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700 backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
+            <!-- Profile Header -->
+            <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-8 text-white relative overflow-hidden">
+                <div class="absolute inset-0 bg-black/10"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-6">
+                    <!-- Profile Image -->
+                    <div class="relative">
+                        <div class="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center overflow-hidden">
+                            {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" alt="عکس پروفایل" class="w-full h-full object-cover">
+                            {% else %}
+                                <i class="fas fa-user text-4xl text-white/80"></i>
+                            {% endif %}
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- User Info -->
+                    <div class="text-center md:text-right flex-1">
+                        <h2 class="text-2xl font-bold mb-2">{{ user.get_full_name|default:user.email }}</h2>
+                        <p class="text-purple-100 mb-1">{{ user.email }}</p>
+                        {% if user.phone %}
+                            <p class="text-purple-100">{{ user.phone }}</p>
+                        {% endif %}
+                        <div class="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
+                            <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm">
+                                <i class="fas fa-calendar ml-1"></i>
+                                عضو از {{ user.date_joined|date:"Y/m/d" }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="p-8">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 text-center border border-purple-200 dark:border-purple-700">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shopping-bag text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">۱۲</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">سفارش‌های انجام شده</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 text-center border border-purple-200 dark:border-purple-700">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-heart text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">۲۵</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">محصولات مورد علاقه</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 text-center border border-purple-200 dark:border-purple-700">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-star text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">۴.۸</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">امتیاز کلی</p>
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Basic Info -->
+                    <div class="space-y-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-user text-purple-600"></i>
+                            اطلاعات شخصی
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-user text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">نام و نام خانوادگی</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ user.get_full_name|default:"تعیین نشده" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-envelope text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">ایمیل</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ user.email }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-phone text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">شماره موبایل</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ user.phone|default:"تعیین نشده" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-map-marker-alt text-purple-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">آدرس</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">
+                                        {% if user.province or user.city or user.address %}
+                                            {% if user.province %}{{ user.province.name }}{% endif %}
+                                            {% if user.province and user.city %} - {% endif %}
+                                            {% if user.city %}{{ user.city.name }}{% endif %}
+                                            {% if user.address %}<br><span class="text-sm text-gray-600">{{ user.address }}</span>{% endif %}
+                                        {% else %}
+                                            تعیین نشده
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Actions -->
+                    <div class="space-y-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <i class="fas fa-cog text-purple-600"></i>
+                            تنظیمات حساب
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <a href="{% url 'core:edit_profile' %}" class="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-700 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-900/30 dark:hover:to-pink-900/30 transition-all duration-300 group">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-edit text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900 dark:text-white">ویرایش پروفایل</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">تغییر اطلاعات شخصی</p>
+                                </div>
+                                <i class="fas fa-arrow-left text-gray-400 group-hover:text-purple-600 transition-colors"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logout Section -->
+                <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-center sm:text-right">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">خروج از حساب کاربری</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm">برای خروج از حساب کاربری خود کلیک کنید</p>
+                        </div>
+                        <a href="{% url 'core:logout' %}" class="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2">
+                            <i class="fas fa-sign-out-alt"></i>
+                            خروج از حساب
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="text-center mt-8">
+            <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به صفحه اصلی
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes blob {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ویرایش پروفایل - زیبایی شاپ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 animate-bounce" style="animation-delay: 0s;">
+            <div class="text-purple-300 text-4xl">💎</div>
+        </div>
+        <div class="absolute top-40 right-20 animate-bounce" style="animation-delay: 1s;">
+            <div class="text-pink-300 text-3xl">✨</div>
+        </div>
+        <div class="absolute bottom-20 left-20 animate-bounce" style="animation-delay: 2s;">
+            <div class="text-purple-200 text-2xl">🌸</div>
+        </div>
+        <div class="absolute bottom-40 right-10 animate-bounce" style="animation-delay: 3s;">
+            <div class="text-pink-200 text-3xl">💖</div>
+        </div>
+        
+        <!-- Gradient Orbs -->
+        <div class="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" style="animation-delay: 4s;"></div>
+    </div>
+
+    <div class="max-w-2xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                ویرایش پروفایل
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">
+                اطلاعات شخصی خود را به‌روزرسانی کنید
+            </p>
+        </div>
+
+        <!-- Edit Profile Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700 backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-6 p-4 rounded-xl {% if message.tags == 'error' %}bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400{% else %}bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400{% endif %} border border-current/20">
+                        <div class="flex items-center gap-2">
+                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Current Profile Image -->
+                <div class="text-center mb-6">
+                    <div class="relative inline-block">
+                        <div class="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 border-4 border-purple-200 dark:border-purple-700 flex items-center justify-center overflow-hidden">
+                            {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" alt="عکس پروفایل فعلی" class="w-full h-full object-cover">
+                            {% else %}
+                                <i class="fas fa-user text-2xl text-purple-600"></i>
+                            {% endif %}
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">عکس پروفایل فعلی</p>
+                </div>
+
+                <!-- Profile Image Upload -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        تغییر عکس پروفایل
+                    </label>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="profile_image" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <span class="font-semibold">برای آپلود کلیک کنید</span> یا فایل را بکشید
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG یا GIF (حداکثر 2MB)</p>
+                            </div>
+                            <input id="profile_image" name="profile_image" type="file" class="hidden" accept="image/*" />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Name Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label for="first_name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            نام
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input 
+                                id="first_name" 
+                                name="first_name" 
+                                type="text" 
+                                value="{{ user.first_name }}"
+                                required 
+                                class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
+                                placeholder="نام خود را وارد کنید"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="last_name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            نام خانوادگی
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input 
+                                id="last_name" 
+                                name="last_name" 
+                                type="text" 
+                                value="{{ user.last_name }}"
+                                required 
+                                class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
+                                placeholder="نام خانوادگی خود را وارد کنید"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Input (Read-only) -->
+                <div class="space-y-2">
+                    <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        ایمیل
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input 
+                            id="email" 
+                            type="email" 
+                            value="{{ user.email }}"
+                            readonly
+                            class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                        >
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <span class="text-xs text-gray-500 bg-white dark:bg-gray-800 px-2">غیرقابل تغییر</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Input -->
+                <div class="space-y-2">
+                    <label for="phone" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        شماره موبایل
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i class="fas fa-phone text-gray-400"></i>
+                        </div>
+                        <input 
+                            id="phone" 
+                            name="phone" 
+                            type="tel" 
+                            value="{{ user.phone|default:'' }}"
+                            class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
+                            placeholder="09123456789"
+                        >
+                    </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                        <i class="fas fa-map-marker-alt text-purple-600"></i>
+                        اطلاعات آدرس
+                    </h3>
+                    
+                    <!-- Province Selection -->
+                    <div class="space-y-2">
+                        <label for="province" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            استان
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-map text-gray-400"></i>
+                            </div>
+                            <select 
+                                id="province" 
+                                name="province" 
+                                required
+                                class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300"
+                            >
+                                <option value="">انتخاب استان</option>
+                                {% for province in provinces %}
+                                    <option value="{{ province.id }}" {% if user.province == province %}selected{% endif %}>
+                                        {{ province.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- City Selection -->
+                    <div class="space-y-2">
+                        <label for="city" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            شهر
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-city text-gray-400"></i>
+                            </div>
+                            <select 
+                                id="city" 
+                                name="city" 
+                                required
+                                class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300"
+                                {% if not user.province %}disabled{% endif %}
+                            >
+                                {% if user.province %}
+                                    <option value="">انتخاب شهر</option>
+                                    {% for city in cities %}
+                                        <option value="{{ city.id }}" {% if user.city.id == city.id %}selected{% endif %}>
+                                            {{ city.name }}
+                                        </option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="">ابتدا استان را انتخاب کنید</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Address -->
+                    <div class="space-y-2">
+                        <label for="address" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            آدرس دقیق
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i class="fas fa-map-marker-alt text-gray-400"></i>
+                            </div>
+                            <textarea 
+                                id="address" 
+                                name="address" 
+                                rows="3"
+                                class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300 resize-none"
+                                placeholder="آدرس دقیق خود را وارد کنید (خیابان، کوچه، پلاک و...)"
+                            >{{ user.address|default:'' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button 
+                        type="submit" 
+                        class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                    >
+                        <i class="fas fa-save"></i>
+                        ذخیره تغییرات
+                    </button>
+                    
+                    <a href="{% url 'core:profile' %}" class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-300 py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center gap-2">
+                        <i class="fas fa-times"></i>
+                        انصراف
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Back to Profile -->
+        <div class="text-center mt-8">
+            <a href="{% url 'core:profile' %}" class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به پروفایل
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes blob {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+/* File upload preview */
+.file-preview {
+    display: none;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto;
+}
+</style>
+
+<script>
+// File upload preview
+document.getElementById('profile_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Create preview image
+            let preview = document.querySelector('.file-preview');
+            if (!preview) {
+                preview = document.createElement('img');
+                preview.className = 'file-preview';
+                document.querySelector('label[for="profile_image"]').appendChild(preview);
+            }
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            
+            // Hide upload text
+            const uploadText = document.querySelector('label[for="profile_image"] .flex.flex-col');
+            if (uploadText) {
+                uploadText.style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Dynamic city loading based on province selection
+document.getElementById('province').addEventListener('change', function() {
+    const provinceId = this.value;
+    const citySelect = document.getElementById('city');
+    const currentCityId = '{{ user.city.id|default:"" }}';
+    
+    // Reset city select
+    citySelect.innerHTML = '<option value="">ابتدا استان را انتخاب کنید</option>';
+    citySelect.disabled = true;
+    
+    if (provinceId) {
+        // Fetch cities for selected province
+        fetch(`{% url 'core:get_cities' %}?province_id=${provinceId}`)
+            .then(response => response.json())
+            .then(data => {
+                citySelect.innerHTML = '<option value="">انتخاب شهر</option>';
+                data.cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id;
+                    option.textContent = city.name;
+                    // If this is the current user's city and province matches, select it
+                    if (currentCityId && city.id == currentCityId) {
+                        option.selected = true;
+                    }
+                    citySelect.appendChild(option);
+                });
+                citySelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching cities:', error);
+                citySelect.innerHTML = '<option value="">خطا در بارگذاری شهرها</option>';
+            });
+    }
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const firstName = document.getElementById('first_name').value.trim();
+    const lastName = document.getElementById('last_name').value.trim();
+    
+    if (!firstName || !lastName) {
+        e.preventDefault();
+        alert('لطفاً نام و نام خانوادگی را وارد کنید');
+        return false;
+    }
+    
+    // Show loading state
+    const submitBtn = document.querySelector('button[type="submit"]');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
+    submitBtn.disabled = true;
+});
+</script>
+{% endblock %} 

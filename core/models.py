@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 import os
+from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
@@ -8,6 +9,21 @@ def user_profile_image_path(instance, filename):
     ext = filename.split('.')[-1]
     filename = f"profile.{ext}"
     return f"users/user_{instance.id}/{filename}"
+
+class Province(models.Model):
+    name = models.CharField(verbose_name=_("اسم استان"), unique=True, max_length=511)
+    
+    def __str__(self) -> str:
+        return self.name
+
+
+
+class City(models.Model):
+    province = models.ForeignKey(Province, verbose_name=_("استان"), on_delete=models.CASCADE, related_name="cities")
+    name = models.CharField(verbose_name=_("اسم شهر"), max_length=511)
+    
+    def __str__(self) -> str:
+        return self.name
 
 class User(AbstractUser):
     email = models.EmailField(unique=True, verbose_name='ایمیل')
@@ -17,7 +33,9 @@ class User(AbstractUser):
     profile_image = models.ImageField(
         upload_to=user_profile_image_path, blank=True, null=True, verbose_name='عکس پروفایل'
     )
-    address = models.CharField(max_length=300, blank=True, null=True, verbose_name='آدرس')
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='استان')
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='شهر')
+    address = models.CharField(max_length=300, blank=True, null=True, verbose_name='آدرس دقیق')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -58,24 +76,6 @@ def delete_old_profile_image(sender, instance, **kwargs):
     if old_image and old_image != new_image:
         if old_image.storage.exists(old_image.name):
             old_image.storage.delete(old_image.name)
-
-class Province(models.Model):
-    name = models.CharField(max_length=100, verbose_name='نام استان')
-    class Meta:
-        verbose_name = 'استان'
-        verbose_name_plural = 'استان‌ها'
-    def __str__(self):
-        return self.name
-
-class City(models.Model):
-    name = models.CharField(max_length=100, verbose_name='نام شهر')
-    province = models.ForeignKey(Province, related_name='cities', on_delete=models.CASCADE, verbose_name='استان')
-    code = models.CharField(max_length=10, unique=True, verbose_name='کد شهر')
-    class Meta:
-        verbose_name = 'شهر'
-        verbose_name_plural = 'شهرها'
-    def __str__(self):
-        return f"{self.name} ({self.province.name})"
 
 class Address(models.Model):
     user = models.ForeignKey(User, related_name='addresses', on_delete=models.CASCADE, verbose_name='کاربر')

@@ -72,6 +72,12 @@
                         <i class="fas fa-shopping-cart text-lg text-gray-800 dark:text-gray-200"></i>
                         <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg animate-pulse">3</span>
                     </button>
+                    
+                    <!-- Login/Register Button -->
+                    <a href="{% url 'core:login' %}" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>ورود</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -96,10 +102,10 @@
                 <i class="fas fa-shopping-cart"></i>
                 <span>سبد خرید</span>
             </button>
-            <button onclick="showPage('contact')" class="mobile-nav-item" data-page="contact">
-                <i class="fas fa-phone"></i>
-                <span>تماس</span>
-            </button>
+            <a href="{% url 'core:login' %}" class="mobile-nav-item" data-page="login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>ورود</span>
+            </a>
         </div>
     </div>
 
