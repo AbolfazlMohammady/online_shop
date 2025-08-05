@@ -1437,6 +1437,204 @@ function setCategoryFilter(category) {
     filterProducts();
 }
 
+// ===== CORE APP JAVASCRIPT FUNCTIONS =====
+
+// Auth tab switching
+function showTab(tabName) {
+    // Hide all forms
+    document.querySelectorAll('.auth-form').forEach(form => {
+        form.classList.add('hidden');
+    });
+    
+    // Show selected form
+    if (tabName === 'login') {
+        document.getElementById('loginForm').classList.remove('hidden');
+    } else if (tabName === 'register') {
+        document.getElementById('registerForm').classList.remove('hidden');
+    }
+    
+    // Update tab buttons
+    document.querySelectorAll('#authTabs .tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+// Show forgot password form
+function showForgotPassword() {
+    document.querySelectorAll('.auth-form').forEach(form => {
+        form.classList.add('hidden');
+    });
+    document.getElementById('forgotForm').classList.remove('hidden');
+}
+
+// Password strength checker
+function checkPasswordStrength(password, elementId = 'passwordStrength') {
+    const strengthElement = document.getElementById(elementId);
+    if (!strengthElement) return;
+    
+    let strength = 0;
+    
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
+    
+    strengthElement.className = 'password-strength';
+    
+    if (strength <= 1) {
+        strengthElement.classList.add('strength-weak');
+    } else if (strength <= 2) {
+        strengthElement.classList.add('strength-medium');
+    } else {
+        strengthElement.classList.add('strength-strong');
+    }
+}
+
+// Profile tab switching
+function showProfileTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.classList.add('hidden');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + 'Tab').classList.remove('hidden');
+    
+    // Update tab buttons
+    document.querySelectorAll('#profileTabs .tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+}
+
+// Load cities based on selected province using AJAX
+function loadCities(preserveCurrentCity = false) {
+    const provinceSelect = document.getElementById('provinceSelect');
+    const citySelect = document.getElementById('citySelect');
+    if (!provinceSelect || !citySelect) return;
+    
+    const selectedProvince = provinceSelect.value;
+    
+    // Store current city selection if preserving
+    let currentCityId = null;
+    if (preserveCurrentCity) {
+        currentCityId = citySelect.value;
+    }
+    
+    citySelect.innerHTML = '<option value="">انتخاب شهر</option>';
+    
+    if (selectedProvince) {
+        // Show loading state
+        citySelect.innerHTML = '<option value="">در حال بارگذاری...</option>';
+        
+        // Make AJAX request to get cities
+        fetch(`/accounts/get-cities/?province_id=${selectedProvince}`)
+            .then(response => response.json())
+            .then(data => {
+                citySelect.innerHTML = '<option value="">انتخاب شهر</option>';
+                
+                if (data.cities && data.cities.length > 0) {
+                    data.cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.id;
+                        option.textContent = city.name;
+                        
+                        // Select the current city if preserving and it matches
+                        if (preserveCurrentCity && currentCityId && city.id == currentCityId) {
+                            option.selected = true;
+                        }
+                        
+                        citySelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading cities:', error);
+                citySelect.innerHTML = '<option value="">خطا در بارگذاری شهرها</option>';
+            });
+    }
+}
+
+// Preview image function
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const avatar = document.querySelector('.profile-avatar');
+            if (avatar) {
+                avatar.innerHTML = `<img src="${e.target.result}" alt="پروفایل" class="w-full h-full rounded-full object-cover">
+                    <div class="edit-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>`;
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Show verification step for forgot password
+function showVerificationStep() {
+    const phoneStep = document.getElementById('phoneStep');
+    const verificationStep = document.getElementById('verificationStep');
+    if (phoneStep && verificationStep) {
+        phoneStep.classList.add('hidden');
+        verificationStep.classList.remove('hidden');
+    }
+}
+
+// Show phone step for forgot password
+function showPhoneStep() {
+    const phoneStep = document.getElementById('phoneStep');
+    const verificationStep = document.getElementById('verificationStep');
+    if (phoneStep && verificationStep) {
+        phoneStep.classList.remove('hidden');
+        verificationStep.classList.add('hidden');
+    }
+}
+
+// Go back to phone step
+function goBackToPhoneStep() {
+    showPhoneStep();
+    // Clear any error messages
+    const messages = document.querySelectorAll('.bg-red-100, .bg-yellow-100, .bg-green-100');
+    messages.forEach(msg => msg.remove());
+}
+
+// Form handlers
+function handleLogin(event) {
+    // Form will be submitted normally
+    return true;
+}
+
+function handleRegister(event) {
+    const passwords = event.target.querySelectorAll('input[type="password"]');
+    
+    if (passwords[0].value !== passwords[1].value) {
+        alert('رمزهای عبور مطابقت ندارند!');
+        event.preventDefault();
+        return false;
+    }
+    
+    return true;
+}
+
+function changePassword(event) {
+    event.preventDefault();
+    const passwords = event.target.querySelectorAll('input[type="password"]');
+    
+    if (passwords[1].value !== passwords[2].value) {
+        alert('رمزهای عبور جدید مطابقت ندارند!');
+        return false;
+    }
+    
+    alert('رمز عبور با موفقیت تغییر کرد! 🔐');
+    event.target.reset();
+    return false;
+}
+
+// ===== END CORE APP JAVASCRIPT FUNCTIONS =====
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     // Start countdown timer - شروع تایمر تخفیف
@@ -1488,4 +1686,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize filters
     filterProducts();
+    
+    // Core app specific initializations
+    // Check if we should show verification step for forgot password
+    const messages = document.querySelectorAll('.bg-green-100');
+    messages.forEach(message => {
+        if (message.textContent.includes('کد تایید')) {
+            showForgotPassword();
+            showVerificationStep();
+        }
+    });
+    
+    // Initialize edit profile page
+    const provinceSelect = document.getElementById('provinceSelect');
+    if (provinceSelect && provinceSelect.value) {
+        // Load cities for the selected province and preserve current city
+        loadCities(true);
+    }
 });

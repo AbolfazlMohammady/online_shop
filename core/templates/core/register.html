@@ -102,39 +102,5 @@
 
 
 
-<script>
-    // Password strength checker
-    function checkPasswordStrength(password) {
-        const strengthElement = document.getElementById('passwordStrength');
-        let strength = 0;
-        
-        if (password.length >= 8) strength++;
-        if (/[A-Z]/.test(password)) strength++;
-        if (/[0-9]/.test(password)) strength++;
-        if (/[^A-Za-z0-9]/.test(password)) strength++;
-        
-        strengthElement.className = 'password-strength';
-        
-        if (strength <= 1) {
-            strengthElement.classList.add('strength-weak');
-        } else if (strength <= 2) {
-            strengthElement.classList.add('strength-medium');
-        } else {
-            strengthElement.classList.add('strength-strong');
-        }
-    }
 
-    // Form handler
-    function handleRegister(event) {
-        const passwords = event.target.querySelectorAll('input[type="password"]');
-        
-        if (passwords[0].value !== passwords[1].value) {
-            alert('رمزهای عبور مطابقت ندارند!');
-            event.preventDefault();
-            return false;
-        }
-        
-        return true;
-    }
-</script>
 {% endblock %} 
