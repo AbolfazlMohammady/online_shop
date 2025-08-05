@@ -51,6 +51,17 @@
                             </div>
                         </div>
                         
+                        <!-- Category Filter -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold mb-2 text-center">دسته‌بندی</h4>
+                            <select id="category-filter" class="w-full p-2 border border-purple-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-400 text-xs appearance-none cursor-pointer">
+                                <option value="">همه دسته‌بندی‌ها</option>
+                                {% for category in categories %}
+                                <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
                         <!-- Category Pills -->
                         <div class="mb-4">
                             <h4 class="text-sm font-bold mb-2 text-center">دسته‌بندی</h4>
@@ -171,32 +182,28 @@
             <!-- Products will be loaded here by JavaScript -->
         </div>
         
-        <!-- Pagination -->
-        {% if products.has_other_pages %}
-        <div class="flex justify-center mt-8">
-            <nav class="flex items-center gap-2">
-                {% if products.has_previous %}
-                <a href="?page={{ products.previous_page_number }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                    <i class="fas fa-chevron-right"></i>
-                </a>
-                {% endif %}
-                
-                {% for num in products.paginator.page_range %}
-                {% if products.number == num %}
-                <span class="px-3 py-2 bg-purple-600 text-white rounded-lg">{{ num }}</span>
-                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-                <a href="?page={{ num }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">{{ num }}</a>
-                {% endif %}
-                {% endfor %}
-                
-                {% if products.has_next %}
-                <a href="?page={{ products.next_page_number }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                    <i class="fas fa-chevron-left"></i>
-                </a>
-                {% endif %}
-            </nav>
+        <!-- No Results Message -->
+        <div id="no-results" class="text-center py-12 hidden">
+            <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">هیچ محصولی یافت نشد</h3>
+            <p class="text-gray-500">لطفاً فیلترهای خود را تغییر دهید یا عبارت جستجوی دیگری را امتحان کنید.</p>
         </div>
-        {% endif %}
+        
+        <!-- Infinite Scroll Loading Indicator -->
+        <div id="loading-indicator" class="hidden flex justify-center items-center py-8">
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                <span class="text-gray-600 dark:text-gray-400">در حال بارگذاری محصولات بیشتر...</span>
+            </div>
+        </div>
+        
+        <!-- End of Products Message -->
+        <div id="end-message" class="hidden text-center py-8">
+            <div class="text-gray-500 dark:text-gray-400">
+                <i class="fas fa-check-circle text-2xl mb-2"></i>
+                <p>تمام محصولات نمایش داده شدند</p>
+            </div>
+        </div>
     </div>
 </div>
 

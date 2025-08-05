@@ -9,24 +9,79 @@ let currentSort = 'default';
 let currentSearch = '';
 let currentPriceRange = { min: 0, max: 1000000 };
 
+// Infinite scroll variables
+let currentPageNumber = 1;
+let isLoading = false;
+let hasMoreProducts = true;
+let productsPerPage = 12;
+
 // Load products from API
-async function loadProducts() {
+async function loadProducts(page = 1, append = false) {
+    if (isLoading) return;
+    
+    isLoading = true;
+    const loadingIndicator = document.getElementById('loading-indicator');
+    if (loadingIndicator) {
+        loadingIndicator.classList.remove('hidden');
+    }
+    
     try {
-        const response = await fetch('/shop/api/products/');
+        console.log('Loading products from API, page:', page, 'append:', append);
+        const response = await fetch(`/shop/api/products/?page=${page}`);
         const data = await response.json();
-        products = data.products || [];
-        filteredProducts = [...products];
-        console.log('Loaded products from API:', products.length);
+        const newProducts = data.products || [];
         
-        // If we're on the products page, render them
-        if (currentPage === 'products') {
-            renderProducts(filteredProducts);
+        console.log('API response:', data);
+        console.log('New products count:', newProducts.length);
+        
+        if (append) {
+            products = [...products, ...newProducts];
+        } else {
+            products = newProducts;
+            currentPageNumber = 1;
         }
+        
+        filteredProducts = [...products];
+        console.log('Total products loaded:', products.length);
+        console.log('Filtered products:', filteredProducts.length);
+        
+        // Check if there are more products
+        hasMoreProducts = data.has_next || false;
+        
+        // If we're on the products page, render them immediately
+        if (currentPage === 'products' || window.location.hash === '#products') {
+            console.log('Rendering products on products page');
+            renderProducts(filteredProducts);
+            updateResultsInfo();
+        }
+        
+        // Also render if this is the initial load and we're on the products page
+        if (products.length > 0 && document.getElementById('products').classList.contains('active')) {
+            console.log('Rendering products on active products page');
+            renderProducts(filteredProducts);
+            updateResultsInfo();
+        }
+        
+        // Show end message if no more products
+        if (!hasMoreProducts && page > 1) {
+            const endMessage = document.getElementById('end-message');
+            if (endMessage) {
+                endMessage.classList.remove('hidden');
+            }
+        }
+        
     } catch (error) {
         console.error('Error loading products:', error);
         // Fallback to empty array
-        products = [];
-        filteredProducts = [];
+        if (!append) {
+            products = [];
+            filteredProducts = [];
+        }
+    } finally {
+        isLoading = false;
+        if (loadingIndicator) {
+            loadingIndicator.classList.add('hidden');
+        }
     }
 }
 
@@ -549,12 +604,18 @@ function renderBlogs() {
 
 // Products Functions
 function renderProducts(productsToRender = products) {
+    console.log('renderProducts called with:', productsToRender.length, 'products');
     const grid = document.getElementById('products-grid');
-    if (!grid) return;
+    if (!grid) {
+        console.error('products-grid element not found!');
+        return;
+    }
     
+    console.log('Clearing grid and rendering products...');
     grid.innerHTML = '';
     
     if (productsToRender.length === 0) {
+        console.log('No products to render, showing empty state');
         grid.innerHTML = `
             <div class="col-span-full text-center py-12">
                 <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
@@ -567,6 +628,8 @@ function renderProducts(productsToRender = products) {
         `;
         return;
     }
+    
+    console.log('Rendering', productsToRender.length, 'products in', currentView, 'view');
     
     if (currentView === 'list') {
         grid.className = 'space-y-4';
@@ -585,9 +648,17 @@ function renderProducts(productsToRender = products) {
                             <p class="theme-text-secondary text-sm mb-3">${product.category_name || 'دسته‌بندی'}</p>
                             <div class="flex items-center">
                                 <div class="flex text-yellow-400">
-                                    ${Array(5).fill().map((_, i) => 
-                                        `<i class="fas fa-star text-sm ${i < Math.floor(product.rating || 0) ? '' : 'far'}"></i>`
-                                    ).join('')}
+                                    ${Array(5).fill().map((_, i) => {
+                                        const rating = product.rating || 0;
+                                        const starIndex = i + 1;
+                                        if (starIndex <= Math.floor(rating)) {
+                                            return '<i class="fas fa-star text-sm"></i>';
+                                        } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+                                            return '<i class="fas fa-star-half-alt text-sm"></i>';
+                                        } else {
+                                            return '<i class="far fa-star text-sm"></i>';
+                                        }
+                                    }).join('')}
                                 </div>
                                 <span class="mr-2 text-sm theme-text-secondary">(${toPersianNumber(product.rating || 0)})</span>
                             </div>
@@ -639,11 +710,19 @@ function renderProducts(productsToRender = products) {
                         <p class="theme-text-secondary text-xs mb-1 sm:mb-2">${product.category_name || 'دسته‌بندی'}</p>
                         <div class="flex items-center mb-2 sm:mb-3">
                             <div class="flex text-yellow-400">
-                                ${Array(5).fill().map((_, i) => 
-                                    `<i class="fas fa-star text-xs ${i < Math.floor(product.rating || 0) ? '' : 'far'}"></i>`
-                                ).join('')}
+                                ${Array(5).fill().map((_, i) => {
+                                    const rating = product.rating || 0;
+                                    const starIndex = i + 1;
+                                    if (starIndex <= Math.floor(rating)) {
+                                        return '<i class="fas fa-star text-sm"></i>';
+                                    } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+                                        return '<i class="fas fa-star-half-alt text-sm"></i>';
+                                    } else {
+                                        return '<i class="far fa-star text-sm"></i>';
+                                    }
+                                }).join('')}
                             </div>
-                            <span class="mr-1 text-xs theme-text-secondary">(${toPersianNumber(product.rating || 0)})</span>
+                            <span class="mr-2 text-sm theme-text-secondary">(${toPersianNumber(product.rating || 0)})</span>
                         </div>
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
                             <div class="flex flex-col">
@@ -853,6 +932,7 @@ function quickFilter(filterType) {
 }
 
 function clearFilters() {
+    // Reset all filters
     activeFilters = {
         search: '',
         category: '',
@@ -862,7 +942,9 @@ function clearFilters() {
         quickFilter: null
     };
     
+    // Reset form elements
     document.getElementById('search-input').value = '';
+    document.getElementById('category-filter').value = '';
     document.getElementById('sort-filter').value = 'default';
     document.getElementById('min-price').value = '';
     document.getElementById('max-price').value = '';
@@ -878,18 +960,27 @@ function clearFilters() {
         btn.classList.remove('active');
     });
     
+    // Reset pagination state
+    currentPageNumber = 1;
+    hasMoreProducts = true;
+    const endMessage = document.getElementById('end-message');
+    if (endMessage) {
+        endMessage.classList.add('hidden');
+    }
+    
     filterProducts();
 }
 
 function filterProducts() {
+    console.log('filterProducts called with activeFilters:', activeFilters);
     filteredProducts = products.filter(product => {
         // Search filter
         if (activeFilters.search && !product.name.toLowerCase().includes(activeFilters.search)) {
             return false;
         }
         
-        // Category filter
-        if (activeFilters.category && product.category !== activeFilters.category) {
+        // Category filter - use category_name from API
+        if (activeFilters.category && product.category_name !== activeFilters.category) {
             return false;
         }
         
@@ -901,23 +992,36 @@ function filterProducts() {
             return false;
         }
         
-        // Quick filter
-        if (activeFilters.quickFilter && !product.tags.includes(activeFilters.quickFilter)) {
-            return false;
+        // Quick filter - check product flags
+        if (activeFilters.quickFilter) {
+            if (activeFilters.quickFilter === 'bestseller' && !product.is_bestseller) return false;
+            if (activeFilters.quickFilter === 'discount' && !product.has_discount) return false;
+            if (activeFilters.quickFilter === 'new' && !product.is_new) return false;
+            if (activeFilters.quickFilter === 'luxury' && !product.is_luxury) return false;
         }
         
         return true;
     });
     
+    console.log('Filtered products count:', filteredProducts.length);
+    
     // Sort products
     if (activeFilters.sort === 'price-low') {
-        filteredProducts.sort((a, b) => a.price - b.price);
+        filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
     } else if (activeFilters.sort === 'price-high') {
-        filteredProducts.sort((a, b) => b.price - a.price);
+        filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
     } else if (activeFilters.sort === 'rating') {
         filteredProducts.sort((a, b) => b.rating - a.rating);
     } else if (activeFilters.sort === 'name') {
         filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    
+    // Reset pagination when filters are applied
+    currentPageNumber = 1;
+    hasMoreProducts = true;
+    const endMessage = document.getElementById('end-message');
+    if (endMessage) {
+        endMessage.classList.add('hidden');
     }
     
     renderProducts(filteredProducts);
@@ -1017,7 +1121,10 @@ function toggleView(view) {
 
 function toPersianNumber(num) {
     const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
-    return num.toString().replace(/\d/g, (digit) => persianDigits[digit]);
+    // Add thousands separators first
+    const formatted = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    // Then convert to Persian digits
+    return formatted.replace(/\d/g, (digit) => persianDigits[digit]);
 }
 
 // Hearts Background
@@ -1142,7 +1249,7 @@ function openProductModal(productId) {
                     ${product.images && product.images.length > 0 ? product.images.map((img, index) => `
                         <div onclick="changeMainImage('${img.image}', ${index})" class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg flex items-center justify-center border-2 ${index === 0 ? 'border-purple-500' : 'border-transparent'} cursor-pointer">
                             <img src="${img.image}" alt="${product.name}" class="w-full h-full object-cover rounded-lg">
-                        </div>
+                    </div>
                     `).join('') : ''}
                 </div>
             </div>
@@ -1156,9 +1263,17 @@ function openProductModal(productId) {
                     <!-- Rating -->
                     <div class="flex items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
                         <div class="flex text-yellow-400">
-                            ${Array(5).fill().map((_, i) => 
-                                `<i class="fas fa-star text-sm ${i < Math.floor(product.rating || 0) ? '' : 'far'}"></i>`
-                            ).join('')}
+                            ${Array(5).fill().map((_, i) => {
+                                const rating = product.rating || 0;
+                                const starIndex = i + 1;
+                                if (starIndex <= Math.floor(rating)) {
+                                    return '<i class="fas fa-star text-sm"></i>';
+                                } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+                                    return '<i class="fas fa-star-half-alt text-sm"></i>';
+                                } else {
+                                    return '<i class="far fa-star text-sm"></i>';
+                                }
+                            }).join('')}
                         </div>
                         <span class="font-semibold text-sm lg:text-base text-gray-900 dark:text-white">${product.rating || 0}</span>
                         <span class="text-gray-900 dark:text-gray-400 text-sm">(${product.review_count || 0} نظر)</span>
@@ -1209,27 +1324,69 @@ function openProductModal(productId) {
                 
                 <!-- Product Description -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg p-3 lg:p-4 border border-gray-200 dark:border-gray-700">
-                    <h3 class="font-semibold mb-2 text-sm lg:text-base text-gray-900 dark:text-white">توضیحات محصول</h3>
-                    <p class="text-xs lg:text-sm text-gray-900 dark:text-gray-300 leading-relaxed mb-3">
-                        این محصول با کیفیت بالا و مواد اولیه درجه یک تولید شده است. مناسب برای استفاده روزانه و دارای ماندگاری بالا می‌باشد.
-                    </p>
+                    <h3 class="font-semibold mb-3 text-sm lg:text-base text-gray-900 dark:text-white">مشخصات محصول</h3>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 lg:gap-2 text-xs lg:text-sm">
-                        <div class="flex items-center gap-1 lg:gap-2">
-                            <i class="fas fa-check-circle text-green-500 text-xs"></i>
-                            <span class="text-gray-900 dark:text-white font-medium">کیفیت تضمینی</span>
+                    <!-- Product Details Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-tag text-purple-500 text-sm"></i>
+                            <span class="text-xs lg:text-sm text-gray-700 dark:text-gray-300">دسته‌بندی:</span>
+                            <span class="text-xs lg:text-sm font-medium text-gray-900 dark:text-white">${product.category_name || 'دسته‌بندی'}</span>
                         </div>
-                        <div class="flex items-center gap-1 lg:gap-2">
-                            <i class="fas fa-check-circle text-green-500 text-xs"></i>
-                            <span class="text-gray-900 dark:text-white font-medium">ارسال سریع</span>
+                        ${product.brand_name ? `
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-crown text-purple-500 text-sm"></i>
+                            <span class="text-xs lg:text-sm text-gray-700 dark:text-gray-300">برند:</span>
+                            <span class="text-xs lg:text-sm font-medium text-gray-900 dark:text-white">${product.brand_name}</span>
                         </div>
-                        <div class="flex items-center gap-1 lg:gap-2">
-                            <i class="fas fa-check-circle text-green-500 text-xs"></i>
-                            <span class="text-gray-900 dark:text-white font-medium">ضمانت بازگشت</span>
+                        ` : ''}
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-star text-yellow-500 text-sm"></i>
+                            <span class="text-xs lg:text-sm text-gray-700 dark:text-gray-300">امتیاز:</span>
+                            <span class="text-xs lg:text-sm font-medium text-gray-900 dark:text-white">${product.rating || 0}</span>
                         </div>
-                        <div class="flex items-center gap-1 lg:gap-2">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-comments text-blue-500 text-sm"></i>
+                            <span class="text-xs lg:text-sm text-gray-700 dark:text-gray-300">نظرات:</span>
+                            <span class="text-xs lg:text-sm font-medium text-gray-900 dark:text-white">${product.review_count || 0}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Description -->
+                    ${product.description ? `
+                    <div class="mb-4">
+                        <h4 class="font-medium mb-2 text-sm lg:text-base text-gray-900 dark:text-white">توضیحات:</h4>
+                        <p class="text-xs lg:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${product.description}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${product.short_description ? `
+                    <div class="mb-4">
+                        <h4 class="font-medium mb-2 text-sm lg:text-base text-gray-900 dark:text-white">خلاصه:</h4>
+                        <p class="text-xs lg:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${product.short_description}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <!-- Product Features -->
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+                        <h4 class="font-medium mb-2 text-sm lg:text-base text-gray-900 dark:text-white">ویژگی‌ها:</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs lg:text-sm">
+                            <div class="flex items-center gap-2">
                             <i class="fas fa-check-circle text-green-500 text-xs"></i>
-                            <span class="text-gray-900 dark:text-white font-medium">پشتیبانی ۲۴/۷</span>
+                                <span class="text-gray-700 dark:text-gray-300">کیفیت تضمینی</span>
+                        </div>
+                            <div class="flex items-center gap-2">
+                            <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                                <span class="text-gray-700 dark:text-gray-300">ارسال سریع</span>
+                        </div>
+                            <div class="flex items-center gap-2">
+                            <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                                <span class="text-gray-700 dark:text-gray-300">ضمانت بازگشت</span>
+                        </div>
+                            <div class="flex items-center gap-2">
+                            <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                                <span class="text-gray-700 dark:text-gray-300">پشتیبانی ۲۴/۷</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1603,9 +1760,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('theme-icon').className = 'fas fa-sun text-lg';
     }
     
-    // Render products and blogs
-    renderProducts();
-    renderBlogs();
+    // Check if we're on the products page based on URL
+    if (window.location.pathname.includes('/shop/products/') || window.location.hash === '#products') {
+        console.log('Detected products page from URL, setting currentPage to products');
+        currentPage = 'products';
+    }
     
     // Initialize cart
     updateCartCount();
@@ -1634,8 +1793,88 @@ document.addEventListener('DOMContentLoaded', function() {
         sortFilter.addEventListener('change', applyFilters);
     }
     
-    // Initialize filters
-    filterProducts();
+    // Initialize filters and render products after a short delay to ensure API data is loaded
+    setTimeout(() => {
+        console.log('Initialization timeout - currentPage:', currentPage, 'products.length:', products.length);
+        
+        // Check if we're on the products page
+        const productsPage = document.getElementById('products');
+        if (productsPage && productsPage.classList.contains('active')) {
+            console.log('Products page is active, setting currentPage to products');
+            currentPage = 'products';
+        }
+        
+        filterProducts();
+        // If we're on the products page, make sure products are rendered
+        if (currentPage === 'products' || window.location.hash === '#products') {
+            console.log('On products page, rendering products');
+            renderProducts(filteredProducts);
+            updateResultsInfo();
+        }
+        // Also render products if they're already loaded and we're on the products page
+        if (products.length > 0 && document.getElementById('products').classList.contains('active')) {
+            console.log('Products loaded and on active products page, rendering');
+            renderProducts(filteredProducts);
+            updateResultsInfo();
+        }
+    }, 500);
+    
+    // Add infinite scroll event listener
+    window.addEventListener('scroll', function() {
+        if (currentPage === 'products' && hasMoreProducts && !isLoading) {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            // Load more products when user scrolls to 80% of the page
+            if (scrollTop + windowHeight >= documentHeight * 0.8) {
+                currentPageNumber++;
+                loadProducts(currentPageNumber, true);
+            }
+        }
+    });
+    
+    // Check if we're on the products page and load products if needed
+    if (window.location.pathname.includes('/shop/products/')) {
+        console.log('On products page, ensuring products are loaded');
+        
+        // Test if products grid exists
+        const productsGrid = document.getElementById('products-grid');
+        if (productsGrid) {
+            console.log('Products grid found:', productsGrid);
+        } else {
+            console.error('Products grid not found!');
+        }
+        
+        setTimeout(() => {
+            if (products.length === 0) {
+                console.log('No products loaded, loading them now');
+                loadProducts();
+            } else {
+                console.log('Products already loaded, rendering them');
+                renderProducts(filteredProducts);
+                updateResultsInfo();
+            }
+        }, 1000);
+        
+        // Additional fallback - load products again after 2 seconds if still no products
+        setTimeout(() => {
+            if (products.length === 0) {
+                console.log('Fallback: Still no products, loading again');
+                loadProducts();
+            }
+        }, 2000);
+        
+        // Final fallback - force load products after 3 seconds
+        setTimeout(() => {
+            console.log('Final fallback: Forcing product load');
+            loadProducts().then(() => {
+                console.log('Products loaded in final fallback, rendering...');
+                renderProducts(filteredProducts);
+                updateResultsInfo();
+            });
+        }, 3000);
+    }
     
     // Core app specific initializations
     // Check if we should show verification step for forgot password
@@ -1653,4 +1892,42 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load cities for the selected province and preserve current city
         loadCities(true);
     }
+    
+    // Test basic functionality
+    console.log('=== BASIC FUNCTIONALITY TEST ===');
+    console.log('Window location:', window.location.pathname);
+    console.log('Products array length:', products.length);
+    console.log('Current page:', currentPage);
+    console.log('Products grid element:', document.getElementById('products-grid'));
+    console.log('=== END TEST ===');
+    
+    // Manual test - load products after 4 seconds
+    setTimeout(() => {
+        console.log('=== MANUAL TEST ===');
+        console.log('Attempting to load products manually...');
+        
+        // Test if products grid exists and can be manipulated
+        const grid = document.getElementById('products-grid');
+        if (grid) {
+            console.log('Products grid found, testing manipulation...');
+            grid.innerHTML = '<div class="col-span-full text-center py-12"><p>Testing grid manipulation...</p></div>';
+            console.log('Grid manipulation successful');
+        } else {
+            console.error('Products grid not found!');
+        }
+        
+        fetch('/shop/api/products/')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Manual API response:', data);
+                products = data.products || [];
+                filteredProducts = [...products];
+                console.log('Manual products loaded:', products.length);
+                renderProducts(filteredProducts);
+                updateResultsInfo();
+            })
+            .catch(error => {
+                console.error('Manual API error:', error);
+            });
+    }, 4000);
 });

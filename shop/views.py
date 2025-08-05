@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
 from django.http import JsonResponse
 from .models import Category, Product, ProductImage, Brand
@@ -268,8 +268,21 @@ def get_products_json(request):
     """API endpoint برای دریافت محصولات به صورت JSON"""
     products = Product.objects.filter(is_active=True).select_related('category', 'brand').prefetch_related('images')
     
+    # Pagination for infinite scroll
+    page = request.GET.get('page', 1)
+    try:
+        page = int(page)
+    except ValueError:
+        page = 1
+    
+    paginator = Paginator(products, 12)  # 12 products per page
+    try:
+        page_obj = paginator.page(page)
+    except (EmptyPage, InvalidPage):
+        page_obj = paginator.page(paginator.num_pages)
+    
     data = []
-    for product in products:
+    for product in page_obj:
         # Get all images for the product
         images = []
         for img in product.images.all():
@@ -304,7 +317,13 @@ def get_products_json(request):
             'short_description': product.short_description,
         })
     
-    return JsonResponse({'products': data})
+    return JsonResponse({
+        'products': data,
+        'has_next': page_obj.has_next(),
+        'current_page': page,
+        'total_pages': paginator.num_pages,
+        'total_products': paginator.count
+    })
 
 def get_categories_json(request):
     """API endpoint برای دریافت دسته‌بندی‌ها به صورت JSON"""
