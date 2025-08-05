@@ -6,11 +6,12 @@ from django.dispatch import receiver
 from PIL import Image
 import os
 import uuid
+from django.utils.text import slugify
 
 class Brand(models.Model):
     """برند محصولات"""
     name = models.CharField(max_length=100, verbose_name="نام برند")
-    slug = models.SlugField(max_length=100, unique=True, verbose_name="اسلاگ")
+    slug = models.SlugField(max_length=100, unique=True, allow_unicode=True, verbose_name="اسلاگ")
     logo = models.ImageField(upload_to='brands/', blank=True, null=True, verbose_name="لوگو")
     description = models.TextField(blank=True, verbose_name="توضیحات")
     website = models.URLField(blank=True, verbose_name="وب‌سایت")
@@ -21,7 +22,7 @@ class Brand(models.Model):
     class Meta:
         verbose_name = "برند"
         verbose_name_plural = "برندها"
-        ordering = ['name']
+        ordering = ['name', '-created_at']
 
     def __str__(self):
         return self.name
@@ -29,10 +30,15 @@ class Brand(models.Model):
     def get_products_count(self):
         return self.products.filter(is_active=True).count()
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        super().save(*args, **kwargs)
+
 class Category(models.Model):
     """دسته‌بندی محصولات"""
     name = models.CharField(max_length=100, verbose_name="نام دسته‌بندی")
-    slug = models.SlugField(max_length=100, unique=True, verbose_name="اسلاگ")
+    slug = models.SlugField(max_length=100, unique=True, allow_unicode=True, verbose_name="اسلاگ")
     icon = models.CharField(max_length=50, blank=True, verbose_name="آیکون")
     description = models.TextField(blank=True, verbose_name="توضیحات")
     is_active = models.BooleanField(default=True, verbose_name="فعال")
@@ -42,13 +48,18 @@ class Category(models.Model):
     class Meta:
         verbose_name = "دسته‌بندی"
         verbose_name_plural = "دسته‌بندی‌ها"
-        ordering = ['name']
+        ordering = ['name', '-created_at']
 
     def __str__(self):
         return self.name
 
     def get_products_count(self):
         return self.products.filter(is_active=True).count()
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        super().save(*args, **kwargs)
 
 class Product(models.Model):
     """محصول"""
@@ -65,7 +76,7 @@ class Product(models.Model):
 
     # Basic Information
     name = models.CharField(max_length=200, verbose_name="نام محصول")
-    slug = models.SlugField(max_length=200, unique=True, verbose_name="اسلاگ")
+    slug = models.SlugField(max_length=200, unique=True, allow_unicode=True, verbose_name="اسلاگ")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name="دسته‌بندی")
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products', verbose_name="برند")
     description = models.TextField(verbose_name="توضیحات")
@@ -122,16 +133,22 @@ class Product(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        # Calculate discount amount if percentage is set
+        # ساخت اسلاگ خودکار
+        if not self.slug:
+            self.slug = slugify(self.name, allow_unicode=True)
+        # منطق تخفیف فقط بر اساس original_price
         if self.discount_percentage > 0:
-            self.discount_amount = (self.price * self.discount_percentage) / 100
-            self.original_price = self.price
-            self.price = self.price - self.discount_amount
             self.has_discount = True
+            if self.original_price:
+                self.discount_amount = (self.original_price * self.discount_percentage) / 100
+                self.price = self.original_price - self.discount_amount
+            else:
+                self.original_price = self.price
+                self.discount_amount = (self.price * self.discount_percentage) / 100
+                self.price = self.price - self.discount_amount
         elif self.discount_amount > 0:
             self.original_price = self.price + self.discount_amount
             self.has_discount = True
-        
         super().save(*args, **kwargs)
 
     @property
@@ -192,28 +209,32 @@ class ProductImage(models.Model):
         super().save(*args, **kwargs)
 
     def compress_image(self):
-        """فشرده‌سازی تصویر"""
+        """فشرده‌سازی تصویر با توجه به فرمت"""
         if self.image and hasattr(self.image, 'path'):
             try:
-                # Check if file exists
                 if not os.path.exists(self.image.path):
                     return
-                
                 img = Image.open(self.image.path)
-                
-                # Convert to RGB if necessary
-                if img.mode != 'RGB':
-                    img = img.convert('RGB')
-                
-                # Resize if too large (max 1200px width/height)
+                ext = os.path.splitext(self.image.path)[1].lower()
                 max_size = (1200, 1200)
                 if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
                     img.thumbnail(max_size, Image.Resampling.LANCZOS)
-                
-                # Save with compression
-                img.save(self.image.path, 'JPEG', quality=85, optimize=True)
+                if img.mode != 'RGB' and ext in ['.jpg', '.jpeg']:
+                    img = img.convert('RGB')
+                # اگر PNG باشد، بهینه‌سازی مخصوص PNG
+                if ext == '.png':
+                    img.save(self.image.path, 'PNG', optimize=True)
+                else:
+                    # اگر پسوند PNG است اما می‌خواهیم JPEG ذخیره کنیم، پسوند را هم تغییر بده
+                    if ext == '.png':
+                        new_path = self.image.path[:-4] + '.jpg'
+                        img = img.convert('RGB')
+                        img.save(new_path, 'JPEG', quality=85, optimize=True)
+                        os.remove(self.image.path)
+                        self.image.name = self.image.name[:-4] + '.jpg'
+                    else:
+                        img.save(self.image.path, 'JPEG', quality=85, optimize=True)
             except (FileNotFoundError, OSError, Exception) as e:
-                # Log error but don't crash
                 print(f"Error compressing image {self.image.path}: {e}")
                 pass
 
@@ -259,8 +280,7 @@ def delete_brand_logo_file(sender, instance, **kwargs):
 def update_primary_image(sender, instance, created, **kwargs):
     """بروزرسانی تصویر اصلی"""
     if instance.is_primary:
-        # Set other images of the same product as non-primary
-        ProductImage.objects.filter(
-            product=instance.product,
-            is_primary=True
-        ).exclude(id=instance.id).update(is_primary=False)
+        # اگر همین تصویر تنها primary است، کاری نکن
+        others = ProductImage.objects.filter(product=instance.product, is_primary=True).exclude(id=instance.id)
+        if others.exists():
+            others.update(is_primary=False)

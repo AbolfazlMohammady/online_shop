@@ -266,10 +266,21 @@ def search_products(request):
 
 def get_products_json(request):
     """API endpoint برای دریافت محصولات به صورت JSON"""
-    products = Product.objects.filter(is_active=True).select_related('category', 'brand')
+    products = Product.objects.filter(is_active=True).select_related('category', 'brand').prefetch_related('images')
     
     data = []
     for product in products:
+        # Get all images for the product
+        images = []
+        for img in product.images.all():
+            images.append({
+                'id': img.id,
+                'image': img.image.url,
+                'alt_text': img.alt_text,
+                'is_primary': img.is_primary,
+                'order': img.order
+            })
+        
         data.append({
             'id': product.id,
             'name': product.name,
@@ -277,10 +288,20 @@ def get_products_json(request):
             'price': str(product.price),
             'original_price': str(product.original_price) if product.original_price else None,
             'discount_percentage': product.discount_percentage,
-            'category': product.category.name,
-            'brand': product.brand.name if product.brand else None,
+            'has_discount': product.has_discount,
+            'category_name': product.category.name,
+            'category_slug': product.category.slug,
+            'brand_name': product.brand.name if product.brand else None,
+            'brand_slug': product.brand.slug if product.brand else None,
             'rating': float(product.rating),
-            'image_url': product.images.first().image.url if product.images.first() else None,
+            'review_count': product.review_count,
+            'is_bestseller': product.is_bestseller,
+            'is_new': product.is_new,
+            'is_featured': product.is_featured,
+            'is_luxury': product.is_luxury,
+            'images': images,
+            'description': product.description,
+            'short_description': product.short_description,
         })
     
     return JsonResponse({'products': data})
