@@ -57,8 +57,9 @@ def user_register(request):
                 phone=phone
             )
             login(request, user)
+            messages.success(request, f'حساب کاربری شما با موفقیت ایجاد شد! خوش آمدید {user.first_name}!')
             return redirect('core:profile')
-    return render(request, 'core/register.html')
+    return render(request, 'core/login.html')
 
 def user_logout(request):
     logout(request)

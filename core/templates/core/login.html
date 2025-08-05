@@ -104,7 +104,7 @@
 
             <!-- Register Form -->
             <div id="registerForm" class="auth-form hidden">
-                <form method="post" onsubmit="return handleRegister(event)">
+                <form method="post" action="{% url 'core:register' %}">
                     {% csrf_token %}
                     <div class="input-group">
                         <input type="email" name="email" class="input-field" placeholder="ایمیل" required>
@@ -117,13 +117,13 @@
                     </div>
                     
                     <div class="input-group">
-                        <input type="password" name="password1" class="input-field" placeholder="رمز عبور" required onkeyup="checkPasswordStrength(this.value)">
+                        <input type="password" name="password" class="input-field" placeholder="رمز عبور" required onkeyup="checkPasswordStrength(this.value)">
                         <i class="fas fa-lock input-icon"></i>
                         <div class="password-strength" id="passwordStrength"></div>
                     </div>
                     
                     <div class="input-group">
-                        <input type="password" name="password2" class="input-field" placeholder="تکرار رمز عبور" required>
+                        <input type="password" name="confirm_password" class="input-field" placeholder="تکرار رمز عبور" required>
                         <i class="fas fa-lock input-icon"></i>
                     </div>
                     
@@ -229,17 +229,7 @@
         return true;
     }
 
-    function handleRegister(event) {
-        const passwords = event.target.querySelectorAll('input[type="password"]');
-        
-        if (passwords[0].value !== passwords[1].value) {
-            alert('رمزهای عبور مطابقت ندارند!');
-            event.preventDefault();
-            return false;
-        }
-        
-        return true;
-    }
+
 
     function handleForgotPassword(event) {
         event.preventDefault();
