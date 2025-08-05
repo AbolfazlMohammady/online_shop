@@ -39,10 +39,17 @@ def user_register(request):
         confirm = request.POST.get('confirm_password')
         phone = request.POST.get('phone')
         
+        # Phone validation
+        if not phone or len(phone) != 11 or not phone.startswith('09'):
+            messages.error(request, 'شماره موبایل باید 11 رقم و با 09 شروع شود')
+            return render(request, 'core/login.html')
+        
         if password != confirm:
             messages.error(request, 'رمز عبور و تکرار آن یکسان نیستند')
         elif User.objects.filter(email=email).exists():
             messages.error(request, 'این ایمیل قبلاً ثبت شده است')
+        elif User.objects.filter(phone=phone).exists():
+            messages.error(request, 'این شماره موبایل قبلاً ثبت شده است')
         else:
             # Extract first name from email (before @ symbol)
             first_name = email.split('@')[0].capitalize()
@@ -59,6 +66,89 @@ def user_register(request):
             login(request, user)
             messages.success(request, f'حساب کاربری شما با موفقیت ایجاد شد! خوش آمدید {user.first_name}!')
             return redirect('core:profile')
+    return render(request, 'core/login.html')
+
+def forgot_password(request):
+    if request.method == 'POST':
+        phone = request.POST.get('phone')
+        verification_code = request.POST.get('verification_code')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        # Step 1: Phone validation and sending code
+        if phone and not verification_code:
+            if not phone or len(phone) != 11 or not phone.startswith('09'):
+                messages.error(request, 'شماره موبایل باید 11 رقم و با 09 شروع شود')
+                return render(request, 'core/login.html')
+            
+            try:
+                user = User.objects.get(phone=phone)
+                # Generate verification code (6 digits)
+                import random
+                code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+                
+                # Store code in session for verification
+                request.session['verification_code'] = code
+                request.session['phone_for_reset'] = phone
+                
+                # Print code to terminal (simulating SMS)
+                print(f"\n{'='*50}")
+                print(f"کد تایید برای شماره {phone}: {code}")
+                print(f"{'='*50}\n")
+                
+                messages.success(request, f'کد تایید به شماره {phone} ارسال شد. لطفاً کد را وارد کنید.')
+                return redirect('core:login')
+                
+            except User.DoesNotExist:
+                messages.error(request, 'کاربری با این شماره موبایل یافت نشد')
+                return render(request, 'core/login.html')
+        
+        # Step 2: Verify code and change password
+        elif verification_code and new_password:
+            stored_code = request.session.get('verification_code')
+            stored_phone = request.session.get('phone_for_reset')
+            
+            if not stored_code or not stored_phone:
+                messages.error(request, 'لطفاً ابتدا شماره موبایل را وارد کنید')
+                return render(request, 'core/login.html')
+            
+            if verification_code != stored_code:
+                messages.error(request, 'کد تایید اشتباه است')
+                return render(request, 'core/login.html')
+            
+            if new_password != confirm_password:
+                messages.error(request, 'رمز عبور و تکرار آن یکسان نیستند')
+                return render(request, 'core/login.html')
+            
+            if len(new_password) < 8:
+                messages.error(request, 'رمز عبور باید حداقل 8 کاراکتر باشد')
+                return render(request, 'core/login.html')
+            
+            try:
+                user = User.objects.get(phone=stored_phone)
+                user.set_password(new_password)
+                user.save()
+                
+                # Clear session
+                if 'verification_code' in request.session:
+                    del request.session['verification_code']
+                if 'phone_for_reset' in request.session:
+                    del request.session['phone_for_reset']
+                
+                # Auto login the user after password change
+                user = authenticate(request, email=user.email, password=new_password)
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, 'رمز عبور شما با موفقیت تغییر یافت و وارد شدید!')
+                    return redirect('core:profile')
+                else:
+                    messages.success(request, 'رمز عبور شما با موفقیت تغییر یافت. حالا می‌توانید وارد شوید.')
+                    return redirect('core:login')
+                
+            except User.DoesNotExist:
+                messages.error(request, 'کاربری با این شماره موبایل یافت نشد')
+                return render(request, 'core/login.html')
+    
     return render(request, 'core/login.html')
 
 def user_logout(request):

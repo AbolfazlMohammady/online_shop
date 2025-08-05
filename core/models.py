@@ -27,7 +27,7 @@ class City(models.Model):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True, verbose_name='ایمیل')
-    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name='شماره موبایل')
+    phone = models.CharField(max_length=11, unique=True, verbose_name='شماره موبایل')
     first_name = models.CharField(max_length=100, verbose_name='نام')
     last_name = models.CharField(max_length=100, verbose_name='نام خانوادگی')
     profile_image = models.ImageField(

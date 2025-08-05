@@ -112,7 +112,7 @@
                     </div>
                     
                     <div class="input-group">
-                        <input type="tel" name="phone" class="input-field" placeholder="شماره تماس" required>
+                        <input type="tel" name="phone" class="input-field" placeholder="شماره موبایل (مثال: 09123456789)" required maxlength="11" pattern="09[0-9]{9}">
                         <i class="fas fa-phone input-icon"></i>
                     </div>
                     
@@ -146,25 +146,62 @@
                 <div class="text-center mb-6">
                     <i class="fas fa-key text-4xl text-purple-600 mb-4"></i>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">بازیابی رمز عبور</h3>
-                    <p class="text-gray-600 dark:text-gray-400 text-sm">ایمیل خود را وارد کنید</p>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">شماره موبایل خود را وارد کنید</p>
                 </div>
                 
-                <form onsubmit="return handleForgotPassword(event)">
-                    <div class="input-group">
-                        <input type="email" name="email" class="input-field" placeholder="ایمیل" required>
-                        <i class="fas fa-envelope input-icon"></i>
+                <!-- Step 1: Phone Input -->
+                <div id="phoneStep">
+                    <form method="post" action="{% url 'core:forgot_password' %}">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="tel" name="phone" class="input-field" placeholder="شماره موبایل (مثال: 09123456789)" required maxlength="11" pattern="09[0-9]{9}">
+                            <i class="fas fa-phone input-icon"></i>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary mb-4">
+                            <i class="fas fa-paper-plane ml-2"></i>
+                            ارسال کد تایید
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Step 2: Verification Code and New Password -->
+                <div id="verificationStep" class="hidden">
+                    <div class="text-center mb-4">
+                        <button type="button" class="text-purple-600 hover:text-purple-700 text-sm" onclick="goBackToPhoneStep()">
+                            <i class="fas fa-arrow-right ml-1"></i>
+                            تغییر شماره موبایل
+                        </button>
                     </div>
                     
-                    <button type="submit" class="btn-primary mb-4">
-                        <i class="fas fa-paper-plane ml-2"></i>
-                        ارسال لینک بازیابی
-                    </button>
-                    
-                    <button type="button" class="w-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" onclick="showTab('login')">
-                        <i class="fas fa-arrow-right ml-2"></i>
-                        بازگشت به ورود
-                    </button>
-                </form>
+                    <form method="post" action="{% url 'core:forgot_password' %}">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" name="verification_code" class="input-field" placeholder="کد تایید 6 رقمی" required maxlength="6" pattern="[0-9]{6}">
+                            <i class="fas fa-shield-alt input-icon"></i>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="password" name="new_password" class="input-field" placeholder="رمز عبور جدید" required minlength="8">
+                            <i class="fas fa-lock input-icon"></i>
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="password" name="confirm_password" class="input-field" placeholder="تکرار رمز عبور جدید" required minlength="8">
+                            <i class="fas fa-lock input-icon"></i>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary mb-4">
+                            <i class="fas fa-check ml-2"></i>
+                            تغییر رمز عبور
+                        </button>
+                    </form>
+                </div>
+                
+                <button type="button" class="w-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors" onclick="showTab('login')">
+                    <i class="fas fa-arrow-right ml-2"></i>
+                    بازگشت به ورود
+                </button>
             </div>
         </div>
     </div>
@@ -231,10 +268,34 @@
 
 
 
-    function handleForgotPassword(event) {
-        event.preventDefault();
-        alert('لینک بازیابی به ایمیل شما ارسال شد! 📧');
-        showTab('login');
+    // Check if we should show verification step
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if there's a success message about verification code
+        const messages = document.querySelectorAll('.bg-green-100');
+        messages.forEach(message => {
+            if (message.textContent.includes('کد تایید')) {
+                showForgotPassword();
+                showVerificationStep();
+            }
+        });
+    });
+
+    function showVerificationStep() {
+        document.getElementById('phoneStep').classList.add('hidden');
+        document.getElementById('verificationStep').classList.remove('hidden');
+    }
+
+    function showPhoneStep() {
+        document.getElementById('phoneStep').classList.remove('hidden');
+        document.getElementById('verificationStep').classList.add('hidden');
+    }
+
+    // Add back button functionality
+    function goBackToPhoneStep() {
+        showPhoneStep();
+        // Clear any error messages
+        const messages = document.querySelectorAll('.bg-red-100, .bg-yellow-100, .bg-green-100');
+        messages.forEach(msg => msg.remove());
     }
 </script>
 {% endblock %} 
