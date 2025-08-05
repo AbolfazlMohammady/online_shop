@@ -51,9 +51,29 @@
                 </button>
             </div>
 
+            <!-- Messages -->
+            {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                        <div class="p-4 rounded-xl {% if message.tags == 'error' %}bg-red-100 border border-red-300 text-red-700{% elif message.tags == 'warning' %}bg-yellow-100 border border-yellow-300 text-yellow-700{% else %}bg-green-100 border border-green-300 text-green-700{% endif %}">
+                            <div class="flex items-center">
+                                {% if message.tags == 'error' %}
+                                    <i class="fas fa-exclamation-circle ml-2"></i>
+                                {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle ml-2"></i>
+                                {% else %}
+                                    <i class="fas fa-check-circle ml-2"></i>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             <!-- Login Form -->
             <div id="loginForm" class="auth-form">
-                <form method="post" onsubmit="return handleLogin(event)">
+                <form method="post">
                     {% csrf_token %}
                     <div class="input-group">
                         <input type="email" name="email" class="input-field" placeholder="ایمیل" required>

@@ -11,12 +11,24 @@ def user_login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
+        
+        # Validation
+        if not email:
+            messages.error(request, 'لطفاً ایمیل را وارد کنید')
+            return render(request, 'core/login.html')
+        
+        if not password:
+            messages.error(request, 'لطفاً رمز عبور را وارد کنید')
+            return render(request, 'core/login.html')
+        
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
+            messages.success(request, f'خوش آمدید {user.get_full_name() or user.email}!')
             return redirect('core:profile')
         else:
             messages.error(request, 'ایمیل یا رمز عبور اشتباه است')
+    
     return render(request, 'core/login.html')
 
 def user_register(request):
@@ -191,3 +203,51 @@ def test_upload(request):
             messages.error(request, 'هیچ فایلی انتخاب نشده')
     
     return render(request, 'core/test_upload.html')
+
+@login_required
+def change_password(request):
+    """Change password view"""
+    if request.method == 'POST':
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        # Validation
+        if not current_password:
+            messages.error(request, 'رمز عبور فعلی را وارد کنید')
+            return redirect('core:profile')
+        
+        if not new_password:
+            messages.error(request, 'رمز عبور جدید را وارد کنید')
+            return redirect('core:profile')
+        
+        if not confirm_password:
+            messages.error(request, 'تکرار رمز عبور جدید را وارد کنید')
+            return redirect('core:profile')
+        
+        if new_password != confirm_password:
+            messages.error(request, 'رمزهای عبور جدید مطابقت ندارند')
+            return redirect('core:profile')
+        
+        if len(new_password) < 8:
+            messages.error(request, 'رمز عبور جدید باید حداقل 8 کاراکتر باشد')
+            return redirect('core:profile')
+        
+        # Check current password
+        user = request.user
+        if not user.check_password(current_password):
+            messages.error(request, 'رمز عبور فعلی اشتباه است')
+            return redirect('core:profile')
+        
+        # Change password
+        user.set_password(new_password)
+        user.save()
+        
+        # Re-login user
+        from django.contrib.auth import login
+        login(request, user)
+        
+        messages.success(request, 'رمز عبور با موفقیت تغییر کرد')
+        return redirect('core:profile')
+    
+    return redirect('core:profile')

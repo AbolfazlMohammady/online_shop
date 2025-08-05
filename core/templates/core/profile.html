@@ -267,7 +267,8 @@
                         <p class="text-gray-600 dark:text-gray-400 text-sm">برای امنیت حساب خود رمز قوی انتخاب کنید</p>
                     </div>
                     
-                    <form onsubmit="return changePassword(event)">
+                    <form method="post" action="{% url 'core:change_password' %}">
+                        {% csrf_token %}
                         <div class="input-group">
                             <input type="password" name="current_password" class="input-field" placeholder="رمز عبور فعلی" required>
                             <i class="fas fa-lock input-icon"></i>
