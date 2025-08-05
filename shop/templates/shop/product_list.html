@@ -51,16 +51,7 @@
                             </div>
                         </div>
                         
-                        <!-- Category Filter -->
-                        <div class="mb-4">
-                            <h4 class="text-sm font-bold mb-2 text-center">دسته‌بندی</h4>
-                            <select id="category-filter" class="w-full p-2 border border-purple-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-400 text-xs appearance-none cursor-pointer">
-                                <option value="">همه دسته‌بندی‌ها</option>
-                                {% for category in categories %}
-                                <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+
                         
                         <!-- Category Pills -->
                         <div class="mb-4">
@@ -75,6 +66,17 @@
                                 </button>
                                 {% endfor %}
                             </div>
+                        </div>
+                        
+                        <!-- Brand Filter -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold mb-2 text-center">برند</h4>
+                            <select id="brand-filter" class="w-full p-2 border border-purple-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-400 text-xs appearance-none cursor-pointer">
+                                <option value="">همه برندها</option>
+                                {% for brand in brands %}
+                                <option value="{{ brand.slug }}" {% if current_brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         
                         <!-- Brand Pills -->
@@ -101,8 +103,8 @@
                         <div class="mb-4">
                             <h4 class="text-sm font-bold mb-2 text-center">قیمت</h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <input type="number" id="min-price" placeholder="حداقل" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs">
-                                <input type="number" id="max-price" placeholder="حداکثر" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs">
+                                <input type="text" id="min-price" placeholder="حداقل" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs" oninput="formatPriceInput(this)">
+                                <input type="text" id="max-price" placeholder="حداکثر" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs" oninput="formatPriceInput(this)">
                             </div>
                         </div>
                         
@@ -189,7 +191,15 @@
             <p class="text-gray-500">لطفاً فیلترهای خود را تغییر دهید یا عبارت جستجوی دیگری را امتحان کنید.</p>
         </div>
         
-        <!-- Infinite Scroll Loading Indicator -->
+        <!-- Load More Button -->
+        <div id="load-more-container" class="text-center py-8">
+            <button id="load-more-btn" onclick="loadMoreProducts()" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center mx-auto">
+                <i class="fas fa-plus ml-2"></i>
+                نمایش بیشتر
+            </button>
+        </div>
+        
+        <!-- Loading Indicator -->
         <div id="loading-indicator" class="hidden flex justify-center items-center py-8">
             <div class="flex items-center space-x-2 space-x-reverse">
                 <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
@@ -227,14 +237,9 @@ function setCategoryFilter(category) {
     event.target.classList.remove('bg-gradient-to-r', 'from-red-200', 'to-pink-200', 'text-red-700');
     event.target.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
     
-    // Update URL with category parameter
-    const url = new URL(window.location);
-    if (category) {
-        url.searchParams.set('category', category);
-    } else {
-        url.searchParams.delete('category');
-    }
-    window.location.href = url.toString();
+    // Update filter
+    activeFilters.category = category;
+    filterProducts();
 }
 
 function setBrandFilter(brand) {
@@ -250,20 +255,31 @@ function setBrandFilter(brand) {
     event.target.classList.remove('bg-gradient-to-r', 'from-blue-200', 'to-indigo-200', 'text-blue-700');
     event.target.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
     
-    // Update URL with brand parameter
-    const url = new URL(window.location);
-    if (brand) {
-        url.searchParams.set('brand', brand);
-    } else {
-        url.searchParams.delete('brand');
-    }
-    window.location.href = url.toString();
+    // Update filter
+    activeFilters.brand = brand;
+    filterProducts();
 }
 
 function quickFilter(filter) {
-    const url = new URL(window.location);
-    url.searchParams.set('quick_filter', filter);
-    window.location.href = url.toString();
+    // Toggle filter
+    if (activeFilters.quickFilter === filter) {
+        activeFilters.quickFilter = null;
+    } else {
+        activeFilters.quickFilter = filter;
+    }
+    
+    // Update button states
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Add active class to clicked button
+    const clickedBtn = event.target.closest('.quick-filter-btn');
+    if (clickedBtn && activeFilters.quickFilter === filter) {
+        clickedBtn.classList.add('active');
+    }
+    
+    filterProducts();
 }
 
 function applyFilters() {
@@ -272,25 +288,62 @@ function applyFilters() {
     const maxPrice = document.getElementById('max-price').value;
     const sort = document.getElementById('sort-filter').value;
     
-    const url = new URL(window.location);
+    // Convert formatted prices to numbers
+    const minPriceNum = minPrice ? parseInt(minPrice.replace(/,/g, '')) : null;
+    const maxPriceNum = maxPrice ? parseInt(maxPrice.replace(/,/g, '')) : null;
     
-    if (search) url.searchParams.set('search', search);
-    else url.searchParams.delete('search');
+    // Update activeFilters
+    activeFilters.search = search.toLowerCase();
+    activeFilters.minPrice = minPriceNum;
+    activeFilters.maxPrice = maxPriceNum;
+    activeFilters.sort = sort;
     
-    if (minPrice) url.searchParams.set('min_price', minPrice);
-    else url.searchParams.delete('min_price');
+    filterProducts();
+}
+
+function formatPriceInput(input) {
+    // Remove all non-digit characters
+    let value = input.value.replace(/[^\d]/g, '');
     
-    if (maxPrice) url.searchParams.set('max_price', maxPrice);
-    else url.searchParams.delete('max_price');
+    // Add thousands separators
+    if (value.length > 0) {
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
     
-    if (sort !== 'default') url.searchParams.set('sort', sort);
-    else url.searchParams.delete('sort');
-    
-    window.location.href = url.toString();
+    // Update input value
+    input.value = value;
 }
 
 function clearFilters() {
-    window.location.href = window.location.pathname;
+    // Reset all form elements
+    document.getElementById('search-input').value = '';
+    document.getElementById('min-price').value = '';
+    document.getElementById('max-price').value = '';
+    document.getElementById('sort-filter').value = 'default';
+    document.getElementById('category-filter').value = '';
+    document.getElementById('brand-filter').value = '';
+    
+    // Reset all filters
+    activeFilters = {
+        search: '',
+        category: '',
+        brand: '',
+        sort: 'default',
+        minPrice: null,
+        maxPrice: null,
+        quickFilter: null
+    };
+    
+    // Reset all pills and buttons
+    document.querySelectorAll('.category-pill, .brand-pill, .quick-filter-btn').forEach(element => {
+        element.classList.remove('active');
+    });
+    
+    // Set first pills as active
+    document.querySelector('.category-pill').classList.add('active');
+    document.querySelector('.brand-pill').classList.add('active');
+    
+    filterProducts();
 }
 
 function toggleView(view) {

@@ -220,6 +220,7 @@ const sampleProducts = [
 let activeFilters = {
     search: '',
     category: '',
+    brand: '',
     sort: 'default',
     minPrice: null,
     maxPrice: null,
@@ -908,24 +909,34 @@ function showNotification(message, type = 'success') {
 function applyFilters() {
     activeFilters.search = document.getElementById('search-input').value.toLowerCase();
     activeFilters.category = document.getElementById('category-filter').value;
+    activeFilters.brand = document.getElementById('brand-filter').value;
     activeFilters.sort = document.getElementById('sort-filter').value;
     activeFilters.minPrice = parseInt(document.getElementById('min-price').value) || null;
     activeFilters.maxPrice = parseInt(document.getElementById('max-price').value) || null;
     
+    console.log('Applying filters:', activeFilters);
     filterProducts();
 }
 
 function quickFilter(filterType) {
-    // Update active state for quick filter buttons
-    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
+    console.log('Quick filter clicked:', filterType);
     
+    // Toggle filter
     if (activeFilters.quickFilter === filterType) {
         activeFilters.quickFilter = null;
     } else {
         activeFilters.quickFilter = filterType;
-        event.target.classList.add('active');
+    }
+    
+    // Update button states
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Add active class to clicked button
+    const clickedBtn = event.target.closest('.quick-filter-btn');
+    if (clickedBtn && activeFilters.quickFilter === filterType) {
+        clickedBtn.classList.add('active');
     }
     
     filterProducts();
@@ -936,6 +947,7 @@ function clearFilters() {
     activeFilters = {
         search: '',
         category: '',
+        brand: '',
         sort: 'default',
         minPrice: null,
         maxPrice: null,
@@ -945,6 +957,7 @@ function clearFilters() {
     // Reset form elements
     document.getElementById('search-input').value = '';
     document.getElementById('category-filter').value = '';
+    document.getElementById('brand-filter').value = '';
     document.getElementById('sort-filter').value = 'default';
     document.getElementById('min-price').value = '';
     document.getElementById('max-price').value = '';
@@ -954,6 +967,12 @@ function clearFilters() {
         pill.classList.remove('active');
     });
     document.querySelector('.category-pill').classList.add('active'); // First one (همه)
+    
+    // Reset brand pills
+    document.querySelectorAll('.brand-pill').forEach(pill => {
+        pill.classList.remove('active');
+    });
+    document.querySelector('.brand-pill').classList.add('active'); // First one (همه)
     
     // Reset quick filter buttons
     document.querySelectorAll('.quick-filter-btn').forEach(btn => {
@@ -979,16 +998,21 @@ function filterProducts() {
             return false;
         }
         
-        // Category filter - use category_name from API
-        if (activeFilters.category && product.category_name !== activeFilters.category) {
+        // Category filter - use category_slug from API
+        if (activeFilters.category && product.category_slug !== activeFilters.category) {
+            return false;
+        }
+        
+        // Brand filter - use brand_slug from API
+        if (activeFilters.brand && product.brand_slug !== activeFilters.brand) {
             return false;
         }
         
         // Price range filter
-        if (activeFilters.minPrice && product.price < activeFilters.minPrice) {
+        if (activeFilters.minPrice && parseFloat(product.price) < activeFilters.minPrice) {
             return false;
         }
-        if (activeFilters.maxPrice && product.price > activeFilters.maxPrice) {
+        if (activeFilters.maxPrice && parseFloat(product.price) > activeFilters.maxPrice) {
             return false;
         }
         
@@ -1061,6 +1085,14 @@ function updateActiveFilters() {
         addFilterTag(`دسته: ${activeFilters.category}`, () => {
             activeFilters.category = '';
             document.getElementById('category-filter').value = '';
+            filterProducts();
+        });
+    }
+    
+    if (activeFilters.brand) {
+        addFilterTag(`برند: ${activeFilters.brand}`, () => {
+            activeFilters.brand = '';
+            document.getElementById('brand-filter').value = '';
             filterProducts();
         });
     }
@@ -1783,10 +1815,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add filter event listeners
     const categoryFilter = document.getElementById('category-filter');
+    const brandFilter = document.getElementById('brand-filter');
     const sortFilter = document.getElementById('sort-filter');
     
     if (categoryFilter) {
         categoryFilter.addEventListener('change', applyFilters);
+    }
+    
+    if (brandFilter) {
+        brandFilter.addEventListener('change', applyFilters);
     }
     
     if (sortFilter) {
@@ -1804,7 +1841,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentPage = 'products';
         }
         
-        filterProducts();
+    filterProducts();
         // If we're on the products page, make sure products are rendered
         if (currentPage === 'products' || window.location.hash === '#products') {
             console.log('On products page, rendering products');
@@ -1818,21 +1855,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updateResultsInfo();
         }
     }, 500);
-    
-    // Add infinite scroll event listener
-    window.addEventListener('scroll', function() {
-        if (currentPage === 'products' && hasMoreProducts && !isLoading) {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            
-            // Load more products when user scrolls to 80% of the page
-            if (scrollTop + windowHeight >= documentHeight * 0.8) {
-                currentPageNumber++;
-                loadProducts(currentPageNumber, true);
-            }
-        }
-    });
     
     // Check if we're on the products page and load products if needed
     if (window.location.pathname.includes('/shop/products/')) {
@@ -1931,3 +1953,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }, 4000);
 });
+
+// Load more products function
+function loadMoreProducts() {
+    if (isLoading || !hasMoreProducts) return;
+    
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    
+    // Show loading state
+    if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
+    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+    
+    currentPageNumber++;
+    loadProducts(currentPageNumber, true).then(() => {
+        // Hide loading indicator
+        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+        
+        // Show/hide load more button based on whether there are more products
+        if (loadMoreBtn) {
+            if (hasMoreProducts) {
+                loadMoreBtn.classList.remove('hidden');
+            } else {
+                loadMoreBtn.classList.add('hidden');
+                const endMessage = document.getElementById('end-message');
+                if (endMessage) endMessage.classList.remove('hidden');
+            }
+        }
+    });
+}
