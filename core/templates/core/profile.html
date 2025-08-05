@@ -115,42 +115,42 @@
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
                     <div class="info-item">
                         <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">نام</label>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             {{ user.first_name|default:'تعیین نشده' }}
                         </div>
                     </div>
                     
                     <div class="info-item">
                         <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">نام خانوادگی</label>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             {{ user.last_name|default:'تعیین نشده' }}
                         </div>
                     </div>
                     
                     <div class="info-item">
                         <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">ایمیل</label>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             {{ user.email }}
                         </div>
                     </div>
                     
                     <div class="info-item">
                         <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">شماره موبایل</label>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             {{ user.phone|default:'تعیین نشده' }}
                         </div>
                     </div>
                     
                     <div class="info-item">
                         <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">استان</label>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             {{ user.province.name|default:'تعیین نشده' }}
                         </div>
                     </div>
                     
                     <div class="info-item">
                         <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">شهر</label>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
                             {{ user.city.name|default:'تعیین نشده' }}
                         </div>
                     </div>
@@ -158,7 +158,7 @@
                 
                 <div class="info-item mb-6">
                     <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 block">آدرس</label>
-                    <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 min-h-[60px]">
+                    <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm min-h-[60px]">
                         {{ user.address|default:'تعیین نشده' }}
                     </div>
                 </div>
@@ -173,9 +173,9 @@
 
             <!-- Invoices Tab -->
             <div id="invoicesTab" class="profile-tab hidden">
-                <div class="space-y-4">
-                    <div class="invoice-item">
-                        <div class="flex justify-between items-start mb-3">
+                <div class="space-y-6">
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
                             <div>
                                 <h4 class="text-gray-900 dark:text-white font-bold text-lg">فاکتور #1001</h4>
                                 <p class="text-gray-600 dark:text-gray-400 text-sm">تاریخ: ۱۴۰۳/۰۲/۱۵</p>
@@ -183,7 +183,7 @@
                             <span class="status-badge status-completed">تکمیل شده</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <div class="text-gray-700 dark:text-gray-300">
+                            <div class="text-gray-800 dark:text-gray-300 font-medium">
                                 <p>کیلیپس پاپیونی رنگی × 2</p>
                                 <p>گیره مو طلایی × 1</p>
                             </div>
@@ -197,8 +197,8 @@
                         </div>
                     </div>
 
-                    <div class="invoice-item">
-                        <div class="flex justify-between items-start mb-3">
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div class="flex justify-between items-start mb-4">
                             <div>
                                 <h4 class="text-gray-900 dark:text-white font-bold text-lg">فاکتور #1002</h4>
                                 <p class="text-gray-600 dark:text-gray-400 text-sm">تاریخ: ۱۴۰۳/۰۲/۲۰</p>
@@ -206,7 +206,7 @@
                             <span class="status-badge status-pending">در انتظار پرداخت</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <div class="text-gray-700 dark:text-gray-300">
+                            <div class="text-gray-800 dark:text-gray-300 font-medium">
                                 <p>تاج مو کریستالی × 1</p>
                             </div>
                             <div class="text-left">
@@ -223,14 +223,14 @@
 
             <!-- Favorites Tab -->
             <div id="favoritesTab" class="profile-tab hidden">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="favorite-item">
-                        <div class="bg-gradient-to-br from-red-200 to-pink-200 h-32 rounded-t-xl flex items-center justify-center">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div class="bg-gradient-to-br from-red-200 to-pink-200 h-32 rounded-lg flex items-center justify-center mb-4">
                             <i class="fas fa-lipstick text-2xl text-red-600"></i>
                         </div>
-                        <div class="p-4 bg-white dark:bg-gray-800 rounded-b-xl">
+                        <div>
                             <h4 class="font-bold text-gray-900 dark:text-white mb-2">رژ لب مات قرمز</h4>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">رژ لب</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-3">رژ لب</p>
                             <div class="flex items-center justify-between">
                                 <span class="text-purple-600 font-bold">۱۲۵,۰۰۰ تومان</span>
                                 <button class="text-red-500 hover:text-red-700">
@@ -240,13 +240,13 @@
                         </div>
                     </div>
 
-                    <div class="favorite-item">
-                        <div class="bg-gradient-to-br from-blue-200 to-cyan-200 h-32 rounded-t-xl flex items-center justify-center">
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div class="bg-gradient-to-br from-blue-200 to-cyan-200 h-32 rounded-lg flex items-center justify-center mb-4">
                             <i class="fas fa-tint text-2xl text-blue-600"></i>
                         </div>
-                        <div class="p-4 bg-white dark:bg-gray-800 rounded-b-xl">
+                        <div>
                             <h4 class="font-bold text-gray-900 dark:text-white mb-2">کرم مرطوب کننده</h4>
-                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">کرم</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-3">کرم</p>
                             <div class="flex items-center justify-between">
                                 <span class="text-purple-600 font-bold">۸۵,۰۰۰ تومان</span>
                                 <button class="text-red-500 hover:text-red-700">
@@ -260,14 +260,14 @@
 
             <!-- Change Password Tab -->
             <div id="passwordTab" class="profile-tab hidden">
-                <div class="max-w-md mx-auto">
-                    <div class="text-center mb-8">
-                        <i class="fas fa-shield-alt text-4xl text-purple-600 mb-4"></i>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">تغییر رمز عبور</h3>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm">برای امنیت حساب خود رمز قوی انتخاب کنید</p>
+                <div class="w-full max-w-md mx-auto px-4 sm:px-0">
+                    <div class="text-center mb-6 sm:mb-8">
+                        <i class="fas fa-shield-alt text-3xl sm:text-4xl text-purple-600 mb-3 sm:mb-4"></i>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">تغییر رمز عبور</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">برای امنیت حساب خود رمز قوی انتخاب کنید</p>
                     </div>
                     
-                    <form method="post" action="{% url 'core:change_password' %}">
+                    <form method="post" action="{% url 'core:change_password' %}" class="space-y-4 sm:space-y-6">
                         {% csrf_token %}
                         <div class="input-group">
                             <input type="password" name="current_password" class="input-field" placeholder="رمز عبور فعلی" required>
@@ -285,7 +285,7 @@
                             <i class="fas fa-key input-icon"></i>
                         </div>
                         
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" class="btn-primary w-full">
                             <i class="fas fa-save ml-2"></i>
                             تغییر رمز عبور
                         </button>

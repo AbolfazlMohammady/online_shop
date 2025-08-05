@@ -474,20 +474,6 @@
     font-size: 0.9rem;
 }
 
-.invoice-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-
-.invoice-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(10px);
-}
-
 .status-badge {
     padding: 0.5rem 1rem;
     border-radius: 20px;
@@ -505,19 +491,6 @@
     background: rgba(245, 158, 11, 0.2);
     color: #f59e0b;
     border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.favorite-item {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.favorite-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
@@ -595,6 +568,41 @@
     
     body {
         padding-bottom: 80px;
+    }
+    
+    /* Mobile responsive improvements for profile tabs */
+    .profile-tab {
+        padding: 1rem;
+    }
+    
+    .input-group {
+        margin-bottom: 1rem;
+    }
+    
+    .input-field {
+        padding: 0.875rem 0.875rem 0.875rem 2.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .input-icon {
+        left: 0.875rem;
+        font-size: 1rem;
+    }
+    
+    .btn-primary {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    /* Tab buttons responsive */
+    .tab-button {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .tab-button i {
+        font-size: 0.9rem;
+        margin-left: 0.25rem;
     }
 }
 
