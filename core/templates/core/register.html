@@ -27,236 +27,114 @@
         <div class="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" style="animation-delay: 4s;"></div>
     </div>
 
-    <div class="max-w-lg w-full space-y-8 relative z-10">
-        <!-- Logo Section -->
-        <div class="text-center">
-            <div class="mx-auto w-20 h-20 bg-gradient-to-br from-purple-600 via-pink-600 to-purple-800 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform mb-6">
-                <i class="fas fa-user-plus text-white text-2xl"></i>
+    <div class="max-w-md w-full space-y-8 relative z-10">
+        <!-- Glass Card Container -->
+        <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-user-plus text-white text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">ثبت نام</h1>
+                <p class="text-gray-600 dark:text-gray-400">حساب کاربری جدید ایجاد کنید</p>
             </div>
-            <h2 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
-                ثبت نام
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400 text-sm">
-                حساب کاربری جدید ایجاد کنید
-            </p>
-        </div>
 
-        <!-- Register Form -->
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700 backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mb-4 p-4 rounded-xl {% if message.tags == 'error' %}bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400{% else %}bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400{% endif %} border border-current/20">
-                        <div class="flex items-center gap-2">
-                            <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i>
-                            <span>{{ message }}</span>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <form method="post" class="space-y-6">
+            <!-- Register Form -->
+            <form method="post" onsubmit="return handleRegister(event)">
                 {% csrf_token %}
                 
-                <!-- Email Input -->
-                <div class="space-y-2">
-                    <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                        ایمیل
+                <div class="input-group">
+                    <input type="text" name="first_name" class="input-field" placeholder="نام" required>
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="text" name="last_name" class="input-field" placeholder="نام خانوادگی" required>
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="email" name="email" class="input-field" placeholder="ایمیل" required>
+                    <i class="fas fa-envelope input-icon"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="tel" name="phone" class="input-field" placeholder="شماره تماس" required>
+                    <i class="fas fa-phone input-icon"></i>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" name="password1" class="input-field" placeholder="رمز عبور" required onkeyup="checkPasswordStrength(this.value)">
+                    <i class="fas fa-lock input-icon"></i>
+                    <div class="password-strength" id="passwordStrength"></div>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" name="password2" class="input-field" placeholder="تکرار رمز عبور" required>
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="flex items-center text-gray-700 dark:text-gray-300 cursor-pointer">
+                        <input type="checkbox" name="terms" class="ml-2" required>
+                        <span class="text-sm">قوانین و مقررات را می‌پذیرم</span>
                     </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope text-gray-400"></i>
-                        </div>
-                        <input 
-                            id="email" 
-                            name="email" 
-                            type="email" 
-                            required 
-                            class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
-                            placeholder="example@email.com"
-                        >
-                    </div>
                 </div>
-
-                <!-- Phone Input -->
-                <div class="space-y-2">
-                    <label for="phone" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                        شماره موبایل
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <i class="fas fa-phone text-gray-400"></i>
-                        </div>
-                        <input 
-                            id="phone" 
-                            name="phone" 
-                            type="tel" 
-                            class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
-                            placeholder="09123456789"
-                        >
-                    </div>
-                </div>
-
-                <!-- Password Fields -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label for="password" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            رمز عبور
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
-                            </div>
-                            <input 
-                                id="password" 
-                                name="password" 
-                                type="password" 
-                                required 
-                                class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
-                                placeholder="رمز عبور"
-                            >
-                            <button 
-                                type="button" 
-                                onclick="togglePassword('password')" 
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                            >
-                                <i id="password-toggle" class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label for="confirm_password" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            تکرار رمز عبور
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
-                            </div>
-                            <input 
-                                id="confirm_password" 
-                                name="confirm_password" 
-                                type="password" 
-                                required 
-                                class="w-full pr-10 pl-4 py-4 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-all duration-300"
-                                placeholder="تکرار رمز عبور"
-                            >
-                            <button 
-                                type="button" 
-                                onclick="togglePassword('confirm_password')" 
-                                class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                            >
-                                <i id="confirm-password-toggle" class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Terms and Conditions -->
-                <div class="flex items-start">
-                    <div class="flex items-center h-5">
-                        <input 
-                            id="terms" 
-                            name="terms" 
-                            type="checkbox" 
-                            required
-                            class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                        >
-                    </div>
-                    <div class="mr-3 text-sm">
-                        <label for="terms" class="text-gray-700 dark:text-gray-300">
-                            با <a href="#" class="text-purple-600 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300">قوانین و مقررات</a> و 
-                            <a href="#" class="text-purple-600 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300">حریم خصوصی</a> موافقم
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Register Button -->
-                <button 
-                    type="submit" 
-                    class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                >
+                
+                <button type="submit" class="btn-primary">
                     <i class="fas fa-user-plus ml-2"></i>
-                    ثبت نام
+                    ایجاد حساب کاربری
                 </button>
             </form>
 
             <!-- Login Link -->
             <div class="text-center mt-6">
                 <p class="text-gray-600 dark:text-gray-400">
-                    قبلاً ثبت نام کرده‌اید؟ 
+                    قبلاً حساب کاربری دارید؟ 
                     <a href="{% url 'core:login' %}" class="text-purple-600 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300 font-semibold transition-colors">
                         وارد شوید
                     </a>
                 </p>
             </div>
         </div>
-
-        <!-- Back to Home -->
-        <div class="text-center">
-            <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-                <i class="fas fa-arrow-right"></i>
-                بازگشت به صفحه اصلی
-            </a>
-        </div>
     </div>
 </div>
 
-<style>
-@keyframes blob {
-    0% {
-        transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-        transform: translate(30px, -50px) scale(1.1);
-    }
-    66% {
-        transform: translate(-20px, 20px) scale(0.9);
-    }
-    100% {
-        transform: translate(0px, 0px) scale(1);
-    }
-}
 
-.animate-blob {
-    animation: blob 7s infinite;
-}
-</style>
 
 <script>
-function togglePassword(fieldId) {
-    const passwordInput = document.getElementById(fieldId);
-    const toggleId = fieldId === 'password' ? 'password-toggle' : 'confirm-password-toggle';
-    const passwordToggle = document.getElementById(toggleId);
-    
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        passwordToggle.className = 'fas fa-eye-slash';
-    } else {
-        passwordInput.type = 'password';
-        passwordToggle.className = 'fas fa-eye';
+    // Password strength checker
+    function checkPasswordStrength(password) {
+        const strengthElement = document.getElementById('passwordStrength');
+        let strength = 0;
+        
+        if (password.length >= 8) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        
+        strengthElement.className = 'password-strength';
+        
+        if (strength <= 1) {
+            strengthElement.classList.add('strength-weak');
+        } else if (strength <= 2) {
+            strengthElement.classList.add('strength-medium');
+        } else {
+            strengthElement.classList.add('strength-strong');
+        }
     }
-}
 
-// Password strength indicator
-document.getElementById('password').addEventListener('input', function() {
-    const password = this.value;
-    const strength = calculatePasswordStrength(password);
-    updatePasswordStrengthIndicator(strength);
-});
-
-function calculatePasswordStrength(password) {
-    let score = 0;
-    if (password.length >= 8) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-    return score;
-}
-
-function updatePasswordStrengthIndicator(strength) {
-    // You can implement a visual password strength indicator here
-    console.log('Password strength:', strength);
-}
+    // Form handler
+    function handleRegister(event) {
+        const passwords = event.target.querySelectorAll('input[type="password"]');
+        
+        if (passwords[0].value !== passwords[1].value) {
+            alert('رمزهای عبور مطابقت ندارند!');
+            event.preventDefault();
+            return false;
+        }
+        
+        return true;
+    }
 </script>
 {% endblock %} 

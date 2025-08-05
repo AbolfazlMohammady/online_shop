@@ -36,6 +36,7 @@ class User(AbstractUser):
     province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='استان')
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='شهر')
     address = models.CharField(max_length=300, blank=True, null=True, verbose_name='آدرس دقیق')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

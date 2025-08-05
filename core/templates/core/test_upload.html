@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تست آپلود - زیبایی شاپ{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-2xl font-bold mb-6">تست آپلود فایل</h1>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">انتخاب فایل:</label>
+                <input type="file" name="profile_image" accept="image/*" class="w-full p-2 border rounded">
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded">
+                آپلود
+            </button>
+        </form>
+        
+        {% if messages %}
+            <div class="mt-4">
+                {% for message in messages %}
+                    <div class="p-3 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
