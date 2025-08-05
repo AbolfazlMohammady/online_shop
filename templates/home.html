@@ -24,9 +24,9 @@
                                 <span id="seconds-hero" class="bg-white/20 px-1 sm:px-2 py-1 rounded text-xs sm:text-sm font-mono">00</span>
                             </div>
                         </div>
-                        <button onclick="showPage('products')" class="bg-white text-red-600 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg transform hover:scale-105 text-xs sm:text-sm">
+                        <a href="{% url 'shop:product_list' %}" class="bg-white text-red-600 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg transform hover:scale-105 text-xs sm:text-sm">
                             همین حالا خرید کنید
-                        </button>
+                        </a>
                     </div>
                 </div>
             </section>
@@ -38,10 +38,10 @@
                 <div class="container mx-auto px-4">
                     <div class="flex items-center justify-between mb-12">
                         <h3 class="text-3xl font-bold">جدیدترین محصولات</h3>
-                        <button onclick="showPage('products')" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors group">
+                        <a href="{% url 'shop:product_list' %}" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors group">
                             <span>مشاهده همه</span>
                             <i class="fas fa-arrow-left group-hover:translate-x-1 transition-transform"></i>
-                        </button>
+                        </a>
                     </div>
                     <div class="flex gap-3 sm:gap-4 overflow-x-auto pb-4" style="scroll-behavior: smooth; scrollbar-width: thin;">
                         <div class="min-w-[200px] sm:min-w-[280px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="openProductModal(1)">
@@ -156,10 +156,10 @@
                 <div class="container mx-auto px-4">
                     <div class="flex items-center justify-between mb-12">
                         <h3 class="text-3xl font-bold">پربازدیدترین محصولات</h3>
-                        <button onclick="showPage('products')" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors group">
+                        <a href="{% url 'shop:product_list' %}" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors group">
                             <span>مشاهده همه</span>
                             <i class="fas fa-arrow-left group-hover:translate-x-1 transition-transform"></i>
-                        </button>
+                        </a>
                     </div>
                     <div class="flex gap-2 sm:gap-3 overflow-x-auto pb-4" style="scroll-behavior: smooth; scrollbar-width: thin;">
                         <div class="min-w-[160px] sm:min-w-[220px] theme-card rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer relative" onclick="openProductModal(5)">

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block contact %}
+<div class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Brand Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center gap-4 mb-4">
+                {% if brand.logo %}
+                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-16 h-16 rounded-full object-cover border-4 border-purple-200">
+                {% else %}
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                    <i class="fas fa-tag text-2xl text-white"></i>
+                </div>
+                {% endif %}
+                <div>
+                    <h1 class="text-3xl font-bold">{{ brand.name }}</h1>
+                    <p class="text-gray-600">{{ brand.description }}</p>
+                </div>
+            </div>
+            {% if brand.website %}
+            <a href="{{ brand.website }}" target="_blank" class="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold">
+                <i class="fas fa-external-link-alt"></i>
+                <span>وب‌سایت رسمی</span>
+            </a>
+            {% endif %}
+        </div>
+        
+        <!-- Results Info -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+                <span class="text-gray-600">نمایش {{ total_products }} محصول از برند {{ brand.name }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleView('grid')" id="grid-view" class="p-2 bg-purple-600 text-white rounded-lg">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button onclick="toggleView('list')" id="list-view" class="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" id="products-grid">
+            {% for product in products %}
+            <div class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer relative" onclick="openProductModal({{ product.id }})">
+                {% if product.has_discount %}
+                <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
+                    <i class="fas fa-fire mr-1"></i>
+                    {{ product.discount_percentage }}% تخفیف
+                </div>
+                {% endif %}
+                {% if product.is_bestseller %}
+                <div class="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
+                    <i class="fas fa-star mr-1"></i>
+                    پرفروش
+                </div>
+                {% endif %}
+                {% if product.is_new %}
+                <div class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
+                    <i class="fas fa-star mr-1"></i>
+                    جدید
+                </div>
+                {% endif %}
+                
+                <div class="h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
+                    {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <i class="fas fa-image text-3xl text-gray-400"></i>
+                    {% endif %}
+                </div>
+                
+                <div class="p-4">
+                    <h4 class="text-base font-bold mb-1 line-clamp-2">{{ product.name }}</h4>
+                    <p class="theme-text-secondary text-xs mb-2">{{ product.category.name }}</p>
+                    
+                    <div class="flex items-center mb-3">
+                        <div class="flex text-yellow-400">
+                            {% for i in "12345" %}
+                            {% if forloop.counter <= product.rating %}
+                            <i class="fas fa-star text-xs"></i>
+                            {% else %}
+                            <i class="far fa-star text-xs"></i>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="mr-1 text-xs theme-text-secondary">({{ product.rating }})</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-purple-600">{{ product.price|floatformat:0 }} تومان</span>
+                            {% if product.original_price %}
+                            <span class="text-xs text-gray-500 line-through">{{ product.original_price|floatformat:0 }} تومان</span>
+                            {% endif %}
+                        </div>
+                        <button onclick="event.stopPropagation(); addToCart({{ product.id }})" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg transition-colors">
+                            <i class="fas fa-cart-plus text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">محصولی یافت نشد</h3>
+                <p class="text-gray-600 mb-6">متأسفانه محصولی از این برند پیدا نکردیم</p>
+                <a href="{% url 'shop:product_list' %}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+                    مشاهده همه محصولات
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <div class="flex justify-center mt-8">
+            <nav class="flex items-center gap-2">
+                {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+                
+                {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                <span class="px-3 py-2 bg-purple-600 text-white rounded-lg">{{ num }}</span>
+                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                <a href="?page={{ num }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">{{ num }}</a>
+                {% endif %}
+                {% endfor %}
+                
+                {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleView(view) {
+    const gridView = document.getElementById('grid-view');
+    const listView = document.getElementById('list-view');
+    const productsGrid = document.getElementById('products-grid');
+    
+    if (view === 'grid') {
+        gridView.classList.add('bg-purple-600', 'text-white');
+        gridView.classList.remove('bg-gray-200', 'text-gray-600');
+        listView.classList.add('bg-gray-200', 'text-gray-600');
+        listView.classList.remove('bg-purple-600', 'text-white');
+        productsGrid.classList.remove('grid-cols-1');
+        productsGrid.classList.add('grid-cols-2', 'sm:grid-cols-3', 'lg:grid-cols-4');
+    } else {
+        listView.classList.add('bg-purple-600', 'text-white');
+        listView.classList.remove('bg-gray-200', 'text-gray-600');
+        gridView.classList.add('bg-gray-200', 'text-gray-600');
+        gridView.classList.remove('bg-purple-600', 'text-white');
+        productsGrid.classList.remove('grid-cols-2', 'sm:grid-cols-3', 'lg:grid-cols-4');
+        productsGrid.classList.add('grid-cols-1');
+    }
+}
+
+function openProductModal(productId) {
+    window.location.href = `/shop/product/${productId}/`;
+}
+
+function addToCart(productId) {
+    // TODO: Implement cart functionality
+    console.log('Adding product to cart:', productId);
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block contact %}
+<div class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <button onclick="history.back()" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold mb-8 transition-colors group">
+            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            <span>بازگشت</span>
+        </button>
+        
+        <div class="grid lg:grid-cols-2 gap-12">
+            <!-- Product Images -->
+            <div class="space-y-4">
+                <!-- Main Image -->
+                <div class="relative">
+                    <div id="main-image" class="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl overflow-hidden shadow-lg">
+                        {% if product.images.first %}
+                        <img id="main-image-src" src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center">
+                            <i class="fas fa-image text-6xl text-gray-400"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Discount Badge -->
+                    {% if product.has_discount %}
+                    <div class="absolute top-4 right-4 bg-red-500 text-white px-3 py-2 rounded-lg font-bold">
+                        <i class="fas fa-fire mr-1"></i>
+                        {{ product.discount_percentage }}% تخفیف
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Product Badges -->
+                    <div class="absolute top-4 left-4 space-y-2">
+                        {% if product.is_bestseller %}
+                        <div class="bg-orange-500 text-white px-3 py-2 rounded-lg text-sm font-bold">
+                            <i class="fas fa-star mr-1"></i>
+                            پرفروش
+                        </div>
+                        {% endif %}
+                        {% if product.is_new %}
+                        <div class="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold">
+                            <i class="fas fa-star mr-1"></i>
+                            جدید
+                        </div>
+                        {% endif %}
+                        {% if product.is_luxury %}
+                        <div class="bg-purple-500 text-white px-3 py-2 rounded-lg text-sm font-bold">
+                            <i class="fas fa-crown mr-1"></i>
+                            لوکس
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Thumbnail Images -->
+                {% if product.images.count > 1 %}
+                <div class="flex gap-2 overflow-x-auto pb-2">
+                    {% for image in product.images.all %}
+                    <div class="flex-shrink-0">
+                        <img src="{{ image.image.url }}" 
+                             alt="{{ image.alt_text|default:product.name }}" 
+                             onclick="changeMainImage('{{ image.image.url }}')"
+                             class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-purple-400 transition-colors">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Product Information -->
+            <div class="space-y-6">
+                <!-- Product Title and Category -->
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">{{ product.name }}</h1>
+                    <div class="flex items-center gap-4 text-gray-600">
+                        <span>{{ product.category.name }}</span>
+                        {% if product.brand %}
+                        <span class="flex items-center gap-1">
+                            {% if product.brand.logo %}
+                            <img src="{{ product.brand.logo.url }}" alt="{{ product.brand.name }}" class="w-5 h-5 rounded-full">
+                            {% else %}
+                            <i class="fas fa-tag"></i>
+                            {% endif %}
+                            {{ product.brand.name }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Rating -->
+                <div class="flex items-center gap-4">
+                    <div class="flex text-yellow-400">
+                        {% for i in "12345" %}
+                        {% if forloop.counter <= product.rating %}
+                        <i class="fas fa-star"></i>
+                        {% else %}
+                        <i class="far fa-star"></i>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="text-gray-600">({{ product.rating }})</span>
+                    <span class="text-gray-600">{{ product.review_count }} نظر</span>
+                </div>
+                
+                <!-- Price -->
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl font-bold text-purple-600">{{ product.price|floatformat:0 }} تومان</span>
+                        {% if product.original_price %}
+                        <span class="text-xl text-gray-500 line-through">{{ product.original_price|floatformat:0 }} تومان</span>
+                        {% endif %}
+                    </div>
+                    {% if product.has_discount %}
+                    <div class="text-green-600 font-semibold">
+                        شما {{ product.discount_amount|floatformat:0 }} تومان صرفه‌جویی می‌کنید!
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Stock Status -->
+                <div class="flex items-center gap-2">
+                    <span class="font-semibold">وضعیت موجودی:</span>
+                    {% if product.is_in_stock %}
+                    <span class="text-green-600 font-semibold">
+                        <i class="fas fa-check-circle mr-1"></i>
+                        موجود
+                    </span>
+                    {% else %}
+                    <span class="text-red-600 font-semibold">
+                        <i class="fas fa-times-circle mr-1"></i>
+                        ناموجود
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <!-- Product Description -->
+                <div>
+                    <h3 class="text-lg font-bold mb-2">توضیحات</h3>
+                    <p class="text-gray-700 leading-relaxed">{{ product.description|linebreaks }}</p>
+                </div>
+                
+                <!-- Product Details -->
+                <div class="grid grid-cols-2 gap-4">
+                    {% if product.brand %}
+                    <div>
+                        <span class="font-semibold">برند:</span>
+                        <span class="text-gray-700">{{ product.brand }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.model %}
+                    <div>
+                        <span class="font-semibold">مدل:</span>
+                        <span class="text-gray-700">{{ product.model }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.color %}
+                    <div>
+                        <span class="font-semibold">رنگ:</span>
+                        <span class="text-gray-700">{{ product.color }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.size %}
+                    <div>
+                        <span class="font-semibold">سایز:</span>
+                        <span class="text-gray-700">{{ product.size }}</span>
+                    </div>
+                    {% endif %}
+                    {% if product.weight %}
+                    <div>
+                        <span class="font-semibold">وزن:</span>
+                        <span class="text-gray-700">{{ product.weight }} گرم</span>
+                    </div>
+                    {% endif %}
+                    {% if product.dimensions %}
+                    <div>
+                        <span class="font-semibold">ابعاد:</span>
+                        <span class="text-gray-700">{{ product.dimensions }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Add to Cart Section -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center border border-gray-300 rounded-lg">
+                            <button onclick="decreaseQuantity()" class="px-3 py-2 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="w-16 text-center border-none focus:outline-none">
+                            <button onclick="increaseQuantity()" class="px-3 py-2 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button onclick="addToCart({{ product.id }})" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
+                            <i class="fas fa-cart-plus mr-2"></i>
+                            افزودن به سبد خرید
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Specifications -->
+        {% if product.specifications.exists %}
+        <div class="mt-16">
+            <h2 class="text-2xl font-bold mb-6">مشخصات فنی</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                {% for spec in product.specifications.all %}
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                    <span class="font-semibold">{{ spec.name }}</span>
+                    <span class="text-gray-700">{{ spec.value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Related Products -->
+        {% if related_products %}
+        <div class="mt-16">
+            <h2 class="text-2xl font-bold mb-6">محصولات مشابه</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for related_product in related_products %}
+                <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="window.location.href='{% url 'shop:product_detail' related_product.slug %}'">
+                    <div class="h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
+                        {% if related_product.images.first %}
+                        <img src="{{ related_product.images.first.image.url }}" alt="{{ related_product.name }}" class="w-full h-full object-cover">
+                        {% else %}
+                        <i class="fas fa-image text-2xl text-gray-400"></i>
+                        {% endif %}
+                    </div>
+                    <div class="p-3">
+                        <h4 class="font-bold text-sm mb-1 line-clamp-2">{{ related_product.name }}</h4>
+                        <p class="text-gray-600 text-xs mb-2">{{ related_product.category.name }}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-purple-600">{{ related_product.price|floatformat:0 }} تومان</span>
+                            <button onclick="event.stopPropagation(); addToCart({{ related_product.id }})" class="bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded text-xs transition-colors">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function changeMainImage(imageUrl) {
+    document.getElementById('main-image-src').src = imageUrl;
+}
+
+function decreaseQuantity() {
+    const quantityInput = document.getElementById('quantity');
+    const currentValue = parseInt(quantityInput.value);
+    if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+    }
+}
+
+function increaseQuantity() {
+    const quantityInput = document.getElementById('quantity');
+    const currentValue = parseInt(quantityInput.value);
+    const maxValue = parseInt(quantityInput.max);
+    if (currentValue < maxValue) {
+        quantityInput.value = currentValue + 1;
+    }
+}
+
+function addToCart(productId) {
+    const quantity = document.getElementById('quantity').value;
+    // TODO: Implement cart functionality
+    console.log('Adding product to cart:', productId, 'Quantity:', quantity);
+}
+</script>
+{% endblock %} 

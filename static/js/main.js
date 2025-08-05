@@ -1,134 +1,37 @@
-// Sample blog data
-const blogs = [
-    {
-        id: 1,
-        title: 'مراقبت از پوست در زمستان',
-        excerpt: 'نکات مهم برای حفظ سلامت پوست در فصل سرد',
-        date: '۱۵ آذر ۱۴۰۲',
-        image: 'fas fa-leaf',
-        color: 'from-green-200 to-blue-200',
-        iconColor: 'text-green-600',
-        content: `
-            <h2 class="text-3xl font-bold mb-6">مراقبت از پوست در زمستان</h2>
-            <div class="flex items-center gap-4 mb-8 text-sm theme-text-secondary">
-                <span><i class="fas fa-calendar ml-1"></i>۱۵ آذر ۱۴۰۲</span>
-                <span><i class="fas fa-user ml-1"></i>تیم زیبایی شاپ</span>
-                <span><i class="fas fa-clock ml-1"></i>۵ دقیقه مطالعه</span>
-            </div>
-            
-            <div class="prose prose-lg max-w-none">
-                <p class="text-lg leading-relaxed mb-6">
-                    فصل زمستان با خشکی هوا و سرمای شدید، چالش‌های خاصی برای پوست ایجاد می‌کند. در این مقاله به بررسی راه‌های مراقبت از پوست در این فصل می‌پردازیم.
-                </p>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">چرا پوست در زمستان خشک می‌شود؟</h3>
-                <p class="mb-6">
-                    هوای سرد زمستان رطوبت کمتری دارد و این باعث می‌شود پوست رطوبت طبیعی خود را از دست بدهد. همچنین استفاده از بخاری و سیستم‌های گرمایشی نیز خشکی پوست را تشدید می‌کند.
-                </p>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">نکات مهم مراقبت از پوست</h3>
-                <ul class="list-disc list-inside mb-6 space-y-2">
-                    <li>استفاده از کرم مرطوب کننده قوی‌تر</li>
-                    <li>کاهش دفعات شستشوی صورت</li>
-                    <li>استفاده از آب ولرم به جای آب داغ</li>
-                    <li>نوشیدن آب کافی در طول روز</li>
-                    <li>استفاده از دستگاه بخور در خانه</li>
-                </ul>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">محصولات پیشنهادی</h3>
-                <p class="mb-6">
-                    برای مراقبت بهتر از پوست در زمستان، استفاده از کرم‌های مرطوب کننده حاوی سرامید و هیالورونیک اسید توصیه می‌شود. همچنین سرم‌های مغذی می‌توانند کمک شایانی به سلامت پوست کنند.
-                </p>
-            </div>
-        `
-    },
-    {
-        id: 2,
-        title: 'آرایش طبیعی روزانه',
-        excerpt: 'راهنمای کامل آرایش ساده و زیبا',
-        date: '۱۲ آذر ۱۴۰۲',
-        image: 'fas fa-palette',
-        color: 'from-pink-200 to-purple-200',
-        iconColor: 'text-pink-600',
-        content: `
-            <h2 class="text-3xl font-bold mb-6">آرایش طبیعی روزانه</h2>
-            <div class="flex items-center gap-4 mb-8 text-sm theme-text-secondary">
-                <span><i class="fas fa-calendar ml-1"></i>۱۲ آذر ۱۴۰۲</span>
-                <span><i class="fas fa-user ml-1"></i>تیم زیبایی شاپ</span>
-                <span><i class="fas fa-clock ml-1"></i>۷ دقیقه مطالعه</span>
-            </div>
-            
-            <div class="prose prose-lg max-w-none">
-                <p class="text-lg leading-relaxed mb-6">
-                    آرایش طبیعی روزانه راهی عالی برای داشتن ظاهری تازه و جذاب بدون اغراق است. در این راهنما، مراحل آرایش ساده و سریع را یاد خواهید گرفت.
-                </p>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">مرحله اول: آماده‌سازی پوست</h3>
-                <p class="mb-6">
-                    قبل از شروع آرایش، پوست را با یک پاک‌کننده ملایم تمیز کنید و سپس کرم مرطوب کننده و کرم ضد آفتاب استفاده کنید.
-                </p>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">مرحله دوم: پایه آرایش</h3>
-                <ul class="list-disc list-inside mb-6 space-y-2">
-                    <li>استفاده از پرایمر برای ماندگاری بیشتر</li>
-                    <li>اعمال کانسیلر روی لکه‌ها و تیرگی‌ها</li>
-                    <li>استفاده از کرم پودر یا BB کرم</li>
-                    <li>تثبیت با پودر شفاف</li>
-                </ul>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">مرحله سوم: آرایش چشم و لب</h3>
-                <p class="mb-6">
-                    برای آرایش طبیعی، از سایه‌های ملایم و نزدیک به رنگ پوست استفاده کنید. مژه‌ها را با ریمل مشکی یا قهوه‌ای رنگ کنید و برای لب‌ها از رژلب طبیعی یا گلاس استفاده کنید.
-                </p>
-            </div>
-        `
-    },
-    {
-        id: 3,
-        title: 'مراقبت از مو',
-        excerpt: 'بهترین روش‌های نگهداری از موهای سالم',
-        date: '۱۰ آذر ۱۴۰۲',
-        image: 'fas fa-cut',
-        color: 'from-amber-200 to-orange-200',
-        iconColor: 'text-amber-600',
-        content: `
-            <h2 class="text-3xl font-bold mb-6">مراقبت از مو</h2>
-            <div class="flex items-center gap-4 mb-8 text-sm theme-text-secondary">
-                <span><i class="fas fa-calendar ml-1"></i>۱۰ آذر ۱۴۰۲</span>
-                <span><i class="fas fa-user ml-1"></i>تیم زیبایی شاپ</span>
-                <span><i class="fas fa-clock ml-1"></i>۶ دقیقه مطالعه</span>
-            </div>
-            
-            <div class="prose prose-lg max-w-none">
-                <p class="text-lg leading-relaxed mb-6">
-                    داشتن موهای سالم و زیبا نیازمند مراقبت‌های منظم و استفاده از محصولات مناسب است. در این مقاله با روش‌های مراقبت از مو آشنا می‌شوید.
-                </p>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">شستشوی صحیح مو</h3>
-                <p class="mb-6">
-                    شستشوی مو باید بر اساس نوع مو انجام شود. موهای چرب نیاز به شستشوی بیشتری دارند در حالی که موهای خشک کمتر باید شسته شوند.
-                </p>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">نکات مهم مراقبت</h3>
-                <ul class="list-disc list-inside mb-6 space-y-2">
-                    <li>استفاده از شامپو مناسب نوع مو</li>
-                    <li>اعمال نرم‌کننده فقط روی انتهای مو</li>
-                    <li>اجتناب از آب بیش از حد داغ</li>
-                    <li>استفاده از ماسک مو هفته‌ای یک بار</li>
-                    <li>محافظت از مو در برابر حرارت</li>
-                </ul>
-                
-                <h3 class="text-2xl font-bold mb-4 text-purple-600">تغذیه مناسب برای مو</h3>
-                <p class="mb-6">
-                    تغذیه مناسب نقش مهمی در سلامت مو دارد. مصرف پروتئین، ویتامین‌های B و C، آهن و روی برای رشد مو ضروری است.
-                </p>
-            </div>
-        `
-    }
-];
+// Global variables
+let products = []; // Will be populated from API
+let filteredProducts = [];
+let currentView = 'grid';
+let cart = [];
+let currentPage = 'home';
+let currentFilter = 'all';
+let currentSort = 'default';
+let currentSearch = '';
+let currentPriceRange = { min: 0, max: 1000000 };
 
-// Sample products data
-const products = [
+// Load products from API
+async function loadProducts() {
+    try {
+        const response = await fetch('/shop/api/products/');
+        const data = await response.json();
+        products = data.products || [];
+        filteredProducts = [...products];
+        console.log('Loaded products from API:', products.length);
+        
+        // If we're on the products page, render them
+        if (currentPage === 'products') {
+            renderProducts(filteredProducts);
+        }
+    } catch (error) {
+        console.error('Error loading products:', error);
+        // Fallback to empty array
+        products = [];
+        filteredProducts = [];
+    }
+}
+
+// Sample products data - keeping for fallback
+const sampleProducts = [
     {
         id: 1,
         name: 'رژ لب مات قرمز',
@@ -259,8 +162,6 @@ const products = [
     }
 ];
 
-let filteredProducts = [...products];
-let currentView = 'grid';
 let activeFilters = {
     search: '',
     category: '',
@@ -269,11 +170,6 @@ let activeFilters = {
     maxPrice: null,
     quickFilter: null
 };
-
-let cart = [
-    { id: 1, name: 'رژ لب مات قرمز', price: 125000, quantity: 2, image: 'fas fa-lipstick', color: 'from-red-200 to-pink-200', iconColor: 'text-red-600' },
-    { id: 2, name: 'کرم مرطوب کننده', price: 85000, quantity: 1, image: 'fas fa-tint', color: 'from-blue-200 to-cyan-200', iconColor: 'text-blue-600' }
-];
 
 // Countdown Timer Function - تایمر شمارش معکوس
 function startCountdown() {
@@ -315,6 +211,7 @@ function showPage(pageId) {
     
     // Show selected page
     document.getElementById(pageId).classList.add('active');
+    currentPage = pageId;
     
     // Update desktop navigation
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -341,6 +238,21 @@ function showPage(pageId) {
     
     // Scroll to top
     window.scrollTo(0, 0);
+    
+    // Page-specific actions
+    if (pageId === 'products') {
+        // Load products from API if not already loaded
+        if (products.length === 0) {
+            loadProducts();
+        } else {
+            renderProducts(filteredProducts);
+            updateResultsInfo();
+        }
+    } else if (pageId === 'blog') {
+        renderBlogs();
+    } else if (pageId === 'cart') {
+        renderCart();
+    }
 }
 
 // Set active navigation link
@@ -642,31 +554,46 @@ function renderProducts(productsToRender = products) {
     
     grid.innerHTML = '';
     
+    if (productsToRender.length === 0) {
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">محصولی یافت نشد</h3>
+                <p class="text-gray-600 mb-6">متأسفانه محصولی با این مشخصات پیدا نکردیم</p>
+                <button onclick="clearFilters()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+                    پاک کردن فیلترها
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
     if (currentView === 'list') {
         grid.className = 'space-y-4';
         productsToRender.forEach(product => {
             const productCard = `
                 <div class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex" onclick="openProductModal(${product.id})">
-                    <div class="w-32 h-32 bg-gradient-to-br ${product.color} flex items-center justify-center flex-shrink-0">
-                        <i class="${product.image} text-3xl ${product.iconColor}"></i>
+                    <div class="w-32 h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center flex-shrink-0">
+                        ${product.images && product.images.length > 0 
+                            ? `<img src="${product.images[0].image}" alt="${product.name}" class="w-full h-full object-cover">`
+                            : `<i class="fas fa-image text-3xl text-gray-400"></i>`
+                        }
                     </div>
                     <div class="p-6 flex-1 flex items-center justify-between">
                         <div>
                             <h3 class="text-lg font-bold mb-2">${product.name}</h3>
-                            <p class="theme-text-secondary text-sm mb-3">${product.category}</p>
+                            <p class="theme-text-secondary text-sm mb-3">${product.category_name || 'دسته‌بندی'}</p>
                             <div class="flex items-center">
                                 <div class="flex text-yellow-400">
-                                    <i class="fas fa-star text-sm"></i>
-                                    <i class="fas fa-star text-sm"></i>
-                                    <i class="fas fa-star text-sm"></i>
-                                    <i class="fas fa-star text-sm"></i>
-                                    <i class="fas fa-star text-sm"></i>
+                                    ${Array(5).fill().map((_, i) => 
+                                        `<i class="fas fa-star text-sm ${i < Math.floor(product.rating || 0) ? '' : 'far'}"></i>`
+                                    ).join('')}
                                 </div>
-                                <span class="mr-2 text-sm theme-text-secondary">(${toPersianNumber(product.rating)})</span>
+                                <span class="mr-2 text-sm theme-text-secondary">(${toPersianNumber(product.rating || 0)})</span>
                             </div>
                         </div>
                         <div class="text-left">
-                            <span class="text-xl font-bold text-purple-600 block mb-4">${toPersianNumber(product.price.toLocaleString())} تومان</span>
+                            <span class="text-xl font-bold text-purple-600 block mb-4">${toPersianNumber(product.price)} تومان</span>
                             <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 <i class="fas fa-cart-plus ml-2"></i>
                                 افزودن
@@ -681,25 +608,48 @@ function renderProducts(productsToRender = products) {
         grid.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4';
         productsToRender.forEach(product => {
             const productCard = `
-                <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="openProductModal(${product.id})">
-                    <div class="h-24 sm:h-32 bg-gradient-to-br ${product.color} flex items-center justify-center">
-                        <i class="${product.image} text-lg sm:text-2xl ${product.iconColor}"></i>
+                <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer relative" onclick="openProductModal(${product.id})">
+                    ${product.has_discount ? `
+                        <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
+                            <i class="fas fa-fire mr-1"></i>
+                            ${product.discount_percentage || 0}% تخفیف
+                        </div>
+                    ` : ''}
+                    ${product.is_bestseller ? `
+                        <div class="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
+                            <i class="fas fa-star mr-1"></i>
+                            پرفروش
+                        </div>
+                    ` : ''}
+                    ${product.is_new ? `
+                        <div class="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
+                            <i class="fas fa-star mr-1"></i>
+                            جدید
+                        </div>
+                    ` : ''}
+                    
+                    <div class="h-24 sm:h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
+                        ${product.images && product.images.length > 0 
+                            ? `<img src="${product.images[0].image}" alt="${product.name}" class="w-full h-full object-cover">`
+                            : `<i class="fas fa-image text-lg sm:text-2xl text-gray-400"></i>`
+                        }
                     </div>
                     <div class="p-2 sm:p-4">
                         <h3 class="text-xs sm:text-base font-bold mb-1 sm:mb-2 line-clamp-2">${product.name}</h3>
-                        <p class="theme-text-secondary text-xs mb-1 sm:mb-2">${product.category}</p>
+                        <p class="theme-text-secondary text-xs mb-1 sm:mb-2">${product.category_name || 'دسته‌بندی'}</p>
                         <div class="flex items-center mb-2 sm:mb-3">
                             <div class="flex text-yellow-400">
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
-                                <i class="fas fa-star text-xs"></i>
+                                ${Array(5).fill().map((_, i) => 
+                                    `<i class="fas fa-star text-xs ${i < Math.floor(product.rating || 0) ? '' : 'far'}"></i>`
+                                ).join('')}
                             </div>
-                            <span class="mr-1 text-xs theme-text-secondary">(${toPersianNumber(product.rating)})</span>
+                            <span class="mr-1 text-xs theme-text-secondary">(${toPersianNumber(product.rating || 0)})</span>
                         </div>
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
-                            <span class="text-xs sm:text-sm font-bold text-purple-600">${toPersianNumber(product.price.toLocaleString())} تومان</span>
+                            <div class="flex flex-col">
+                                <span class="text-xs sm:text-sm font-bold text-purple-600">${toPersianNumber(product.price)} تومان</span>
+                                ${product.original_price ? `<span class="text-xs text-gray-500 line-through">${toPersianNumber(product.original_price)} تومان</span>` : ''}
+                            </div>
                             <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 hover:bg-purple-700 text-white px-2 sm:px-3 py-1 rounded-lg transition-colors w-full sm:w-auto">
                                 <i class="fas fa-cart-plus text-xs sm:text-sm"></i>
                             </button>
@@ -726,9 +676,9 @@ function addToCart(productId) {
             name: product.name,
             price: product.price,
             quantity: 1,
-            image: product.image,
-            color: product.color,
-            iconColor: product.iconColor
+            image: product.images && product.images.length > 0 ? product.images[0].image : null,
+            color: 'from-pink-200 to-purple-200',
+            iconColor: 'text-gray-400'
         });
     }
     
@@ -781,7 +731,7 @@ function renderCart() {
         cartItems.innerHTML = cart.map(item => `
             <div class="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl bg-white dark:bg-gray-800 shadow-sm">
                 <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${item.color} rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-                    <i class="${item.image} text-lg sm:text-xl ${item.iconColor}"></i>
+                    ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded-lg sm:rounded-xl">` : `<i class="fas fa-image text-lg sm:text-xl ${item.iconColor}"></i>`}
                 </div>
                 <div class="flex-1 min-w-0">
                     <h4 class="font-bold text-sm sm:text-base line-clamp-1 text-gray-900 dark:text-white">${item.name}</h4>
@@ -1180,20 +1130,20 @@ function openProductModal(productId) {
         <div class="grid lg:grid-cols-2 gap-4 lg:gap-8">
             <!-- Product Image -->
             <div class="space-y-3 lg:space-y-4">
-                <div id="main-product-image" class="w-full h-48 sm:h-64 lg:h-80 bg-gradient-to-br ${product.color} rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300">
-                    <i id="main-product-icon" class="${product.image} text-4xl sm:text-5xl lg:text-6xl ${product.iconColor}"></i>
+                <div id="main-product-image" class="w-full h-48 sm:h-64 lg:h-80 bg-gradient-to-br from-pink-200 to-purple-200 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300">
+                    ${product.images && product.images.length > 0 
+                        ? `<img src="${product.images[0].image}" alt="${product.name}" class="w-full h-full object-cover rounded-2xl">`
+                        : `<i class="fas fa-image text-4xl sm:text-5xl lg:text-6xl text-gray-400"></i>`
+                    }
                 </div>
                 
                 <!-- Product Gallery Thumbnails -->
                 <div class="flex gap-2 justify-center lg:justify-start">
-                    <div onclick="changeMainImage('${product.color}', '${product.image}', '${product.iconColor}')" class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${product.color} rounded-lg flex items-center justify-center border-2 border-purple-500 cursor-pointer">
-                        <i class="${product.image} text-sm sm:text-lg ${product.iconColor}"></i>
-                    </div>
-                    ${product.detailImages.map((img, index) => `
-                        <div onclick="changeMainImage('${img.color}', '${img.icon}', '${img.iconColor}')" class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${img.color} rounded-lg flex items-center justify-center cursor-pointer opacity-60 hover:opacity-100 transition-all duration-300 border-2 border-transparent hover:border-purple-300">
-                            <i class="${img.icon} text-sm sm:text-lg ${img.iconColor}"></i>
+                    ${product.images && product.images.length > 0 ? product.images.map((img, index) => `
+                        <div onclick="changeMainImage('${img.image}', ${index})" class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg flex items-center justify-center border-2 ${index === 0 ? 'border-purple-500' : 'border-transparent'} cursor-pointer">
+                            <img src="${img.image}" alt="${product.name}" class="w-full h-full object-cover rounded-lg">
                         </div>
-                    `).join('')}
+                    `).join('') : ''}
                 </div>
             </div>
             
@@ -1201,26 +1151,26 @@ function openProductModal(productId) {
             <div class="space-y-4 lg:space-y-6">
                 <div>
                     <h1 class="text-lg sm:text-xl lg:text-2xl font-bold mb-2 lg:mb-3 text-gray-900 dark:text-white">${product.name}</h1>
-                    <p class="text-sm lg:text-base text-gray-900 dark:text-gray-400 mb-3 lg:mb-4">دسته‌بندی: ${product.category}</p>
+                    <p class="text-sm lg:text-base text-gray-900 dark:text-gray-400 mb-3 lg:mb-4">دسته‌بندی: ${product.category_name || 'دسته‌بندی'}</p>
                     
                     <!-- Rating -->
                     <div class="flex items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
                         <div class="flex text-yellow-400">
-                            <i class="fas fa-star text-sm"></i>
-                            <i class="fas fa-star text-sm"></i>
-                            <i class="fas fa-star text-sm"></i>
-                            <i class="fas fa-star text-sm"></i>
-                            <i class="fas fa-star text-sm"></i>
+                            ${Array(5).fill().map((_, i) => 
+                                `<i class="fas fa-star text-sm ${i < Math.floor(product.rating || 0) ? '' : 'far'}"></i>`
+                            ).join('')}
                         </div>
-                        <span class="font-semibold text-sm lg:text-base text-gray-900 dark:text-white">${product.rating}</span>
-                        <span class="text-gray-900 dark:text-gray-400 text-sm">(۱۲۳ نظر)</span>
+                        <span class="font-semibold text-sm lg:text-base text-gray-900 dark:text-white">${product.rating || 0}</span>
+                        <span class="text-gray-900 dark:text-gray-400 text-sm">(${product.review_count || 0} نظر)</span>
                     </div>
                     
                     <!-- Price -->
                     <div class="flex flex-wrap items-center gap-2 lg:gap-3 mb-4 lg:mb-6">
-                        <span class="text-lg lg:text-xl font-bold text-purple-600">${product.price.toLocaleString()} تومان</span>
-                        <span class="text-gray-900 dark:text-gray-400 line-through text-sm">${(product.price * 1.2).toLocaleString()} تومان</span>
-                        <span class="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-2 py-1 rounded-lg text-xs font-bold">۲۰٪ تخفیف</span>
+                        <span class="text-lg lg:text-xl font-bold text-purple-600">${toPersianNumber(product.price)} تومان</span>
+                        ${product.original_price ? `
+                            <span class="text-gray-900 dark:text-gray-400 line-through text-sm">${toPersianNumber(product.original_price)} تومان</span>
+                            <span class="bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-2 py-1 rounded-lg text-xs font-bold">${product.discount_percentage || 0}% تخفیف</span>
+                        ` : ''}
                     </div>
                 </div>
                 
@@ -1328,23 +1278,20 @@ function addToCartFromModal(productId) {
 }
 
 // Change main product image in modal
-function changeMainImage(color, icon, iconColor) {
+function changeMainImage(imageSrc, index) {
     const mainImage = document.getElementById('main-product-image');
-    const mainIcon = document.getElementById('main-product-icon');
     
-    if (mainImage && mainIcon) {
-        mainImage.className = `w-full h-80 bg-gradient-to-br ${color} rounded-2xl flex items-center justify-center shadow-lg transition-all duration-300`;
-        mainIcon.className = `${icon} text-6xl ${iconColor}`;
+    if (mainImage) {
+        mainImage.innerHTML = `<img src="${imageSrc}" alt="Product" class="w-full h-full object-cover rounded-2xl">`;
         
         // Update thumbnail borders
-        document.querySelectorAll('.flex.gap-2 > div').forEach(thumb => {
-            thumb.classList.remove('border-purple-500');
-            thumb.classList.add('border-transparent');
+        const thumbnails = mainImage.parentElement.querySelectorAll('.flex.gap-2 > div');
+        thumbnails.forEach((thumb, i) => {
+            const border = thumb.querySelector('.border-2');
+            if (border) {
+                border.className = `border-2 ${i === index ? 'border-purple-500' : 'border-transparent'}`;
+            }
         });
-        
-        // Add border to clicked thumbnail
-        event.target.closest('div').classList.remove('border-transparent');
-        event.target.closest('div').classList.add('border-purple-500');
     }
 }
 
@@ -1645,6 +1592,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start lantern animation
     startLanternAnimation();
+    
+    // Load products from API
+    loadProducts();
     
     // Load theme
     const savedTheme = localStorage.getItem('theme');

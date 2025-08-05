@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block contact %}
+<div class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold text-center mb-8">محصولات ما</h2>
+        
+        <!-- Circular Cosmetic Filter Box -->
+        <div class="relative mb-8 flex justify-end">
+            <!-- Circular Compact Design -->
+            <div id="cosmetic-compact" class="relative">
+                <!-- Compact Base (Closed State) -->
+                <div id="compact-base" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-500 shadow-2xl cursor-pointer transform transition-all duration-500 hover:scale-110 relative overflow-hidden border-4 border-white/30" onclick="toggleCompact()">
+                    <!-- Mirror Effect -->
+                    <div class="absolute inset-1 rounded-full bg-gradient-to-br from-pink-200/80 to-purple-200/80 shadow-inner border-2 border-white/60">
+                        <!-- Reflection -->
+                        <div class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 w-3 h-3 sm:w-4 sm:h-4 bg-white/40 rounded-full blur-sm"></div>
+                        <div class="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/30 rounded-full blur-sm"></div>
+                    </div>
+                    
+                    <!-- Brand Logo -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fas fa-sliders-h text-lg sm:text-2xl text-white drop-shadow-lg"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Shimmer Effect -->
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 animate-shimmer"></div>
+                    
+                    <!-- Pulse Ring -->
+                    <div class="absolute inset-0 rounded-full border-2 border-white/20 animate-ping"></div>
+                </div>
+                
+                <!-- Expanded Filter Panel -->
+                <div id="filter-panel" class="fixed top-0 right-0 w-80 h-full bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 shadow-2xl transform translate-x-full transition-all duration-700 ease-out z-50 overflow-y-auto" style="border-radius: 50px 0 0 50px;">
+                    <!-- Close Button -->
+                    <button onclick="toggleCompact()" class="absolute top-6 left-6 w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors z-20">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <!-- Filter Content -->
+                    <div class="p-6 pt-20 h-full">
+                        <!-- Search -->
+                        <div class="mb-4">
+                            <div class="relative">
+                                <input type="text" id="search-input" placeholder="جستجو..." class="w-full p-3 pr-10 border-2 border-pink-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700 backdrop-blur-sm rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm">
+                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-pink-400">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Category Pills -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold mb-2 text-center">دسته‌بندی</h4>
+                            <div class="flex flex-wrap gap-1 justify-center">
+                                <button onclick="setCategoryFilter('')" class="category-pill active px-3 py-1 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 text-gray-700 dark:text-gray-200 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
+                                    همه
+                                </button>
+                                {% for category in categories %}
+                                <button onclick="setCategoryFilter('{{ category.slug }}')" class="category-pill px-3 py-1 bg-gradient-to-r from-red-200 to-pink-200 text-red-700 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
+                                    {{ category.icon }} {{ category.name }}
+                                </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Brand Pills -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold mb-2 text-center">برند</h4>
+                            <div class="flex flex-wrap gap-1 justify-center">
+                                <button onclick="setBrandFilter('')" class="brand-pill active px-3 py-1 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 text-gray-700 dark:text-gray-200 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
+                                    همه
+                                </button>
+                                {% for brand in brands %}
+                                <button onclick="setBrandFilter('{{ brand.slug }}')" class="brand-pill px-3 py-1 bg-gradient-to-r from-blue-200 to-indigo-200 text-blue-700 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
+                                    {% if brand.logo %}
+                                    <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-4 h-4 inline-block mr-1 rounded-full">
+                                    {% else %}
+                                    <i class="fas fa-tag mr-1"></i>
+                                    {% endif %}
+                                    {{ brand.name }}
+                                </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Price Range -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold mb-2 text-center">قیمت</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" id="min-price" placeholder="حداقل" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs">
+                                <input type="number" id="max-price" placeholder="حداکثر" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs">
+                            </div>
+                        </div>
+                        
+                        <!-- Sort -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold mb-2 text-center">مرتب‌سازی</h4>
+                            <select id="sort-filter" class="w-full p-2 border border-purple-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-400 text-xs appearance-none cursor-pointer">
+                                <option value="default">پیش‌فرض</option>
+                                <option value="price-low">💰 ارزان‌ترین</option>
+                                <option value="price-high">💎 گران‌ترین</option>
+                                <option value="rating">⭐ بهترین</option>
+                                <option value="name">🔤 الفبایی</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Quick Filters -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-bold mb-2 text-center">فیلتر سریع</h4>
+                            <div class="flex flex-wrap gap-1 justify-center">
+                                <button onclick="quickFilter('bestseller')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-red-100 to-pink-100 text-red-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-red-200">
+                                    🔥 پرفروش
+                                </button>
+                                <button onclick="quickFilter('discount')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-orange-200">
+                                    💸 تخفیف
+                                </button>
+                                <button onclick="quickFilter('new')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-green-200">
+                                    ✨ جدید
+                                </button>
+                                <button onclick="quickFilter('luxury')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-purple-200">
+                                    👑 لوکس
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex gap-2 justify-center">
+                            <button onclick="applyFilters()" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                اعمال
+                            </button>
+                            <button onclick="clearFilters()" class="px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                پاک کردن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Info -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+                <span id="results-count" class="text-gray-600">نمایش {{ total_products }} محصول</span>
+                <div id="active-filters" class="flex gap-2">
+                    {% if current_category %}
+                    <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs">{{ current_category }}</span>
+                    {% endif %}
+                    {% if current_brand %}
+                    <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">{{ current_brand }}</span>
+                    {% endif %}
+                    {% if search_query %}
+                    <span class="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">{{ search_query }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleView('grid')" id="grid-view" class="p-2 bg-purple-600 text-white rounded-lg">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button onclick="toggleView('list')" id="list-view" class="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" id="products-grid">
+            <!-- Products will be loaded here by JavaScript -->
+        </div>
+        
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <div class="flex justify-center mt-8">
+            <nav class="flex items-center gap-2">
+                {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+                
+                {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                <span class="px-3 py-2 bg-purple-600 text-white rounded-lg">{{ num }}</span>
+                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                <a href="?page={{ num }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">{{ num }}</a>
+                {% endif %}
+                {% endfor %}
+                
+                {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}" class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Filter functionality
+function toggleCompact() {
+    const panel = document.getElementById('filter-panel');
+    panel.classList.toggle('translate-x-full');
+}
+
+function setCategoryFilter(category) {
+    // Remove active class from all category pills
+    document.querySelectorAll('.category-pill').forEach(pill => {
+        pill.classList.remove('active');
+        pill.classList.remove('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+        pill.classList.add('bg-gradient-to-r', 'from-red-200', 'to-pink-200', 'text-red-700');
+    });
+    
+    // Add active class to clicked pill
+    event.target.classList.add('active');
+    event.target.classList.remove('bg-gradient-to-r', 'from-red-200', 'to-pink-200', 'text-red-700');
+    event.target.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+    
+    // Update URL with category parameter
+    const url = new URL(window.location);
+    if (category) {
+        url.searchParams.set('category', category);
+    } else {
+        url.searchParams.delete('category');
+    }
+    window.location.href = url.toString();
+}
+
+function setBrandFilter(brand) {
+    // Remove active class from all brand pills
+    document.querySelectorAll('.brand-pill').forEach(pill => {
+        pill.classList.remove('active');
+        pill.classList.remove('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+        pill.classList.add('bg-gradient-to-r', 'from-blue-200', 'to-indigo-200', 'text-blue-700');
+    });
+    
+    // Add active class to clicked pill
+    event.target.classList.add('active');
+    event.target.classList.remove('bg-gradient-to-r', 'from-blue-200', 'to-indigo-200', 'text-blue-700');
+    event.target.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+    
+    // Update URL with brand parameter
+    const url = new URL(window.location);
+    if (brand) {
+        url.searchParams.set('brand', brand);
+    } else {
+        url.searchParams.delete('brand');
+    }
+    window.location.href = url.toString();
+}
+
+function quickFilter(filter) {
+    const url = new URL(window.location);
+    url.searchParams.set('quick_filter', filter);
+    window.location.href = url.toString();
+}
+
+function applyFilters() {
+    const search = document.getElementById('search-input').value;
+    const minPrice = document.getElementById('min-price').value;
+    const maxPrice = document.getElementById('max-price').value;
+    const sort = document.getElementById('sort-filter').value;
+    
+    const url = new URL(window.location);
+    
+    if (search) url.searchParams.set('search', search);
+    else url.searchParams.delete('search');
+    
+    if (minPrice) url.searchParams.set('min_price', minPrice);
+    else url.searchParams.delete('min_price');
+    
+    if (maxPrice) url.searchParams.set('max_price', maxPrice);
+    else url.searchParams.delete('max_price');
+    
+    if (sort !== 'default') url.searchParams.set('sort', sort);
+    else url.searchParams.delete('sort');
+    
+    window.location.href = url.toString();
+}
+
+function clearFilters() {
+    window.location.href = window.location.pathname;
+}
+
+function toggleView(view) {
+    const gridView = document.getElementById('grid-view');
+    const listView = document.getElementById('list-view');
+    const productsGrid = document.getElementById('products-grid');
+    
+    if (view === 'grid') {
+        gridView.classList.add('bg-purple-600', 'text-white');
+        gridView.classList.remove('bg-gray-200', 'text-gray-600');
+        listView.classList.add('bg-gray-200', 'text-gray-600');
+        listView.classList.remove('bg-purple-600', 'text-white');
+        productsGrid.classList.remove('grid-cols-1');
+        productsGrid.classList.add('grid-cols-2', 'sm:grid-cols-3', 'lg:grid-cols-4');
+    } else {
+        listView.classList.add('bg-purple-600', 'text-white');
+        listView.classList.remove('bg-gray-200', 'text-gray-600');
+        gridView.classList.add('bg-gray-200', 'text-gray-600');
+        gridView.classList.remove('bg-purple-600', 'text-white');
+        productsGrid.classList.remove('grid-cols-2', 'sm:grid-cols-3', 'lg:grid-cols-4');
+        productsGrid.classList.add('grid-cols-1');
+    }
+}
+
+function openProductModal(productId) {
+    window.location.href = `/shop/product/${productId}/`;
+}
+
+function addToCart(productId) {
+    // TODO: Implement cart functionality
+    console.log('Adding product to cart:', productId);
+}
+</script>
+{% endblock %} 
