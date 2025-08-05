@@ -9,25 +9,42 @@ from django.http import JsonResponse
 
 def user_login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email_or_phone = request.POST.get('email')
         password = request.POST.get('password')
         
         # Validation
-        if not email:
-            messages.error(request, 'لطفاً ایمیل را وارد کنید')
+        if not email_or_phone:
+            messages.error(request, 'لطفاً ایمیل یا شماره موبایل را وارد کنید')
             return render(request, 'core/login.html')
         
         if not password:
             messages.error(request, 'لطفاً رمز عبور را وارد کنید')
             return render(request, 'core/login.html')
         
-        user = authenticate(request, email=email, password=password)
+        # Try to authenticate with email or phone
+        user = None
+        
+        # First try with email
+        if '@' in email_or_phone:
+            try:
+                user_obj = User.objects.get(email=email_or_phone)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
+        else:
+            # Try with phone number
+            try:
+                user_obj = User.objects.get(phone=email_or_phone)
+                user = authenticate(request, username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                pass
+        
         if user is not None:
             login(request, user)
             messages.success(request, f'خوش آمدید {user.get_full_name() or user.email}!')
             return redirect('core:profile')
         else:
-            messages.error(request, 'ایمیل یا رمز عبور اشتباه است')
+            messages.error(request, 'ایمیل/شماره موبایل یا رمز عبور اشتباه است')
     
     return render(request, 'core/login.html')
 
