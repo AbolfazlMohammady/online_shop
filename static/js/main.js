@@ -929,6 +929,23 @@ function quickFilter(filterType) {
 }
 
 function clearFilters() {
+    console.log('Clearing all filters');
+    
+    // Reset all form elements
+    const searchInput = document.getElementById('search-input');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    const sortFilter = document.getElementById('sort-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    const brandFilter = document.getElementById('brand-filter');
+    
+    if (searchInput) searchInput.value = '';
+    if (minPriceInput) minPriceInput.value = '';
+    if (maxPriceInput) maxPriceInput.value = '';
+    if (sortFilter) sortFilter.value = 'default';
+    if (categoryFilter) categoryFilter.value = '';
+    if (brandFilter) brandFilter.value = '';
+    
     // Reset all filters
     activeFilters = {
         search: '',
@@ -940,39 +957,26 @@ function clearFilters() {
         quickFilter: null
     };
     
-    // Reset form elements
-    document.getElementById('search-input').value = '';
-    document.getElementById('category-filter').value = '';
-    document.getElementById('brand-filter').value = '';
-    document.getElementById('sort-filter').value = 'default';
-    document.getElementById('min-price').value = '';
-    document.getElementById('max-price').value = '';
-    
-    // Reset category pills
-    document.querySelectorAll('.category-pill').forEach(pill => {
-        pill.classList.remove('active');
-    });
-    document.querySelector('.category-pill').classList.add('active'); // First one (همه)
-    
-    // Reset brand pills
-    document.querySelectorAll('.brand-pill').forEach(pill => {
-        pill.classList.remove('active');
-    });
-    document.querySelector('.brand-pill').classList.add('active'); // First one (همه)
-    
-    // Reset quick filter buttons
-    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-        btn.classList.remove('active');
+    // Reset all pills and buttons
+    document.querySelectorAll('.category-pill, .brand-pill, .quick-filter-btn').forEach(element => {
+        element.classList.remove('active');
+        element.classList.remove('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
     });
     
-    // Reset pagination state
-    currentPageNumber = 1;
-    hasMoreProducts = true;
-    const endMessage = document.getElementById('end-message');
-    if (endMessage) {
-        endMessage.classList.add('hidden');
+    // Set first pills as active
+    const firstCategoryPill = document.querySelector('.category-pill');
+    const firstBrandPill = document.querySelector('.brand-pill');
+    
+    if (firstCategoryPill) {
+        firstCategoryPill.classList.add('active');
+        firstCategoryPill.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+    }
+    if (firstBrandPill) {
+        firstBrandPill.classList.add('active');
+        firstBrandPill.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
     }
     
+    console.log('Filters cleared, calling filterProducts');
     filterProducts();
 }
 
@@ -1026,9 +1030,17 @@ function filterProducts() {
     } else if (activeFilters.sort === 'price-high') {
         filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
     } else if (activeFilters.sort === 'rating') {
-        filteredProducts.sort((a, b) => b.rating - a.rating);
+        filteredProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     } else if (activeFilters.sort === 'name') {
         filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (activeFilters.sort === 'newest') {
+        filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (activeFilters.sort === 'bestseller') {
+        filteredProducts.sort((a, b) => {
+            if (a.is_bestseller && !b.is_bestseller) return -1;
+            if (!a.is_bestseller && b.is_bestseller) return 1;
+            return 0;
+        });
     }
     
     // Reset pagination when filters are applied
@@ -1808,15 +1820,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const sortFilter = document.getElementById('sort-filter');
     
     if (categoryFilter) {
-        categoryFilter.addEventListener('change', applyFilters);
+        categoryFilter.addEventListener('change', function() {
+            activeFilters.category = this.value;
+            filterProducts();
+        });
     }
     
     if (brandFilter) {
-        brandFilter.addEventListener('change', applyFilters);
+        brandFilter.addEventListener('change', function() {
+            activeFilters.brand = this.value;
+            filterProducts();
+        });
     }
     
     if (sortFilter) {
-        sortFilter.addEventListener('change', applyFilters);
+        sortFilter.addEventListener('change', function() {
+            activeFilters.sort = this.value;
+            filterProducts();
+        });
     }
     
     // Initialize filters and render products after a short delay to ensure API data is loaded

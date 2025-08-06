@@ -12,21 +12,33 @@
 /* Modern Product Card Styles */
 .product-card {
     position: relative;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(147, 51, 234, 0.2);
     border-radius: 16px;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     height: 420px;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.1);
+}
+
+.dark .product-card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .product-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(147, 51, 234, 0.15);
     border-color: rgba(147, 51, 234, 0.3);
+}
+
+.dark .product-card:hover {
+    box-shadow: 0 20px 40px rgba(147, 51, 234, 0.25);
+    border-color: rgba(147, 51, 234, 0.4);
 }
 
 .product-image-container {
@@ -574,6 +586,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const applyBtn = document.querySelector('button[onclick="applyFilters()"]');
     const clearBtn = document.querySelector('button[onclick="clearFilters()"]');
     
+    // Price inputs - format on input
     if (minPriceInput) {
         minPriceInput.addEventListener('input', formatPriceInput);
     }
@@ -582,17 +595,46 @@ document.addEventListener('DOMContentLoaded', function() {
         maxPriceInput.addEventListener('input', formatPriceInput);
     }
     
+    // Apply button - only for price range
     if (applyBtn) {
         applyBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            applyFilters();
+            applyPriceFilters();
         });
     }
     
+    // Clear button
     if (clearBtn) {
         clearBtn.addEventListener('click', function(e) {
             e.preventDefault();
             clearFilters();
+        });
+    }
+    
+    // New button IDs
+    const applyPriceBtn = document.getElementById('apply-price-filter');
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+    
+    if (applyPriceBtn) {
+        applyPriceBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            applyPriceFilters();
+        });
+    }
+    
+    if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            clearFilters();
+        });
+    }
+    
+    // Sort filter
+    const sortFilter = document.getElementById('sort-filter');
+    if (sortFilter) {
+        sortFilter.addEventListener('change', function() {
+            activeFilters.sort = this.value;
+            filterProducts();
         });
     }
 });
