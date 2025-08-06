@@ -11,13 +11,14 @@ urlpatterns = [
     path('products/bestseller/', views.bestseller_products, name='bestseller_products'),
     
     # Product detail
-    path('product/<slug:slug>/', views.product_detail, name='product_detail'),
+    path('product/<str:slug>/', views.product_detail, name='product_detail'),
+
     
     # Category products
-    path('category/<slug:slug>/', views.category_products, name='category_products'),
+    path('category/<str:slug>/', views.category_products, name='category_products'),
     
     # Brand products
-    path('brand/<slug:slug>/', views.brand_products, name='brand_products'),
+    path('brand/<str:slug>/', views.brand_products, name='brand_products'),
     
     # Search
     path('search/', views.search_products, name='search_products'),

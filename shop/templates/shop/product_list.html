@@ -444,7 +444,53 @@
         
         <!-- Products Grid -->
         <div id="products-grid" class="products-grid">
-            <!-- Products will be loaded here by JavaScript -->
+            {% for product in products %}
+            <a href="{% url 'shop:product_detail' product.slug %}" class="product-card" style="text-decoration: none; color: inherit;">
+                <div class="product-image-container">
+                    {% if product.images.first %}
+                    <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% else %}
+                    <div class="placeholder-container">
+                        <i class="fas fa-image placeholder-icon"></i>
+                        <span class="placeholder-text">بدون تصویر</span>
+                    </div>
+                    {% endif %}
+                    {% if product.has_discount %}
+                    <div class="discount-badge">{{ product.discount_percentage }}٪ تخفیف</div>
+                    {% endif %}
+                    {% if product.is_bestseller %}
+                    <div class="bestseller-badge">پرفروش</div>
+                    {% endif %}
+                    {% if product.is_new %}
+                    <div class="new-badge">جدید</div>
+                    {% endif %}
+                </div>
+                <div class="product-content">
+                    <div class="product-info">
+                        <div class="product-title line-clamp-2">{{ product.name }}</div>
+                        <div class="category-tag">{{ product.category.name }}</div>
+                        <div class="product-rating">
+                            <div class="stars">
+                                {% for i in "12345" %}
+                                {% if forloop.counter <= product.rating %}
+                                <i class="fas fa-star"></i>
+                                {% else %}
+                                <i class="far fa-star"></i>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="rating-text">({{ product.rating }})</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">{{ product.price|floatformat:0 }} تومان</span>
+                            {% if product.original_price %}
+                            <span class="original-price">{{ product.original_price|floatformat:0 }} تومان</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
         </div>
         
         <!-- No Results Message -->

@@ -623,9 +623,9 @@ function renderProducts(productsToRender = products) {
                     <i class="fas fa-search text-4xl mb-4"></i>
                     <h3 class="text-lg font-semibold mb-2">هیچ محصولی یافت نشد</h3>
                     <p class="text-sm">لطفاً فیلترهای خود را تغییر دهید یا عبارت جستجوی دیگری را امتحان کنید.</p>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
         return;
     }
     
@@ -1066,12 +1066,12 @@ function toggleView(view) {
     
     // Update button states
     if (gridBtn && listBtn) {
-        if (view === 'grid') {
+    if (view === 'grid') {
             gridBtn.classList.add('bg-purple-600', 'text-white');
             gridBtn.classList.remove('bg-gray-200', 'text-gray-600');
             listBtn.classList.add('bg-gray-200', 'text-gray-600');
             listBtn.classList.remove('bg-purple-600', 'text-white');
-        } else {
+    } else {
             listBtn.classList.add('bg-purple-600', 'text-white');
             listBtn.classList.remove('bg-gray-200', 'text-gray-600');
             gridBtn.classList.add('bg-gray-200', 'text-gray-600');
@@ -1839,7 +1839,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (sortFilter) {
             sortFilter.addEventListener('change', function() {
                 activeFilters.sort = this.value;
-                filterProducts();
+    filterProducts();
             });
         }
         
@@ -1932,7 +1932,7 @@ function applyPriceFilters() {
 function renderGridView(productsToRender, grid) {
     productsToRender.forEach(product => {
         const productCard = `
-            <div class="product-card" onclick="openProductModal(${product.id})">
+            <a href="/shop/product/${product.slug}/" class="product-card" style="text-decoration: none; color: inherit;">
                 <!-- Badges -->
                 ${product.has_discount ? `
                     <div class="discount-badge">
@@ -1952,7 +1952,6 @@ function renderGridView(productsToRender, grid) {
                         جدید
                     </div>
                 ` : ''}
-                
                 <!-- Image Container -->
                 <div class="product-image-container">
                     ${product.images && product.images.length > 0 
@@ -1964,61 +1963,38 @@ function renderGridView(productsToRender, grid) {
                             <div class="placeholder-text">بدون تصویر</div>
                            </div>`
                     }
-                    
                     <!-- Overlay with Title and Category -->
                     <div class="product-overlay">
                         <div class="category-tag">
                             <i class="fas fa-tag mr-1"></i>
                             ${product.category_name || 'دسته‌بندی'}
                         </div>
-                        <div class="product-title">${product.name}</div>
+                        <div class="product-title">
+                            ${product.name}
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Content -->
                 <div class="product-content">
                     <div class="product-info">
-                        <!-- Rating -->
                         <div class="product-rating">
                             <div class="stars">
-                                ${Array(5).fill().map((_, i) => {
-                                    const rating = product.rating || 0;
-                                    const starIndex = i + 1;
-                                    if (starIndex <= Math.floor(rating)) {
-                                        return '<i class="fas fa-star"></i>';
-                                    } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
-                                        return '<i class="fas fa-star-half-alt"></i>';
-                                    } else {
-                                        return '<i class="far fa-star"></i>';
+                                ${(() => {
+                                    let stars = '';
+                                    for (let i = 1; i <= 5; i++) {
+                                        stars += i <= Math.round(product.rating) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
                                     }
-                                }).join('')}
+                                    return stars;
+                                })()}
                             </div>
-                            <span class="rating-text">(${toPersianNumber(product.rating || 0)})</span>
+                            <span class="rating-text">(${product.rating || 0})</span>
                         </div>
-                        
-                        <!-- Price -->
                         <div class="product-price">
-                            <span class="current-price">${toPersianNumber(product.price)} تومان</span>
-                            ${product.original_price ? `
-                                <span class="original-price">${toPersianNumber(product.original_price)} تومان</span>
-                            ` : ''}
+                            <span class="current-price">${product.price.toLocaleString()} تومان</span>
+                            ${product.original_price ? `<span class="original-price">${product.original_price.toLocaleString()} تومان</span>` : ''}
                         </div>
-                        
-                        <!-- Brand (if exists) -->
-                        ${product.brand_name ? `
-                            <div class="text-xs text-gray-500 flex items-center gap-1">
-                                <i class="fas fa-crown text-blue-500"></i>
-                                ${product.brand_name}
-                            </div>
-                        ` : ''}
                     </div>
                 </div>
-                
-                <!-- Floating Cart Button -->
-                <button onclick="event.stopPropagation(); addToCart(${product.id})" class="cart-button" title="افزودن به سبد خرید">
-                    <i class="fas fa-cart-plus"></i>
-                </button>
-            </div>
+            </a>
         `;
         grid.innerHTML += productCard;
     });
@@ -2027,7 +2003,7 @@ function renderGridView(productsToRender, grid) {
 function renderListView(productsToRender, grid) {
     productsToRender.forEach(product => {
         const productCard = `
-            <div class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex" onclick="openProductModal(${product.id})">
+            <a href="/shop/product/${product.slug}/" class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex" style="text-decoration: none; color: inherit;">
                 <div class="w-32 h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center flex-shrink-0">
                     ${product.images && product.images.length > 0 
                         ? `<img src="${product.images[0].image}" alt="${product.name}" class="w-full h-full object-cover">`
@@ -2054,40 +2030,26 @@ function renderListView(productsToRender, grid) {
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="flex text-yellow-400">
-                                    ${Array(5).fill().map((_, i) => {
-                                        const rating = product.rating || 0;
-                                        const starIndex = i + 1;
-                                        if (starIndex <= Math.floor(rating)) {
-                                            return '<i class="fas fa-star text-sm"></i>';
-                                        } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
-                                            return '<i class="fas fa-star-half-alt text-sm"></i>';
-                                        } else {
-                                            return '<i class="far fa-star text-sm"></i>';
+                                    ${(() => {
+                                        let stars = '';
+                                        for (let i = 1; i <= 5; i++) {
+                                            stars += i <= Math.round(product.rating) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
                                         }
-                                    }).join('')}
+                                        return stars;
+                                    })()}
                                 </div>
-                                <span class="text-sm text-gray-600">(${toPersianNumber(product.rating || 0)})</span>
+                                <span class="rating-text">(${product.rating || 0})</span>
                             </div>
                         </div>
-                        ${product.short_description ? `
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">${product.short_description}</p>
-                        ` : ''}
-                    </div>
-                    <div class="text-left ml-6">
-                        <div class="mb-3">
-                            <span class="text-xl font-bold text-purple-600 block">${toPersianNumber(product.price)} تومان</span>
-                            ${product.original_price ? `
-                            <span class="text-gray-500 line-through text-sm">${toPersianNumber(product.original_price)} تومان</span>
-                            ` : ''}
+                        <div class="product-price">
+                            <span class="current-price">${product.price.toLocaleString()} تومان</span>
+                            ${product.original_price ? `<span class="original-price">${product.original_price.toLocaleString()} تومان</span>` : ''}
                         </div>
-                        <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                            <i class="fas fa-cart-plus ml-2"></i>
-                            افزودن
-                        </button>
                     </div>
                 </div>
-            </div>
+            </a>
         `;
         grid.innerHTML += productCard;
     });
+}
 }
