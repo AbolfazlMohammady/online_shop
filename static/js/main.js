@@ -2052,4 +2052,3 @@ function renderListView(productsToRender, grid) {
         grid.innerHTML += productCard;
     });
 }
-}
