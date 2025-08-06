@@ -17,71 +17,71 @@ let productsPerPage = 12;
 
 // Load products from API
 async function loadProducts(page = 1, append = false) {
-    if (isLoading) return;
+    console.log('Loading products page:', page, 'append:', append);
     
-    isLoading = true;
-    const loadingIndicator = document.getElementById('loading-indicator');
-    if (loadingIndicator) {
-        loadingIndicator.classList.remove('hidden');
+    // Prevent multiple simultaneous requests
+    if (window.isLoadingProducts) {
+        console.log('Products already loading, skipping...');
+        return;
     }
     
+    window.isLoadingProducts = true;
+    
     try {
-        console.log('Loading products from API, page:', page, 'append:', append);
         const response = await fetch(`/shop/api/products/?page=${page}`);
         const data = await response.json();
-        const newProducts = data.products || [];
         
         console.log('API response:', data);
-        console.log('New products count:', newProducts.length);
         
-        if (append) {
-            products = [...products, ...newProducts];
-        } else {
-            products = newProducts;
-            currentPageNumber = 1;
-        }
-        
-        filteredProducts = [...products];
-        console.log('Total products loaded:', products.length);
-        console.log('Filtered products:', filteredProducts.length);
-        
-        // Check if there are more products
-        hasMoreProducts = data.has_next || false;
-        
-        // If we're on the products page, render them immediately
-        if (currentPage === 'products' || window.location.hash === '#products') {
-            console.log('Rendering products on products page');
-            renderProducts(filteredProducts);
-            updateResultsInfo();
-        }
-        
-        // Also render if this is the initial load and we're on the products page
-        if (products.length > 0 && document.getElementById('products').classList.contains('active')) {
-            console.log('Rendering products on active products page');
-            renderProducts(filteredProducts);
-            updateResultsInfo();
-        }
-        
-        // Show end message if no more products
-        if (!hasMoreProducts && page > 1) {
-            const endMessage = document.getElementById('end-message');
-            if (endMessage) {
-                endMessage.classList.remove('hidden');
+        if (data.products && Array.isArray(data.products)) {
+            if (append) {
+                // Append new products to existing ones
+                products.push(...data.products);
+                filteredProducts.push(...data.products);
+                console.log('Appended products, total:', products.length);
+            } else {
+                // Replace all products
+                products = data.products;
+                filteredProducts = [...data.products];
+                console.log('Replaced products, total:', products.length);
             }
+            
+            // Update pagination state
+            hasMoreProducts = data.has_next;
+            currentPageNumber = data.current_page;
+            
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            const endMessage = document.getElementById('end-message');
+            
+            if (loadMoreBtn) {
+                if (hasMoreProducts) {
+                    loadMoreBtn.classList.remove('hidden');
+                } else {
+                    loadMoreBtn.classList.add('hidden');
+                }
+            }
+            
+            if (endMessage) {
+                if (!hasMoreProducts && products.length > 0) {
+                    endMessage.classList.remove('hidden');
+                } else {
+                    endMessage.classList.add('hidden');
+                }
+            }
+            
+            // Render products
+            renderProducts(filteredProducts);
+            updateResultsInfo();
+            
+        } else {
+            console.error('Invalid API response format:', data);
         }
         
     } catch (error) {
         console.error('Error loading products:', error);
-        // Fallback to empty array
-        if (!append) {
-            products = [];
-            filteredProducts = [];
-        }
     } finally {
-        isLoading = false;
-        if (loadingIndicator) {
-            loadingIndicator.classList.add('hidden');
-        }
+        window.isLoadingProducts = false;
     }
 }
 
@@ -1769,213 +1769,145 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Initialize filters and render products after a short delay to ensure API data is loaded
-    setTimeout(() => {
-        console.log('Initialization timeout - currentPage:', currentPage, 'products.length:', products.length);
-        
-        // Check if we're on the products page
-        const productsPage = document.getElementById('products');
-        if (productsPage && productsPage.classList.contains('active')) {
-            console.log('Products page is active, setting currentPage to products');
-            currentPage = 'products';
-        }
-        
-    filterProducts();
-        // If we're on the products page, make sure products are rendered
-        if (currentPage === 'products' || window.location.hash === '#products') {
-            console.log('On products page, rendering products');
-            renderProducts(filteredProducts);
-            updateResultsInfo();
-        }
-        // Also render products if they're already loaded and we're on the products page
-        if (products.length > 0 && document.getElementById('products').classList.contains('active')) {
-            console.log('Products loaded and on active products page, rendering');
-            renderProducts(filteredProducts);
-            updateResultsInfo();
-        }
-    }, 500);
-    
-    // Check if we're on the products page and load products if needed
+    // Load products only once when page loads
     if (window.location.pathname.includes('/shop/products/')) {
-        console.log('On products page, ensuring products are loaded');
+        console.log('On products page, loading products once');
         
-        // Test if products grid exists
-        const productsGrid = document.getElementById('products-grid');
-        if (productsGrid) {
-            console.log('Products grid found:', productsGrid);
+        // Check if products are already loaded
+        if (products.length === 0) {
+            console.log('No products loaded, loading initial products');
+            loadProducts(1, false);
         } else {
-            console.error('Products grid not found!');
+            console.log('Products already loaded, rendering existing products');
+            renderProducts(filteredProducts);
+            updateResultsInfo();
         }
-        
-        setTimeout(() => {
-            if (products.length === 0) {
-                console.log('No products loaded, loading them now');
-                loadProducts();
-            } else {
-                console.log('Products already loaded, rendering them');
-                renderProducts(filteredProducts);
-                updateResultsInfo();
-            }
-        }, 1000);
-        
-        // Additional fallback - load products again after 2 seconds if still no products
-        setTimeout(() => {
-            if (products.length === 0) {
-                console.log('Fallback: Still no products, loading again');
-                loadProducts();
-            }
-        }, 2000);
-        
-        // Final fallback - force load products after 3 seconds
-        setTimeout(() => {
-            console.log('Final fallback: Forcing product load');
-            loadProducts().then(() => {
-                console.log('Products loaded in final fallback, rendering...');
-                renderProducts(filteredProducts);
-                updateResultsInfo();
-            });
-        }, 3000);
     }
     
-    // Core app specific initializations
-    // Check if we should show verification step for forgot password
-    const messages = document.querySelectorAll('.bg-green-100');
-    messages.forEach(message => {
-        if (message.textContent.includes('کد تایید')) {
-            showForgotPassword();
-            showVerificationStep();
+    // Add event listeners for price range
+    document.addEventListener('DOMContentLoaded', function() {
+        const minPriceInput = document.getElementById('min-price');
+        const maxPriceInput = document.getElementById('max-price');
+        const applyBtn = document.querySelector('button[onclick="applyFilters()"]');
+        const clearBtn = document.querySelector('button[onclick="clearFilters()"]');
+        
+        // Price inputs - format on input
+        if (minPriceInput) {
+            minPriceInput.addEventListener('input', formatPriceInput);
+        }
+        
+        if (maxPriceInput) {
+            maxPriceInput.addEventListener('input', formatPriceInput);
+        }
+        
+        // Apply button - only for price range
+        if (applyBtn) {
+            applyBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                applyPriceFilters();
+            });
+        }
+        
+        // Clear button
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                clearFilters();
+            });
+        }
+        
+        // New button IDs
+        const applyPriceBtn = document.getElementById('apply-price-filter');
+        const clearFiltersBtn = document.getElementById('clear-filters-btn');
+        
+        if (applyPriceBtn) {
+            applyPriceBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                applyPriceFilters();
+            });
+        }
+        
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                clearFilters();
+            });
+        }
+        
+        // Sort filter
+        const sortFilter = document.getElementById('sort-filter');
+        if (sortFilter) {
+            sortFilter.addEventListener('change', function() {
+                activeFilters.sort = this.value;
+                filterProducts();
+            });
+        }
+        
+        // View toggle buttons
+        const gridViewBtn = document.getElementById('grid-view');
+        const listViewBtn = document.getElementById('list-view');
+        
+        if (gridViewBtn) {
+            gridViewBtn.addEventListener('click', function() {
+                toggleView('grid');
+            });
+        }
+        
+        if (listViewBtn) {
+            listViewBtn.addEventListener('click', function() {
+                toggleView('list');
+            });
         }
     });
-    
-    // Initialize edit profile page
-    const provinceSelect = document.getElementById('provinceSelect');
-    if (provinceSelect && provinceSelect.value) {
-        // Load cities for the selected province and preserve current city
-        loadCities(true);
-    }
-    
-    // Test basic functionality
-    console.log('=== BASIC FUNCTIONALITY TEST ===');
-    console.log('Window location:', window.location.pathname);
-    console.log('Products array length:', products.length);
-    console.log('Current page:', currentPage);
-    console.log('Products grid element:', document.getElementById('products-grid'));
-    console.log('=== END TEST ===');
-    
-    // Manual test - load products after 4 seconds
-    setTimeout(() => {
-        console.log('=== MANUAL TEST ===');
-        console.log('Attempting to load products manually...');
-        
-        // Test if products grid exists and can be manipulated
-        const grid = document.getElementById('products-grid');
-        if (grid) {
-            console.log('Products grid found, testing manipulation...');
-            grid.innerHTML = '<div class="col-span-full text-center py-12"><p>Testing grid manipulation...</p></div>';
-            console.log('Grid manipulation successful');
-        } else {
-            console.error('Products grid not found!');
-        }
-        
-        fetch('/shop/api/products/')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Manual API response:', data);
-                products = data.products || [];
-                filteredProducts = [...products];
-                console.log('Manual products loaded:', products.length);
-                renderProducts(filteredProducts);
-                updateResultsInfo();
-            })
-            .catch(error => {
-                console.error('Manual API error:', error);
-            });
-    }, 4000);
-    
-    // Add event listeners for search and price range
-    const searchInput = document.getElementById('search-input');
-    const minPriceInput = document.getElementById('min-price');
-    const maxPriceInput = document.getElementById('max-price');
-    const applyBtn = document.querySelector('button[onclick="applyFilters()"]');
-    const clearBtn = document.querySelector('button[onclick="clearFilters()"]');
-    
-    // Search input - filter on every keystroke
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            activeFilters.search = this.value.toLowerCase();
-            filterProducts();
-        });
-    }
-    
-    // Price inputs - format on input
-    if (minPriceInput) {
-        minPriceInput.addEventListener('input', formatPriceInput);
-    }
-    
-    if (maxPriceInput) {
-        maxPriceInput.addEventListener('input', formatPriceInput);
-    }
-    
-    // Apply button - only for price range
-    if (applyBtn) {
-        applyBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            applyPriceFilters();
-        });
-    }
-    
-    // Clear button
-    if (clearBtn) {
-        clearBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            clearFilters();
-        });
-    }
-    
-    // New button IDs
-    const applyPriceBtn = document.getElementById('apply-price-filter');
-    const clearFiltersBtn = document.getElementById('clear-filters-btn');
-    
-    if (applyPriceBtn) {
-        applyPriceBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            applyPriceFilters();
-        });
-    }
-    
-    if (clearFiltersBtn) {
-        clearFiltersBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            clearFilters();
-        });
-    }
 });
 
 // Load more products function
 function loadMoreProducts() {
-    if (isLoading || !hasMoreProducts) return;
+    console.log('Load more products clicked, current page:', currentPageNumber);
     
+    if (!hasMoreProducts) {
+        console.log('No more products to load');
+        return;
+    }
+    
+    // Show loading indicator
     const loadMoreBtn = document.getElementById('load-more-btn');
     const loadingIndicator = document.getElementById('loading-indicator');
     
-    // Show loading state
-    if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
-    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+    if (loadMoreBtn) {
+        loadMoreBtn.classList.add('hidden');
+    }
     
-    currentPageNumber++;
-    loadProducts(currentPageNumber, true).then(() => {
+    if (loadingIndicator) {
+        loadingIndicator.classList.remove('hidden');
+    }
+    
+    // Load next page
+    const nextPage = currentPageNumber + 1;
+    console.log('Loading next page:', nextPage);
+    
+    loadProducts(nextPage, true).then(() => {
         // Hide loading indicator
-        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+        if (loadingIndicator) {
+            loadingIndicator.classList.add('hidden');
+        }
         
-        // Show/hide load more button based on whether there are more products
+        // Show load more button if there are more products
+        if (hasMoreProducts && loadMoreBtn) {
+            loadMoreBtn.classList.remove('hidden');
+        }
+        
+        console.log('Load more completed, total products:', products.length);
+    }).catch(error => {
+        console.error('Error loading more products:', error);
+        
+        // Show load more button again on error
         if (loadMoreBtn) {
-            if (hasMoreProducts) {
-                loadMoreBtn.classList.remove('hidden');
-            } else {
-                loadMoreBtn.classList.add('hidden');
-                const endMessage = document.getElementById('end-message');
-                if (endMessage) endMessage.classList.remove('hidden');
-            }
+            loadMoreBtn.classList.remove('hidden');
+        }
+        
+        if (loadingIndicator) {
+            loadingIndicator.classList.add('hidden');
         }
     });
 }
