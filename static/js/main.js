@@ -605,7 +605,7 @@ function renderBlogs() {
 
 // Products Functions
 function renderProducts(productsToRender = products) {
-    console.log('Rendering products:', productsToRender.length);
+    console.log('Rendering products:', productsToRender.length, 'in view:', currentView);
     
     const grid = document.getElementById('products-grid');
     if (!grid) {
@@ -629,103 +629,16 @@ function renderProducts(productsToRender = products) {
         return;
     }
     
-    // Set grid class for modern layout
-    grid.className = 'products-grid';
+    // Set grid class based on current view
+    if (currentView === 'list') {
+        grid.className = 'space-y-4';
+        renderListView(productsToRender, grid);
+    } else {
+        grid.className = 'products-grid';
+        renderGridView(productsToRender, grid);
+    }
     
-    productsToRender.forEach(product => {
-        const productCard = `
-            <div class="product-card" onclick="openProductModal(${product.id})">
-                <!-- Badges -->
-                ${product.has_discount ? `
-                    <div class="discount-badge">
-                        <i class="fas fa-fire mr-1"></i>
-                        ${product.discount_percentage || 0}% تخفیف
-                    </div>
-                ` : ''}
-                ${product.is_bestseller ? `
-                    <div class="bestseller-badge">
-                        <i class="fas fa-star mr-1"></i>
-                        پرفروش
-                    </div>
-                ` : ''}
-                ${product.is_new && !product.is_bestseller ? `
-                    <div class="new-badge">
-                        <i class="fas fa-star mr-1"></i>
-                        جدید
-                    </div>
-                ` : ''}
-                
-                <!-- Image Container -->
-                <div class="product-image-container">
-                    ${product.images && product.images.length > 0 
-                        ? `<img src="${product.images[0].image}" alt="${product.name}" class="product-image">`
-                        : `<div class="placeholder-container">
-                            <div class="placeholder-icon">
-                                <i class="fas fa-image"></i>
-                            </div>
-                            <div class="placeholder-text">بدون تصویر</div>
-                           </div>`
-                    }
-                    
-                    <!-- Overlay with Title and Category -->
-                    <div class="product-overlay">
-                        <div class="category-tag">
-                            <i class="fas fa-tag mr-1"></i>
-                            ${product.category_name || 'دسته‌بندی'}
-                        </div>
-                        <div class="product-title">${product.name}</div>
-                    </div>
-                </div>
-                
-                <!-- Content -->
-                <div class="product-content">
-                    <div class="product-info">
-                        <!-- Rating -->
-                        <div class="product-rating">
-                            <div class="stars">
-                                ${Array(5).fill().map((_, i) => {
-                                    const rating = product.rating || 0;
-                                    const starIndex = i + 1;
-                                    if (starIndex <= Math.floor(rating)) {
-                                        return '<i class="fas fa-star"></i>';
-                                    } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
-                                        return '<i class="fas fa-star-half-alt"></i>';
-                                    } else {
-                                        return '<i class="far fa-star"></i>';
-                                    }
-                                }).join('')}
-                            </div>
-                            <span class="rating-text">(${toPersianNumber(product.rating || 0)})</span>
-                        </div>
-                        
-                        <!-- Price -->
-                        <div class="product-price">
-                            <span class="current-price">${toPersianNumber(product.price)} تومان</span>
-                            ${product.original_price ? `
-                                <span class="original-price">${toPersianNumber(product.original_price)} تومان</span>
-                            ` : ''}
-                        </div>
-                        
-                        <!-- Brand (if exists) -->
-                        ${product.brand_name ? `
-                            <div class="text-xs text-gray-500 flex items-center gap-1">
-                                <i class="fas fa-crown text-blue-500"></i>
-                                ${product.brand_name}
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-                
-                <!-- Floating Cart Button -->
-                <button onclick="event.stopPropagation(); addToCart(${product.id})" class="cart-button" title="افزودن به سبد خرید">
-                    <i class="fas fa-cart-plus"></i>
-                </button>
-            </div>
-        `;
-        grid.innerHTML += productCard;
-    });
-    
-    console.log('Products rendered successfully');
+    console.log('Products rendered successfully in', currentView, 'view');
 }
 
 // Cart Functions
@@ -1139,18 +1052,34 @@ function addFilterTag(text, onRemove) {
 }
 
 function toggleView(view) {
+    console.log('Toggling view to:', view);
     currentView = view;
+    
+    const grid = document.getElementById('products-grid');
     const gridBtn = document.getElementById('grid-view');
     const listBtn = document.getElementById('list-view');
     
-    if (view === 'grid') {
-        gridBtn.className = 'p-2 bg-purple-600 text-white rounded-lg';
-        listBtn.className = 'p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors';
-    } else {
-        listBtn.className = 'p-2 bg-purple-600 text-white rounded-lg';
-        gridBtn.className = 'p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors';
+    if (!grid) {
+        console.error('Products grid not found!');
+        return;
     }
     
+    // Update button states
+    if (gridBtn && listBtn) {
+        if (view === 'grid') {
+            gridBtn.classList.add('bg-purple-600', 'text-white');
+            gridBtn.classList.remove('bg-gray-200', 'text-gray-600');
+            listBtn.classList.add('bg-gray-200', 'text-gray-600');
+            listBtn.classList.remove('bg-purple-600', 'text-white');
+        } else {
+            listBtn.classList.add('bg-purple-600', 'text-white');
+            listBtn.classList.remove('bg-gray-200', 'text-gray-600');
+            gridBtn.classList.add('bg-gray-200', 'text-gray-600');
+            gridBtn.classList.remove('bg-purple-600', 'text-white');
+        }
+    }
+    
+    // Re-render products with new view
     renderProducts(filteredProducts);
 }
 
@@ -2066,4 +1995,167 @@ function applyPriceFilters() {
     activeFilters.maxPrice = maxPriceNum;
     
     filterProducts();
+}
+
+function renderGridView(productsToRender, grid) {
+    productsToRender.forEach(product => {
+        const productCard = `
+            <div class="product-card" onclick="openProductModal(${product.id})">
+                <!-- Badges -->
+                ${product.has_discount ? `
+                    <div class="discount-badge">
+                        <i class="fas fa-fire mr-1"></i>
+                        ${product.discount_percentage || 0}% تخفیف
+                    </div>
+                ` : ''}
+                ${product.is_bestseller ? `
+                    <div class="bestseller-badge">
+                        <i class="fas fa-star mr-1"></i>
+                        پرفروش
+                    </div>
+                ` : ''}
+                ${product.is_new && !product.is_bestseller ? `
+                    <div class="new-badge">
+                        <i class="fas fa-star mr-1"></i>
+                        جدید
+                    </div>
+                ` : ''}
+                
+                <!-- Image Container -->
+                <div class="product-image-container">
+                    ${product.images && product.images.length > 0 
+                        ? `<img src="${product.images[0].image}" alt="${product.name}" class="product-image">`
+                        : `<div class="placeholder-container">
+                            <div class="placeholder-icon">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            <div class="placeholder-text">بدون تصویر</div>
+                           </div>`
+                    }
+                    
+                    <!-- Overlay with Title and Category -->
+                    <div class="product-overlay">
+                        <div class="category-tag">
+                            <i class="fas fa-tag mr-1"></i>
+                            ${product.category_name || 'دسته‌بندی'}
+                        </div>
+                        <div class="product-title">${product.name}</div>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="product-content">
+                    <div class="product-info">
+                        <!-- Rating -->
+                        <div class="product-rating">
+                            <div class="stars">
+                                ${Array(5).fill().map((_, i) => {
+                                    const rating = product.rating || 0;
+                                    const starIndex = i + 1;
+                                    if (starIndex <= Math.floor(rating)) {
+                                        return '<i class="fas fa-star"></i>';
+                                    } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+                                        return '<i class="fas fa-star-half-alt"></i>';
+                                    } else {
+                                        return '<i class="far fa-star"></i>';
+                                    }
+                                }).join('')}
+                            </div>
+                            <span class="rating-text">(${toPersianNumber(product.rating || 0)})</span>
+                        </div>
+                        
+                        <!-- Price -->
+                        <div class="product-price">
+                            <span class="current-price">${toPersianNumber(product.price)} تومان</span>
+                            ${product.original_price ? `
+                                <span class="original-price">${toPersianNumber(product.original_price)} تومان</span>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Brand (if exists) -->
+                        ${product.brand_name ? `
+                            <div class="text-xs text-gray-500 flex items-center gap-1">
+                                <i class="fas fa-crown text-blue-500"></i>
+                                ${product.brand_name}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                <!-- Floating Cart Button -->
+                <button onclick="event.stopPropagation(); addToCart(${product.id})" class="cart-button" title="افزودن به سبد خرید">
+                    <i class="fas fa-cart-plus"></i>
+                </button>
+            </div>
+        `;
+        grid.innerHTML += productCard;
+    });
+}
+
+function renderListView(productsToRender, grid) {
+    productsToRender.forEach(product => {
+        const productCard = `
+            <div class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex" onclick="openProductModal(${product.id})">
+                <div class="w-32 h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center flex-shrink-0">
+                    ${product.images && product.images.length > 0 
+                        ? `<img src="${product.images[0].image}" alt="${product.name}" class="w-full h-full object-cover">`
+                        : `<i class="fas fa-image text-3xl text-gray-400"></i>`
+                    }
+                </div>
+                <div class="p-6 flex-1 flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h3 class="text-lg font-bold mb-1">${product.name}</h3>
+                                <div class="flex items-center gap-4 text-sm text-gray-600">
+                                    <span class="flex items-center gap-1">
+                                        <i class="fas fa-tag text-purple-500"></i>
+                                        ${product.category_name || 'دسته‌بندی'}
+                                    </span>
+                                    ${product.brand_name ? `
+                                    <span class="flex items-center gap-1">
+                                        <i class="fas fa-crown text-blue-500"></i>
+                                        ${product.brand_name}
+                                    </span>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="flex text-yellow-400">
+                                    ${Array(5).fill().map((_, i) => {
+                                        const rating = product.rating || 0;
+                                        const starIndex = i + 1;
+                                        if (starIndex <= Math.floor(rating)) {
+                                            return '<i class="fas fa-star text-sm"></i>';
+                                        } else if (starIndex === Math.ceil(rating) && rating % 1 !== 0) {
+                                            return '<i class="fas fa-star-half-alt text-sm"></i>';
+                                        } else {
+                                            return '<i class="far fa-star text-sm"></i>';
+                                        }
+                                    }).join('')}
+                                </div>
+                                <span class="text-sm text-gray-600">(${toPersianNumber(product.rating || 0)})</span>
+                            </div>
+                        </div>
+                        ${product.short_description ? `
+                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">${product.short_description}</p>
+                        ` : ''}
+                    </div>
+                    <div class="text-left ml-6">
+                        <div class="mb-3">
+                            <span class="text-xl font-bold text-purple-600 block">${toPersianNumber(product.price)} تومان</span>
+                            ${product.original_price ? `
+                            <span class="text-gray-500 line-through text-sm">${toPersianNumber(product.original_price)} تومان</span>
+                            ` : ''}
+                        </div>
+                        <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-cart-plus ml-2"></i>
+                            افزودن
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        grid.innerHTML += productCard;
+    });
 }

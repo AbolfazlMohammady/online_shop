@@ -433,10 +433,10 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="toggleView('grid')" id="grid-view" class="p-2 bg-purple-600 text-white rounded-lg">
+                <button id="grid-view" class="p-2 bg-purple-600 text-white rounded-lg">
                     <i class="fas fa-th"></i>
                 </button>
-                <button onclick="toggleView('list')" id="list-view" class="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors">
+                <button id="list-view" class="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors">
                     <i class="fas fa-list"></i>
                 </button>
             </div>
@@ -635,6 +635,22 @@ document.addEventListener('DOMContentLoaded', function() {
         sortFilter.addEventListener('change', function() {
             activeFilters.sort = this.value;
             filterProducts();
+        });
+    }
+    
+    // View toggle buttons
+    const gridViewBtn = document.getElementById('grid-view');
+    const listViewBtn = document.getElementById('list-view');
+    
+    if (gridViewBtn) {
+        gridViewBtn.addEventListener('click', function() {
+            toggleView('grid');
+        });
+    }
+    
+    if (listViewBtn) {
+        listViewBtn.addEventListener('click', function() {
+            toggleView('list');
         });
     }
 });
