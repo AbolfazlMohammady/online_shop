@@ -2,38 +2,52 @@
 
 {% block content %}
 <div class="min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <button onclick="history.back()" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold mb-8 transition-colors group">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Back Button -->
+        <button onclick="history.back()" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold mb-6 transition-colors group">
             <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
             <span>بازگشت</span>
         </button>
-        <div class="grid lg:grid-cols-2 gap-12">
-            <!-- Product Image and Gallery -->
-            <div class="space-y-6">
-                <div class="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden">
+        
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            <!-- Product Image Section -->
+            <div class="space-y-4">
+                <!-- Main Image -->
+                <div class="aspect-square bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl flex items-center justify-center shadow-lg overflow-hidden max-w-md mx-auto">
                     {% if product.images.first %}
                         <img id="main-image-src" src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
                     {% else %}
-                        <i class="fas fa-image text-8xl text-gray-400"></i>
+                        <i class="fas fa-image text-6xl text-gray-400"></i>
                     {% endif %}
                 </div>
-                <!-- Product Gallery Thumbnails -->
-                <div class="flex gap-3">
+                
+                <!-- Thumbnail Gallery -->
+                {% if product.images.count > 1 %}
+                <div class="flex gap-2 justify-center">
                     {% for image in product.images.all %}
-                    <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-purple-500 transition-opacity overflow-hidden {% if forloop.first %}border-purple-500{% endif %}" onclick="changeMainImage('{{ image.image.url }}')">
+                    <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl flex items-center justify-center cursor-pointer border-2 border-transparent hover:border-purple-500 transition-all overflow-hidden {% if forloop.first %}border-purple-500{% endif %}" onclick="changeMainImage('{{ image.image.url }}')">
                         <img src="{{ image.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
                     </div>
                     {% endfor %}
                 </div>
+                {% endif %}
             </div>
-            <!-- Product Info -->
-            <div class="space-y-8">
+            
+            <!-- Product Info Section -->
+            <div class="space-y-6">
+                <!-- Product Header -->
                 <div>
-                    <h1 class="text-4xl font-bold mb-4">{{ product.name }}</h1>
-                    <p class="text-lg theme-text-secondary mb-6">دسته‌بندی: {{ product.category.name }}</p>
+                    <h1 class="text-2xl lg:text-3xl font-bold mb-3 product-title">{{ product.name }}</h1>
+                    
+                    {% if product.brand %}
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">برند: {{ product.brand.name }}</p>
+                    {% endif %}
+                    
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">دسته‌بندی: {{ product.category.name }}</p>
+                    
                     <!-- Rating -->
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="flex text-yellow-400 text-lg">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex text-yellow-400 text-sm">
                             {% for i in "12345" %}
                                 {% if forloop.counter <= product.rating %}
                                     <i class="fas fa-star"></i>
@@ -42,72 +56,272 @@
                                 {% endif %}
                             {% endfor %}
                         </div>
-                        <span class="text-lg font-semibold">{{ product.rating }}</span>
-                        <span class="theme-text-secondary">({{ product.review_count }} نظر)</span>
+                        <span class="text-sm font-semibold">{{ product.rating }}</span>
+                        <span class="text-xs text-gray-500">({{ product.review_count }} نظر)</span>
                     </div>
+                    
                     <!-- Price -->
-                    <div class="flex items-center gap-4 mb-8">
-                        <span class="text-3xl font-bold text-purple-600">{{ product.price|floatformat:0 }} تومان</span>
-                        {% if product.original_price %}
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="text-2xl lg:text-3xl font-bold text-purple-600" id="product-price">{{ product.price|floatformat:0 }}</span>
+                        <span class="text-sm text-gray-500">تومان</span>
+                        {% if product.original_price and product.original_price > product.price %}
                         <span class="text-lg text-gray-500 line-through">{{ product.original_price|floatformat:0 }} تومان</span>
-                        <span class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-sm font-bold">{{ product.discount_percentage }}٪ تخفیف</span>
+                        <span class="bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs font-bold">{{ product.discount_percentage }}٪ تخفیف</span>
                         {% endif %}
                     </div>
                 </div>
-                <!-- Product Options -->
-                <div class="space-y-6">
-                    {% if product.colors.exists %}
-                    <div>
-                        <h3 class="text-lg font-bold mb-3">رنگ:</h3>
-                        <div class="flex gap-3">
-                            {% for color in product.colors.all %}
-                            <button class="w-12 h-12 rounded-full border-2 {% if color == product.color %}border-purple-500{% else %}border-transparent hover:border-purple-500{% endif %} shadow-lg transition-colors" style="background: {{ color.hex_code }}"></button>
-                            {% endfor %}
+                
+                <!-- Product Specifications -->
+                {% if product.model or product.color or product.size or product.weight or product.dimensions %}
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+                    <h3 class="text-lg font-bold mb-3">مشخصات محصول</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                        {% if product.model %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">مدل:</span>
+                            <span class="font-medium">{{ product.model }}</span>
                         </div>
-                    </div>
-                    {% endif %}
-                    <div>
-                        <h3 class="text-lg font-bold mb-3">تعداد:</h3>
-                        <div class="flex items-center gap-4">
-                            <button onclick="decreaseQuantity()" class="w-12 h-12 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-xl flex items-center justify-center font-bold text-lg transition-colors">-</button>
-                            <input type="number" id="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="text-xl font-bold w-12 text-center border-none focus:outline-none">
-                            <button onclick="increaseQuantity()" class="w-12 h-12 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-xl flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                        {% endif %}
+                        {% if product.color %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">رنگ:</span>
+                            <span class="font-medium">{{ product.color }}</span>
                         </div>
+                        {% endif %}
+                        {% if product.size %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">سایز:</span>
+                            <span class="font-medium">{{ product.size }}</span>
+                        </div>
+                        {% endif %}
+                        {% if product.weight %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">وزن:</span>
+                            <span class="font-medium">{{ product.weight }} گرم</span>
+                        </div>
+                        {% endif %}
+                        {% if product.dimensions %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">ابعاد:</span>
+                            <span class="font-medium">{{ product.dimensions }}</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
+                {% endif %}
+                
+                <!-- Additional Specifications -->
+                {% if product.specifications.exists %}
+                <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                    <h3 class="text-lg font-bold mb-3">مشخصات فنی</h3>
+                    <div class="space-y-2 text-sm">
+                        {% for spec in product.specifications.all %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">{{ spec.name }}:</span>
+                            <span class="font-medium">{{ spec.value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Quantity Selector -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+                    <h3 class="text-lg font-bold mb-3">تعداد</h3>
+                    <div class="flex items-center gap-4">
+                        <button onclick="decreaseQuantity()" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-lg flex items-center justify-center font-bold text-lg transition-colors">-</button>
+                        <input type="number" id="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="text-lg font-bold w-16 text-center border-none bg-transparent focus:outline-none">
+                        <button onclick="increaseQuantity()" class="w-10 h-10 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-lg flex items-center justify-center font-bold text-lg transition-colors">+</button>
+                        <span class="text-sm text-gray-500">موجودی: {{ product.stock_quantity }} عدد</span>
+                    </div>
+                </div>
+                
                 <!-- Action Buttons -->
-                <div class="space-y-4">
+                <div class="space-y-3">
                     <button onclick="addToCart({{ product.id }})" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3">
                         <i class="fas fa-cart-plus"></i>
                         افزودن به سبد خرید
                     </button>
-                    <button class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3">
+                    <button onclick="addToWishlist({{ product.id }})" class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-3">
                         <i class="fas fa-heart"></i>
                         افزودن به علاقه‌مندی‌ها
                     </button>
                 </div>
-                <!-- Product Description -->
-                <div class="theme-bg rounded-2xl p-6 shadow-lg">
-                    <h3 class="text-xl font-bold mb-4">توضیحات محصول</h3>
-                    <p class="leading-relaxed theme-text-secondary">
-                        {{ product.description|linebreaks }}
-                    </p>
-                    <div class="mt-6 grid md:grid-cols-2 gap-4">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span>کیفیت تضمینی</span>
+            </div>
+        </div>
+        
+        <!-- Product Details Tabs -->
+        <div class="mt-12">
+            <div class="border-b border-gray-200 dark:border-gray-700">
+                <nav class="flex space-x-8 space-x-reverse">
+                    <button onclick="showProductTab('description')" class="product-tab-btn active py-4 px-1 border-b-2 border-transparent font-medium text-sm transition-colors">
+                        توضیحات محصول
+                    </button>
+                    <button onclick="showProductTab('specifications')" class="product-tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-sm transition-colors">
+                        مشخصات کامل
+                    </button>
+                    <button onclick="showProductTab('comments')" class="product-tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-sm transition-colors">
+                        نظرات ({{ product.review_count }})
+                    </button>
+                </nav>
+            </div>
+            
+            <!-- Tab Contents -->
+            <div class="mt-8">
+                <!-- Description Tab -->
+                <div id="description-tab" class="product-tab-content active">
+                    <div class="prose prose-lg max-w-none">
+                        <div class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {{ product.description|linebreaks }}
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span>ارسال سریع</span>
+                    </div>
+                </div>
+                
+                <!-- Specifications Tab -->
+                <div id="specifications-tab" class="product-tab-content">
+                    <div class="space-y-6">
+                        
+                        <!-- Basic Specifications -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                            <h4 class="text-lg font-bold mb-4">مشخصات اصلی</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">نام محصول:</span>
+                                    <span class="font-medium">{{ product.name }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">دسته‌بندی:</span>
+                                    <span class="font-medium">{{ product.category.name }}</span>
+                                </div>
+                                {% if product.brand %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">برند:</span>
+                                    <span class="font-medium">{{ product.brand.name }}</span>
+                                </div>
+                                {% endif %}
+                                {% if product.model %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">مدل:</span>
+                                    <span class="font-medium">{{ product.model }}</span>
+                                </div>
+                                {% endif %}
+                                {% if product.color %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">رنگ:</span>
+                                    <span class="font-medium">{{ product.color }}</span>
+                                </div>
+                                {% endif %}
+                                {% if product.size %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">سایز:</span>
+                                    <span class="font-medium">{{ product.size }}</span>
+                                </div>
+                                {% endif %}
+                                {% if product.weight %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">وزن:</span>
+                                    <span class="font-medium">{{ product.weight }} گرم</span>
+                                </div>
+                                {% endif %}
+                                {% if product.dimensions %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">ابعاد:</span>
+                                    <span class="font-medium">{{ product.dimensions }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span>ضمانت بازگشت</span>
+                        
+                        <!-- Additional Specifications -->
+                        {% if product.specifications.exists %}
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                            <h4 class="text-lg font-bold mb-4">مشخصات فنی</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {% for spec in product.specifications.all %}
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600 dark:text-gray-400">{{ spec.name }}:</span>
+                                    <span class="font-medium">{{ spec.value }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-check-circle text-green-500"></i>
-                            <span>پشتیبانی ۲۴/۷</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Comments Tab -->
+                <div id="comments-tab" class="product-tab-content">
+                    <div class="space-y-6">
+                        
+                        {% if product.review_count > 0 %}
+                        <div class="space-y-4">
+                            <!-- Sample comments - replace with actual comments -->
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">ع</div>
+                                    <div>
+                                        <div class="font-medium">علی محمدی</div>
+                                        <div class="flex text-yellow-400 text-xs">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 mr-auto">۲ روز پیش</div>
+                                </div>
+                                <p class="text-sm text-gray-700 dark:text-gray-300">کیفیت محصول عالی بود و ارسال سریع انجام شد. کاملاً راضی هستم.</p>
+                            </div>
+                            
+                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">س</div>
+                                    <div>
+                                        <div class="font-medium">سارا احمدی</div>
+                                        <div class="flex text-yellow-400 text-xs">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 mr-auto">۱ هفته پیش</div>
+                                </div>
+                                <p class="text-sm text-gray-700 dark:text-gray-300">محصول دقیقاً مطابق با تصویر بود. قیمت مناسب و کیفیت خوبی داشت.</p>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-comments text-4xl text-gray-400 mb-4"></i>
+                            <p class="text-gray-500">هنوز نظری برای این محصول ثبت نشده است.</p>
+                            <p class="text-sm text-gray-400 mt-2">اولین نفری باشید که نظر می‌دهید!</p>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Add Comment Form -->
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                            <h4 class="text-lg font-bold mb-4">افزودن نظر</h4>
+                            <form class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">امتیاز شما</label>
+                                    <div class="flex gap-2">
+                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
+                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
+                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
+                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
+                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">نظر شما</label>
+                                    <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" placeholder="نظر خود را بنویسید..."></textarea>
+                                </div>
+                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                                    ارسال نظر
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -115,10 +329,62 @@
         </div>
     </div>
 </div>
+
 <script>
-function changeMainImage(imageUrl) {
-    document.getElementById('main-image-src').src = imageUrl;
+// Persian number formatting function
+function toPersianNumber(num) {
+    const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+    return num.toString().replace(/\d/g, x => persianNumbers[x]);
 }
+
+// Format price with Persian numbers and thousands separator
+function formatPrice(price) {
+    const formatted = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return toPersianNumber(formatted);
+}
+
+// Update price display
+document.addEventListener('DOMContentLoaded', function() {
+    const priceElement = document.getElementById('product-price');
+    if (priceElement) {
+        const price = parseInt(priceElement.textContent);
+        priceElement.textContent = formatPrice(price);
+    }
+});
+
+function changeMainImage(imageUrl) {
+    const mainImage = document.getElementById('main-image-src');
+    
+    // Add fade out effect
+    mainImage.style.opacity = '0';
+    mainImage.style.transform = 'scale(0.95)';
+    
+    setTimeout(() => {
+        // Change image
+        mainImage.src = imageUrl;
+        
+        // Add fade in effect
+        mainImage.style.opacity = '1';
+        mainImage.style.transform = 'scale(1)';
+    }, 150);
+    
+    // Update active thumbnail
+    const thumbnails = document.querySelectorAll('[onclick*="changeMainImage"]');
+    thumbnails.forEach(thumb => {
+        thumb.classList.remove('border-purple-500');
+        thumb.classList.add('border-transparent');
+    });
+    
+    // Find and activate the clicked thumbnail
+    const clickedThumb = Array.from(thumbnails).find(thumb => 
+        thumb.getAttribute('onclick').includes(imageUrl)
+    );
+    if (clickedThumb) {
+        clickedThumb.classList.remove('border-transparent');
+        clickedThumb.classList.add('border-purple-500');
+    }
+}
+
 function decreaseQuantity() {
     const quantityInput = document.getElementById('quantity');
     const currentValue = parseInt(quantityInput.value);
@@ -126,6 +392,7 @@ function decreaseQuantity() {
         quantityInput.value = currentValue - 1;
     }
 }
+
 function increaseQuantity() {
     const quantityInput = document.getElementById('quantity');
     const currentValue = parseInt(quantityInput.value);
@@ -134,10 +401,188 @@ function increaseQuantity() {
         quantityInput.value = currentValue + 1;
     }
 }
+
 function addToCart(productId) {
     const quantity = document.getElementById('quantity').value;
     // TODO: Implement cart functionality
     console.log('Adding product to cart:', productId, 'Quantity:', quantity);
+    showNotification('محصول به سبد خرید اضافه شد', 'success');
+}
+
+function addToWishlist(productId) {
+    // TODO: Implement wishlist functionality
+    console.log('Adding product to wishlist:', productId);
+    showNotification('محصول به علاقه‌مندی‌ها اضافه شد', 'success');
+}
+
+function showProductTab(tabName) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.product-tab-content');
+    tabContents.forEach(content => content.classList.remove('active'));
+    
+    // Remove active class from all tab buttons
+    const tabButtons = document.querySelectorAll('.product-tab-btn');
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab content
+    const selectedTab = document.getElementById(tabName + '-tab');
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+}
+
+function showNotification(message, type = 'success') {
+    // Create notification element
+    const notification = document.createElement('div');
+    const bgClass = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+    notification.className = 'fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full ' + bgClass;
+    notification.textContent = message;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
 }
 </script>
+
+<style>
+.product-tab-content {
+    display: none;
+}
+
+.product-tab-content.active {
+    display: block;
+}
+
+.product-tab-btn.active {
+    border-color: #7c3aed !important;
+    color: #7c3aed !important;
+}
+
+/* Main image transition */
+#main-image-src {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .grid {
+        gap: 1.5rem;
+    }
+    
+    .text-2xl {
+        font-size: 1.5rem;
+    }
+    
+    .text-3xl {
+        font-size: 1.875rem;
+    }
+    
+    .py-4 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    .space-y-6 > * + * {
+        margin-top: 1.5rem;
+    }
+    
+    .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+    
+    .space-y-3 > * + * {
+        margin-top: 0.75rem;
+    }
+    
+    .space-y-2 > * + * {
+        margin-top: 0.5rem;
+    }
+}
+
+/* Dark mode improvements */
+.dark .bg-gray-50 {
+    background-color: #1f2937 !important;
+}
+
+.dark .bg-gray-100 {
+    background-color: #374151 !important;
+}
+
+.dark .text-gray-600 {
+    color: #9ca3af !important;
+}
+
+.dark .text-gray-700 {
+    color: #d1d5db !important;
+}
+
+.dark .border-gray-200 {
+    border-color: #374151 !important;
+}
+
+.dark .border-gray-300 {
+    border-color: #4b5563 !important;
+}
+
+.dark .border-gray-600 {
+    border-color: #4b5563 !important;
+}
+
+.dark .border-gray-700 {
+    border-color: #4b5563 !important;
+}
+
+.dark .focus\:ring-purple-500:focus {
+    --tw-ring-color: #a855f7 !important;
+}
+
+.dark .bg-gray-700 {
+    background-color: #374151 !important;
+}
+
+.dark .bg-gray-800 {
+    background-color: #1f2937 !important;
+}
+
+.dark .hover\:bg-gray-300:hover {
+    background-color: #4b5563 !important;
+}
+
+.dark .hover\:bg-gray-600:hover {
+    background-color: #4b5563 !important;
+}
+
+.dark .hover\:bg-gray-700:hover {
+    background-color: #374151 !important;
+}
+
+.dark .hover\:bg-gray-800:hover {
+    background-color: #1f2937 !important;
+}
+</style>
 {% endblock %} 

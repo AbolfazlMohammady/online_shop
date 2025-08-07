@@ -115,6 +115,10 @@ def product_detail(request, slug):
         is_active=True
     )
     
+    # Increment view count
+    product.view_count += 1
+    product.save(update_fields=['view_count'])
+    
     # Get related products
     related_products = Product.objects.filter(
         category=product.category,
@@ -232,6 +236,25 @@ def bestseller_products(request):
         'products': page_obj,
         'total_products': products.count(),
         'page_title': 'محصولات پرفروش',
+    }
+    
+    return render(request, 'shop/product_list.html', context)
+
+def most_viewed_products(request):
+    """نمایش محصولات پربازدید"""
+    products = Product.objects.filter(
+        is_active=True
+    ).select_related('category', 'brand').prefetch_related('images').order_by('-view_count')
+    
+    # Pagination
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'products': page_obj,
+        'total_products': products.count(),
+        'page_title': 'پربازدیدترین محصولات',
     }
     
     return render(request, 'shop/product_list.html', context)

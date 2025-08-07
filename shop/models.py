@@ -109,6 +109,7 @@ class Product(models.Model):
     # Ratings and Reviews
     rating = models.DecimalField(max_digits=3, decimal_places=1, default=0, validators=[MinValueValidator(0), MaxValueValidator(5)], verbose_name="امتیاز")
     review_count = models.PositiveIntegerField(default=0, verbose_name="تعداد نظرات")
+    view_count = models.PositiveIntegerField(default=0, verbose_name="تعداد بازدید")
     
     # Status
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', verbose_name="وضعیت")

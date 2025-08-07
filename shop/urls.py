@@ -9,6 +9,7 @@ urlpatterns = [
     path('products/featured/', views.featured_products, name='featured_products'),
     path('products/new/', views.new_products, name='new_products'),
     path('products/bestseller/', views.bestseller_products, name='bestseller_products'),
+    path('products/most-viewed/', views.most_viewed_products, name='most_viewed_products'),
     
     # Product detail
     path('product/<str:slug>/', views.product_detail, name='product_detail'),

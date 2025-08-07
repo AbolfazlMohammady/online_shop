@@ -1989,8 +1989,8 @@ function renderGridView(productsToRender, grid) {
                             <span class="rating-text">(${product.rating || 0})</span>
                         </div>
                         <div class="product-price">
-                            <span class="current-price">${product.price.toLocaleString()} تومان</span>
-                            ${product.original_price ? `<span class="original-price">${product.original_price.toLocaleString()} تومان</span>` : ''}
+                            <span class="current-price">${toPersianNumber(product.price)} تومان</span>
+                            ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
                         </div>
                     </div>
                 </div>
@@ -2042,8 +2042,8 @@ function renderListView(productsToRender, grid) {
                             </div>
                         </div>
                         <div class="product-price">
-                            <span class="current-price">${product.price.toLocaleString()} تومان</span>
-                            ${product.original_price ? `<span class="original-price">${product.original_price.toLocaleString()} تومان</span>` : ''}
+                            <span class="current-price">${toPersianNumber(product.price)} تومان</span>
+                            ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
                         </div>
                     </div>
                 </div>
