@@ -101,10 +101,10 @@
                      </div>
                      
                      <!-- Stock Status -->
-                     <div class="flex items-center justify-between mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                     <div class="flex items-center justify-between mb-6 p-4 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
                          <div class="flex items-center gap-3">
                              <div class="w-3 h-3 rounded-full {% if product.stock_quantity > 0 %}bg-green-500{% else %}bg-red-500{% endif %} animate-pulse"></div>
-                             <span class="text-gray-700 dark:text-gray-300 font-medium">
+                             <span class="text-gray-900 dark:text-gray-300 font-medium">
                                  {% if product.stock_quantity > 0 %}
                                      موجود در انبار
                                  {% else %}
@@ -112,14 +112,14 @@
                                  {% endif %}
                              </span>
                          </div>
-                         <span class="text-sm text-gray-500">
+                         <span class="text-sm text-gray-700 dark:text-gray-400">
                              موجودی: <span class="font-bold text-gray-900 dark:text-white">{{ product.stock_quantity }}</span> عدد
                          </span>
                      </div>
                      
                      <!-- Quantity Selector -->
                                      <div class="flex items-center gap-4 mb-6">
-                    <span class="text-gray-700 dark:text-gray-300 font-medium">تعداد:</span>
+                    <span class="text-gray-900 dark:text-gray-300 font-medium">تعداد:</span>
                     <div class="flex items-center gap-3">
                         <button onclick="decreaseQuantity()" 
                                 class="w-10 h-10 bg-gray-900 hover:bg-gray-800 text-white rounded-lg flex items-center justify-center font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
@@ -167,7 +167,7 @@
         </div>
         
         <!-- Product Details Tabs -->
-        <div class="mt-12">
+        <div class="mt-12 mb-0">
             <!-- Tab Contents -->
             <div class="mt-0" id="details-tabs" style="scroll-margin-top: 100px;">
                 <!-- Description Tab -->
@@ -545,7 +545,7 @@ function goToTab(button, tabName) {
 
 function changeMainImage(imageUrl) {
     const mainImage = document.getElementById('main-image-src');
-    const mainImageContainer = mainImage.parentElement;
+    if (!mainImage) return;
     
     // Add slide out effect
     mainImage.style.transform = 'translateX(-100%) scale(0.9)';
@@ -568,22 +568,10 @@ function changeMainImage(imageUrl) {
         }, 50);
     }, 200);
     
-    // Update active thumbnail with animation
-    const thumbnails = document.querySelectorAll('[onclick*="changeMainImage"]');
-    thumbnails.forEach(thumb => {
-        thumb.classList.remove('border-purple-500', 'scale-110', 'shadow-lg');
-        thumb.classList.add('border-transparent');
-        thumb.style.transform = 'scale(1)';
-    });
-    
-    // Find and activate the clicked thumbnail
-    const clickedThumb = Array.from(thumbnails).find(thumb => 
-        thumb.getAttribute('onclick').includes(imageUrl)
-    );
-    if (clickedThumb) {
-        clickedThumb.classList.remove('border-transparent');
-        clickedThumb.classList.add('border-purple-500', 'scale-110', 'shadow-lg');
-        clickedThumb.style.transform = 'scale(1.1)';
+    // Update current image index for navigation
+    const imageIndex = productImages.indexOf(imageUrl);
+    if (imageIndex !== -1) {
+        currentImageIndex = imageIndex;
     }
 }
 
@@ -975,4 +963,5 @@ document.addEventListener('DOMContentLoaded', function() {
             color: #facc15 !important;
         }
 </style>
+<br>
 {% endblock %} 
