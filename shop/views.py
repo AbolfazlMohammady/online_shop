@@ -8,9 +8,17 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from .models import Category, Product, ProductImage, Brand, Comment
 
-# Create your views here.
 
 def product_list(request):
+    """
+    This Python function retrieves filter parameters for displaying a list of products with search and
+    filtering options.
+    
+    :param request: The `request` parameter in the `product_list` function is typically an object that
+    contains information about the current HTTP request. It includes details such as the request method
+    (GET, POST, etc.), headers, user session information, and any data sent in the request (such as form
+    data or query
+    """
     """نمایش لیست محصولات با فیلتر و جستجو"""
     # Get filter parameters
     category_slug = request.GET.get('category', '')
@@ -20,6 +28,7 @@ def product_list(request):
     max_price = request.GET.get('max_price', '')
     sort_by = request.GET.get('sort', 'default')
     quick_filter = request.GET.get('quick_filter', '')
+    
     
     # Base queryset
     products = Product.objects.filter(is_active=True).select_related('category', 'brand').prefetch_related('images')
