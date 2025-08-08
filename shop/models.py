@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
+from django.conf import settings
 from PIL import Image
 import os
 import uuid
@@ -180,6 +181,19 @@ class Product(models.Model):
             return "کم موجود"
         return "موجود"
 
+    def update_rating(self):
+        """بروزرسانی امتیاز و تعداد نظرات بر اساس کامنت‌های تایید شده"""
+        approved_comments = self.comments.filter(is_approved=True)
+        if approved_comments.exists():
+            total_rating = sum(comment.rating for comment in approved_comments)
+            avg_rating = total_rating / approved_comments.count()
+            self.rating = round(avg_rating, 1)
+            self.review_count = approved_comments.count()
+        else:
+            self.rating = 0
+            self.review_count = 0
+        self.save(update_fields=['rating', 'review_count'])
+
 class ProductImage(models.Model):
     """تصاویر محصول"""
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images', verbose_name="محصول")
@@ -253,6 +267,31 @@ class ProductSpecification(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.name}: {self.value}"
+
+class Comment(models.Model):
+    """نظرات محصولات"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments', verbose_name="محصول")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, related_name='comments', verbose_name="کاربر")
+    name = models.CharField(max_length=100, verbose_name="نام")
+    email = models.EmailField(verbose_name="ایمیل")
+    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name="امتیاز")
+    comment = models.TextField(verbose_name="نظر")
+    is_approved = models.BooleanField(default=False, verbose_name="تایید شده")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
+
+    class Meta:
+        verbose_name = "نظر"
+        verbose_name_plural = "نظرات"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} - {self.product.name}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Update product rating when comment is saved
+        self.product.update_rating()
 
 # Signals for deleting old images
 @receiver(pre_delete, sender=ProductImage)

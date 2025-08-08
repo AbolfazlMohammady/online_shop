@@ -13,6 +13,9 @@ urlpatterns = [
     
     # Product detail
     path('product/<str:slug>/', views.product_detail, name='product_detail'),
+    
+    # Comments
+    path('product/<int:product_id>/comment/', views.add_comment, name='add_comment'),
 
     
     # Category products

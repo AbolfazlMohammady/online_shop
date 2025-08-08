@@ -2,7 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
 from django.http import JsonResponse
-from .models import Category, Product, ProductImage, Brand
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
+from .models import Category, Product, ProductImage, Brand, Comment
 
 # Create your views here.
 
@@ -119,6 +123,9 @@ def product_detail(request, slug):
     product.view_count += 1
     product.save(update_fields=['view_count'])
     
+    # Get approved comments
+    comments = product.comments.filter(is_approved=True).order_by('-created_at')
+    
     # Get related products
     related_products = Product.objects.filter(
         category=product.category,
@@ -132,6 +139,7 @@ def product_detail(request, slug):
     
     context = {
         'product': product,
+        'comments': comments,
         'related_products': related_products,
         'similar_products': similar_products,
     }
@@ -389,3 +397,73 @@ def test_products(request):
     }
     
     return render(request, 'shop/test_products.html', context)
+
+@csrf_exempt
+@require_POST
+def add_comment(request, product_id):
+    """ثبت نظر جدید"""
+    try:
+        product = get_object_or_404(Product, id=product_id, is_active=True)
+        
+        # دریافت داده‌ها از فرم
+        rating = request.POST.get('rating', '')
+        comment_text = request.POST.get('comment', '').strip()
+        
+        # اعتبارسنجی داده‌ها
+        if not rating or not comment_text:
+            return JsonResponse({
+                'success': False,
+                'message': 'لطفاً امتیاز و نظر خود را وارد کنید.'
+            })
+        
+        try:
+            rating = int(rating)
+            if rating < 1 or rating > 5:
+                raise ValueError()
+        except ValueError:
+            return JsonResponse({
+                'success': False,
+                'message': 'امتیاز باید بین 1 تا 5 باشد.'
+            })
+        
+        # دریافت اطلاعات کاربر
+        if request.user.is_authenticated:
+            name = f"{request.user.first_name} {request.user.last_name}".strip()
+            if not name:
+                name = request.user.username
+            email = request.user.email
+        else:
+            name = "کاربر مهمان"
+            email = "guest@example.com"
+        
+        # ایجاد کامنت جدید
+        comment = Comment.objects.create(
+            product=product,
+            user=request.user if request.user.is_authenticated else None,
+            name=name,
+            email=email,
+            rating=rating,
+            comment=comment_text,
+            is_approved=True  # برای تست، همه کامنت‌ها تایید می‌شوند
+        )
+        
+        # بروزرسانی امتیاز محصول
+        product.update_rating()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'نظر شما با موفقیت ثبت شد.',
+            'comment': {
+                'name': comment.name,
+                'rating': comment.rating,
+                'comment': comment.comment,
+                'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M'),
+                'user_avatar': comment.user.profile.avatar.url if comment.user and comment.user.profile.avatar else None
+            }
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': 'خطا در ثبت نظر. لطفاً دوباره تلاش کنید.'
+        })

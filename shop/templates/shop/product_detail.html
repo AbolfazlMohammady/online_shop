@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load date_filters %}
 
 {% block content %}
 <div class="min-h-screen">
@@ -57,7 +58,7 @@
                             {% endfor %}
                         </div>
                         <span class="text-sm font-semibold">{{ product.rating }}</span>
-                        <span class="text-xs text-gray-500">({{ product.review_count }} نظر)</span>
+                        <span class="text-xs text-gray-500">({{ comments.count }} نظر)</span>
                     </div>
                     
                     <!-- Price -->
@@ -161,7 +162,7 @@
                         مشخصات کامل
                     </button>
                     <button onclick="showProductTab('comments')" class="product-tab-btn py-4 px-1 border-b-2 border-transparent font-medium text-sm transition-colors">
-                        نظرات ({{ product.review_count }})
+                        نظرات ({{ comments.count }})
                     </button>
                 </nav>
             </div>
@@ -253,76 +254,96 @@
                 <div id="comments-tab" class="product-tab-content">
                     <div class="space-y-6">
                         
-                        {% if product.review_count > 0 %}
-                        <div class="space-y-4">
-                            <!-- Sample comments - replace with actual comments -->
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">ع</div>
-                                    <div>
-                                        <div class="font-medium">علی محمدی</div>
-                                        <div class="flex text-yellow-400 text-xs">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mr-auto">۲ روز پیش</div>
-                                </div>
-                                <p class="text-sm text-gray-700 dark:text-gray-300">کیفیت محصول عالی بود و ارسال سریع انجام شد. کاملاً راضی هستم.</p>
-                            </div>
-                            
-                            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="flex items-center gap-3 mb-2">
-                                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-sm font-bold">س</div>
-                                    <div>
-                                        <div class="font-medium">سارا احمدی</div>
-                                        <div class="flex text-yellow-400 text-xs">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                        </div>
-                                    </div>
-                                    <div class="text-xs text-gray-500 mr-auto">۱ هفته پیش</div>
-                                </div>
-                                <p class="text-sm text-gray-700 dark:text-gray-300">محصول دقیقاً مطابق با تصویر بود. قیمت مناسب و کیفیت خوبی داشت.</p>
-                            </div>
+                        <!-- Add Comment Button -->
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 max-w-md mx-auto">
+                            <button id="show-comment-form" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
+                                <i class="fas fa-comment text-lg"></i>
+                                افزودن نظر
+                            </button>
                         </div>
-                        {% else %}
-                        <div class="text-center py-8">
-                            <i class="fas fa-comments text-4xl text-gray-400 mb-4"></i>
-                            <p class="text-gray-500">هنوز نظری برای این محصول ثبت نشده است.</p>
-                            <p class="text-sm text-gray-400 mt-2">اولین نفری باشید که نظر می‌دهید!</p>
-                        </div>
-                        {% endif %}
                         
-                        <!-- Add Comment Form -->
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
-                            <h4 class="text-lg font-bold mb-4">افزودن نظر</h4>
-                            <form class="space-y-4">
+                        <!-- Add Comment Form (Hidden by default) -->
+                        <div id="comment-form-container" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-5 hidden max-w-lg mx-auto">
+                            <form id="comment-form" class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2">امتیاز شما</label>
-                                    <div class="flex gap-2">
-                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
-                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
-                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
-                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
-                                        <i class="far fa-star text-2xl text-yellow-400 cursor-pointer hover:text-yellow-500"></i>
+                                    <label class="block text-sm font-medium mb-3 text-gray-900 dark:text-white">امتیاز شما</label>
+                                    <div class="flex gap-2 justify-center" id="rating-stars">
+                                        <i class="far fa-star text-xl text-yellow-400 cursor-pointer hover:text-yellow-500 transition-colors" data-rating="1"></i>
+                                        <i class="far fa-star text-xl text-yellow-400 cursor-pointer hover:text-yellow-500 transition-colors" data-rating="2"></i>
+                                        <i class="far fa-star text-xl text-yellow-400 cursor-pointer hover:text-yellow-500 transition-colors" data-rating="3"></i>
+                                        <i class="far fa-star text-xl text-yellow-400 cursor-pointer hover:text-yellow-500 transition-colors" data-rating="4"></i>
+                                        <i class="far fa-star text-xl text-yellow-400 cursor-pointer hover:text-yellow-500 transition-colors" data-rating="5"></i>
                                     </div>
+                                    <input type="hidden" name="rating" id="rating-input" value="">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2">نظر شما</label>
-                                    <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white" placeholder="نظر خود را بنویسید..."></textarea>
+                                    <label class="block text-sm font-medium mb-2 text-gray-900 dark:text-white">نظر شما</label>
+                                    <textarea name="comment" rows="3" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="تجربه خود را از این محصول به اشتراک بگذارید..."></textarea>
                                 </div>
-                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                                    ارسال نظر
-                                </button>
+                                <div class="flex gap-3">
+                                    <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm">
+                                        ارسال نظر
+                                    </button>
+                                    <button type="button" id="cancel-comment" class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 text-sm">
+                                        انصراف
+                                    </button>
+                                </div>
                             </form>
                         </div>
+                        
+                        {% if comments %}
+                        <div class="space-y-3">
+                            {% for comment in comments %}
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border-2 border-gray-200 dark:border-gray-700 p-4 hover:shadow-xl transition-all duration-300">
+                                <div class="flex items-start gap-3">
+                                    <!-- User Avatar -->
+                                    {% if comment.user and comment.user.profile_image %}
+                                        <img src="{{ comment.user.profile_image.url }}" alt="{{ comment.name }}" class="w-10 h-10 rounded-full object-cover border-2 border-purple-200 dark:border-purple-900 shadow-md">
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                            {{ comment.name|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Comment Content -->
+                                    <div class="flex-1 min-w-0">
+                                        <!-- Header with Rating -->
+                                        <div class="flex items-start justify-between mb-3">
+                                            <div class="flex items-center gap-2">
+                                                <h4 class="font-bold text-gray-900 dark:text-white text-sm">{{ comment.name }}</h4>
+                                                <span class="text-xs text-gray-600 dark:text-gray-400 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full font-medium">{{ comment.created_at|timesince_fa }}</span>
+                                            </div>
+                                            
+                                            <!-- Rating Stars (Top Right) -->
+                                            <div class="flex items-center gap-1">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= comment.rating %}
+                                                        <i class="fas fa-star text-yellow-500 text-sm"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star text-yellow-500 text-sm"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <span class="text-xs text-gray-600 dark:text-gray-400 font-bold mr-1">({{ comment.rating }}/5)</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Comment Text -->
+                                        <p class="text-gray-800 dark:text-gray-200 text-sm leading-relaxed font-medium">{{ comment.comment }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-12">
+                            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-comments text-2xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">هنوز نظری ثبت نشده</h3>
+                            <p class="text-gray-500 text-sm mb-4">اولین نفری باشید که تجربه خود را به اشتراک می‌گذارد!</p>
+                            <div class="w-24 h-1 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full mx-auto"></div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -457,6 +478,123 @@ function showNotification(message, type = 'success') {
         }, 300);
     }, 3000);
 }
+
+// Comment form functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const ratingStars = document.querySelectorAll('#rating-stars i');
+    const ratingInput = document.getElementById('rating-input');
+    const showCommentBtn = document.getElementById('show-comment-form');
+    const commentFormContainer = document.getElementById('comment-form-container');
+    const cancelCommentBtn = document.getElementById('cancel-comment');
+    
+    // Show comment form
+    if (showCommentBtn) {
+        showCommentBtn.addEventListener('click', function() {
+            commentFormContainer.classList.remove('hidden');
+            this.parentElement.classList.add('hidden');
+        });
+    }
+    
+    // Cancel comment form
+    if (cancelCommentBtn) {
+        cancelCommentBtn.addEventListener('click', function() {
+            commentFormContainer.classList.add('hidden');
+            showCommentBtn.parentElement.classList.remove('hidden');
+            // Reset form
+            document.getElementById('comment-form').reset();
+            ratingInput.value = '';
+            ratingStars.forEach(star => {
+                star.classList.remove('fas');
+                star.classList.add('far');
+            });
+        });
+    }
+    
+    // Rating stars functionality
+    ratingStars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-rating');
+            ratingInput.value = rating;
+            
+            // Update stars display
+            ratingStars.forEach((s, index) => {
+                if (index < rating) {
+                    s.classList.remove('far');
+                    s.classList.add('fas');
+                } else {
+                    s.classList.remove('fas');
+                    s.classList.add('far');
+                }
+            });
+        });
+    });
+    
+    // Comment form submission
+    const commentForm = document.getElementById('comment-form');
+    if (commentForm) {
+        commentForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const rating = ratingInput.value;
+            const comment = this.querySelector('textarea[name="comment"]').value;
+            
+            if (!rating) {
+                showNotification('لطفاً امتیاز خود را انتخاب کنید.', 'error');
+                return;
+            }
+            
+            if (!comment.trim()) {
+                showNotification('لطفاً نظر خود را بنویسید.', 'error');
+                return;
+            }
+            
+            formData.append('rating', rating);
+            formData.append('comment', comment);
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'در حال ارسال...';
+            submitBtn.disabled = true;
+            
+            fetch(`/shop/product/{{ product.id }}/comment/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(data.message, 'success');
+                    // Reset form and hide it
+                    this.reset();
+                    ratingInput.value = '';
+                    ratingStars.forEach(star => {
+                        star.classList.remove('fas');
+                        star.classList.add('far');
+                    });
+                    commentFormContainer.classList.add('hidden');
+                    showCommentBtn.parentElement.classList.remove('hidden');
+                    
+                    // Reload entire page immediately
+                    window.location.reload();
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showNotification('خطا در ارسال نظر. لطفاً دوباره تلاش کنید.', 'error');
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+    }
+});
 </script>
 
 <style>
@@ -524,65 +662,96 @@ function showNotification(message, type = 'success') {
     }
 }
 
-/* Dark mode improvements */
-.dark .bg-gray-50 {
-    background-color: #1f2937 !important;
-}
-
-.dark .bg-gray-100 {
-    background-color: #374151 !important;
-}
-
-.dark .text-gray-600 {
-    color: #9ca3af !important;
-}
-
-.dark .text-gray-700 {
-    color: #d1d5db !important;
-}
-
-.dark .border-gray-200 {
-    border-color: #374151 !important;
-}
-
-.dark .border-gray-300 {
-    border-color: #4b5563 !important;
-}
-
-.dark .border-gray-600 {
-    border-color: #4b5563 !important;
-}
-
-.dark .border-gray-700 {
-    border-color: #4b5563 !important;
-}
-
-.dark .focus\:ring-purple-500:focus {
-    --tw-ring-color: #a855f7 !important;
-}
-
-.dark .bg-gray-700 {
-    background-color: #374151 !important;
-}
-
-.dark .bg-gray-800 {
-    background-color: #1f2937 !important;
-}
-
-.dark .hover\:bg-gray-300:hover {
-    background-color: #4b5563 !important;
-}
-
-.dark .hover\:bg-gray-600:hover {
-    background-color: #4b5563 !important;
-}
-
-.dark .hover\:bg-gray-700:hover {
-    background-color: #374151 !important;
-}
-
-.dark .hover\:bg-gray-800:hover {
-    background-color: #1f2937 !important;
-}
+        /* Dark mode improvements */
+        .dark .bg-gray-50 {
+            background-color: #1f2937 !important;
+        }
+        
+        .dark .bg-gray-100 {
+            background-color: #374151 !important;
+        }
+        
+        .dark .text-gray-600 {
+            color: #9ca3af !important;
+        }
+        
+        .dark .text-gray-700 {
+            color: #d1d5db !important;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #374151 !important;
+        }
+        
+        .dark .border-gray-300 {
+            border-color: #4b5563 !important;
+        }
+        
+        .dark .border-gray-600 {
+            border-color: #4b5563 !important;
+        }
+        
+        .dark .border-gray-700 {
+            border-color: #4b5563 !important;
+        }
+        
+        .dark .focus\:ring-purple-500:focus {
+            --tw-ring-color: #a855f7 !important;
+        }
+        
+        .dark .bg-gray-700 {
+            background-color: #374151 !important;
+        }
+        
+        .dark .bg-gray-800 {
+            background-color: #1f2937 !important;
+        }
+        
+        .dark .hover\:bg-gray-300:hover {
+            background-color: #4b5563 !important;
+        }
+        
+        .dark .hover\:bg-gray-600:hover {
+            background-color: #4b5563 !important;
+        }
+        
+        .dark .hover\:bg-gray-700:hover {
+            background-color: #374151 !important;
+        }
+        
+        .dark .hover\:bg-gray-800:hover {
+            background-color: #1f2937 !important;
+        }
+        
+        /* Light mode improvements for comments */
+        .bg-white {
+            background-color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        }
+        
+        .text-gray-800 {
+            color: #1f2937 !important;
+        }
+        
+        .text-gray-600 {
+            color: #4b5563 !important;
+        }
+        
+        .border-gray-200 {
+            border-color: #e5e7eb !important;
+        }
+        
+        .bg-gray-200 {
+            background-color: #e5e7eb !important;
+        }
+        
+        /* Enhanced contrast for better readability */
+        .text-yellow-500 {
+            color: #eab308 !important;
+        }
+        
+        .text-yellow-400 {
+            color: #facc15 !important;
+        }
 </style>
 {% endblock %} 
