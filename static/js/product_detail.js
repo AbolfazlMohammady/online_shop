@@ -143,6 +143,7 @@
         }).catch(() => {});
       });
     }
+    
 
     // Tabs
     function showProductTab(tabName) {
