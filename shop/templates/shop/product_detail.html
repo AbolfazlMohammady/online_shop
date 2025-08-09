@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% load date_filters %}
+{% load date_filters static %}
 
 {% block content %}
-<div class="min-h-screen">
+
+<div id="product-detail" class="min-h-screen" data-product-id="{{ product.id }}" data-images='[{% for image in product.images.all %}"{{ image.image.url }}"{% if not forloop.last %}, {% endif %}{% endfor %}]'>
     <div class="container mx-auto px-4 py-6">
         <!-- Back Button -->
-        <button onclick="history.back()" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold mb-6 transition-colors group">
+        <button id="btn-back" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold mb-6 transition-colors group">
             <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
             <span>بازگشت</span>
         </button>
@@ -21,10 +22,10 @@
                         <i class="fas fa-image text-6xl text-gray-400"></i>
                     {% endif %}
                     {% if product.images.count > 1 %}
-                    <button type="button" onclick="pdPreviousImage()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black/30 hover:bg-black/50 rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <button type="button" id="btn-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black/30 hover:bg-black/50 rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button type="button" onclick="pdNextImage()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black/30 hover:bg-black/50 rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <button type="button" id="btn-next" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-black/30 hover:bg-black/50 rounded-full text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                     {% endif %}
@@ -36,7 +37,7 @@
                     {% for image in product.images.all %}
                         <img src="{{ image.image.url }}" 
                              class="thumbnail-img w-20 h-20 object-cover rounded-xl border-2 border-transparent cursor-pointer hover:border-purple-500 transition-all duration-200"
-                             onclick="pdChangeMainImage('{{ image.image.url }}')"
+                             data-index="{{ forloop.counter0 }}"
                              alt="{{ product.name }} - {{ forloop.counter }}">
                     {% endfor %}
                 </div>
@@ -140,13 +141,13 @@
                                      <div class="flex items-center gap-4 mb-6">
                     <span class="text-gray-900 dark:text-gray-300 font-medium">تعداد:</span>
                     <div class="flex items-center gap-3">
-                        <button onclick="decreaseQuantity()" 
+                        <button id="qty-decrease" 
                                 class="w-10 h-10 bg-gray-900 hover:bg-gray-800 text-white rounded-lg flex items-center justify-center font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
                             <i class="fas fa-minus"></i>
                         </button>
                         <input type="number" id="quantity" value="1" min="1" max="{{ product.stock_quantity }}" 
                                class="text-xl font-bold w-16 text-center border-none bg-transparent focus:outline-none">
-                        <button onclick="increaseQuantity()" 
+                        <button id="qty-increase" 
                                 class="w-10 h-10 bg-gray-900 hover:bg-gray-800 text-white rounded-lg flex items-center justify-center font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
                             <i class="fas fa-plus"></i>
                         </button>
@@ -155,13 +156,13 @@
                 
                 <!-- Quick Tab Navigation -->
                 <div class="flex gap-2 mt-6">
-                    <button onclick="goToTab(this, 'description')" class="product-tab-btn active px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <button data-tab-target="description" class="product-tab-btn active px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                         <i class="fas fa-info-circle mr-2"></i>توضیحات
                     </button>
-                    <button onclick="goToTab(this, 'specifications')" class="product-tab-btn px-4 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-lg text-sm font-medium hover:from-green-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <button data-tab-target="specifications" class="product-tab-btn px-4 py-2 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-lg text-sm font-medium hover:from-green-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                         <i class="fas fa-cogs mr-2"></i>مشخصات
                     </button>
-                    <button onclick="goToTab(this, 'comments')" class="product-tab-btn px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-lg text-sm font-medium hover:from-pink-600 hover:to-rose-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    <button data-tab-target="comments" class="product-tab-btn px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-lg text-sm font-medium hover:from-pink-600 hover:to-rose-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                         <i class="fas fa-comments mr-2"></i>نظرات
                     </button>
                 </div>
@@ -169,13 +170,13 @@
                  
                  <!-- Action Buttons -->
                  <div class="space-y-4">
-                     <button onclick="addToCart({{ product.id }})" 
+                     <button id="btn-add-to-cart"
                              class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
                          <i class="fas fa-cart-plus text-xl"></i>
                          افزودن به سبد خرید
                      </button>
                      
-                     <button onclick="addToWishlist({{ product.id }})" 
+                      <button id="btn-add-to-wishlist"
                              class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
                          <i class="fas fa-heart text-xl"></i>
                          افزودن به علاقه‌مندی‌ها
@@ -498,520 +499,7 @@
     </div>
 </div>
 
-<script>
-// Persian number formatting function
-function toPersianNumber(num) {
-    const persianNumbers = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    return num.toString().replace(/\d/g, x => persianNumbers[x]);
-}
+<!-- All page-specific scripts and styles were moved to static files -->
 
-// Format price with Persian numbers and thousands separator
-function formatPrice(price) {
-    const formatted = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return toPersianNumber(formatted);
-}
-
-// Image gallery variables - MUST be defined FIRST
-let currentImageIndex = 0;
-const productImages = [
-    {% for image in product.images.all %}
-        "{{ image.image.url }}",
-    {% endfor %}
-];
-
-// Debug: Log the images array
-console.log('Product images loaded:', productImages);
-console.log('Number of images:', productImages.length);
-
-// Check if we have valid images
-if (productImages.length === 0 || (productImages.length === 1 && productImages[0] === '')) {
-    console.warn('No valid images found for product');
-}
-
-// Navigation functions for image gallery
-function pdPreviousImage() {
-    if (productImages.length > 1) {
-        currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
-        pdChangeMainImage(productImages[currentImageIndex]);
-    }
-}
-
-function pdNextImage() {
-    if (productImages.length > 1) {
-        currentImageIndex = (currentImageIndex + 1) % productImages.length;
-        pdChangeMainImage(productImages[currentImageIndex]);
-    }
-}
-
-function pdChangeMainImage(imageUrl) {
-    const mainImage = document.getElementById('main-image-src');
-    if (!mainImage) return;
-
-    // Cache-bust to avoid stale images
-    const nextUrl = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 'v=' + Date.now();
-
-    const preload = new Image();
-    preload.onload = function() {
-        mainImage.style.opacity = '0';
-        setTimeout(() => {
-            mainImage.src = nextUrl;
-            mainImage.style.opacity = '1';
-            // One-time load listener to confirm visual update
-            const onLoad = function() {
-                console.log('Main image loaded:', mainImage.currentSrc || mainImage.src);
-                mainImage.removeEventListener('load', onLoad);
-            };
-            mainImage.addEventListener('load', onLoad);
-            const idx = productImages.indexOf(imageUrl);
-            if (idx !== -1) currentImageIndex = idx;
-            updateThumbnails();
-            updateImageCounter();
-        }, 50);
-    };
-    preload.onerror = function() {
-        // Fallback to direct switch
-        mainImage.src = nextUrl;
-    };
-    preload.src = nextUrl;
-}
-
-// Update thumbnails active state
-function updateThumbnails() {
-    const thumbnails = document.querySelectorAll('.thumbnail-img');
-    thumbnails.forEach((thumb, index) => {
-        if (index === currentImageIndex) {
-            thumb.classList.add('border-purple-500');
-        } else {
-            thumb.classList.remove('border-purple-500');
-        }
-    });
-}
-
-// Update image counter
-function updateImageCounter() {
-    const counterElement = document.getElementById('current-image-number');
-    if (counterElement) {
-        counterElement.textContent = currentImageIndex + 1;
-    }
-}
-
-// Quick tab navigation function
-function goToTab(button, tabName) {
-    // Show the selected tab
-    showProductTab(tabName);
-    
-    // Update active state of buttons
-    const productTabButtons = document.querySelectorAll('.product-tab-btn');
-    productTabButtons.forEach(btn => btn.classList.remove('active'));
-    button.classList.add('active');
-    
-    // Smooth scroll to the tabs section
-    const tabsSection = document.getElementById('details-tabs');
-    if (tabsSection) {
-        tabsSection.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' 
-        });
-    }
-}
-
-function autoRotateImages() {
-    if (productImages.length > 1) {
-        currentImageIndex = (currentImageIndex + 1) % productImages.length;
-        changeMainImage(productImages[currentImageIndex]);
-    }
-}
-
-// Start auto-rotation (disabled for now to avoid conflicts)
-// setInterval(autoRotateImages, 5000);
-
-function decreaseQuantity() {
-    const quantityInput = document.getElementById('quantity');
-    const currentValue = parseInt(quantityInput.value);
-    if (currentValue > 1) {
-        quantityInput.value = currentValue - 1;
-    }
-}
-
-function increaseQuantity() {
-    const quantityInput = document.getElementById('quantity');
-    const currentValue = parseInt(quantityInput.value);
-    const maxValue = parseInt(quantityInput.max);
-    if (currentValue < maxValue) {
-        quantityInput.value = currentValue + 1;
-    }
-}
-
-function addToCart(productId) {
-    const quantity = document.getElementById('quantity').value;
-    // TODO: Implement cart functionality
-    console.log('Adding product to cart:', productId, 'Quantity:', quantity);
-    showNotification('محصول به سبد خرید اضافه شد', 'success');
-}
-
-function addToWishlist(productId) {
-    // TODO: Implement wishlist functionality
-    console.log('Adding product to wishlist:', productId);
-    showNotification('محصول به علاقه‌مندی‌ها اضافه شد', 'success');
-}
-
-function showProductTab(tabName) {
-    // Hide all tab contents
-    const tabContents = document.querySelectorAll('.product-tab-content');
-    tabContents.forEach(content => content.classList.remove('active'));
-    
-    // Remove active class from all tab buttons
-    const tabButtons = document.querySelectorAll('.product-tab-btn');
-    tabButtons.forEach(btn => btn.classList.remove('active'));
-    
-    // Show selected tab content
-    const selectedTab = document.getElementById(tabName + '-tab');
-    if (selectedTab) {
-        selectedTab.classList.add('active');
-    }
-}
-
-function showNotification(message, type = 'success') {
-    // Create notification element
-    const notification = document.createElement('div');
-    const bgClass = type === 'success' ? 'bg-green-500' : 'bg-red-500';
-    notification.className = 'fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full ' + bgClass;
-    notification.textContent = message;
-    
-    // Add to page
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.classList.remove('translate-x-full');
-    }, 100);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        notification.classList.add('translate-x-full');
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
-
-// Update price display
-document.addEventListener('DOMContentLoaded', function() {
-    const currentPriceElement = document.getElementById('current-price');
-    const originalPriceElement = document.getElementById('original-price');
-    
-    if (currentPriceElement) {
-        const price = parseInt(currentPriceElement.textContent);
-        currentPriceElement.textContent = formatPrice(price);
-    }
-    
-    if (originalPriceElement) {
-        const originalPrice = parseInt(originalPriceElement.textContent);
-        originalPriceElement.textContent = formatPrice(originalPrice) + ' تومان';
-    }
-});
-
-// Comment form functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const ratingStars = document.querySelectorAll('#rating-stars i');
-    const ratingInput = document.getElementById('rating-input');
-    const showCommentBtn = document.getElementById('show-comment-form');
-    const commentFormContainer = document.getElementById('comment-form-container');
-    const cancelCommentBtn = document.getElementById('cancel-comment');
-    
-    // Add event listeners for thumbnails
-    const thumbnails = document.querySelectorAll('.thumbnail-image');
-    thumbnails.forEach(thumbnail => {
-        thumbnail.addEventListener('click', function() {
-            const imageUrl = this.getAttribute('data-image-url');
-            console.log('Thumbnail clicked:', imageUrl);
-            changeMainImage(imageUrl);
-        });
-    });
-    
-    // Show comment form
-    if (showCommentBtn) {
-        showCommentBtn.addEventListener('click', function() {
-            commentFormContainer.classList.remove('hidden');
-            this.parentElement.classList.add('hidden');
-        });
-    }
-    
-    // Cancel comment form
-    if (cancelCommentBtn) {
-        cancelCommentBtn.addEventListener('click', function() {
-            commentFormContainer.classList.add('hidden');
-            showCommentBtn.parentElement.classList.remove('hidden');
-            // Reset form
-            document.getElementById('comment-form').reset();
-            ratingInput.value = '';
-            ratingStars.forEach(star => {
-                star.classList.remove('fas');
-                star.classList.add('far');
-            });
-        });
-    }
-    
-    // Rating stars functionality
-    ratingStars.forEach(star => {
-        star.addEventListener('click', function() {
-            const rating = this.getAttribute('data-rating');
-            ratingInput.value = rating;
-            
-            // Update stars display
-            ratingStars.forEach((s, index) => {
-                if (index < rating) {
-                    s.classList.remove('far');
-                    s.classList.add('fas');
-                } else {
-                    s.classList.remove('fas');
-                    s.classList.add('far');
-                }
-            });
-        });
-    });
-    
-    // Comment form submission
-    const commentForm = document.getElementById('comment-form');
-    if (commentForm) {
-        commentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData();
-            const rating = ratingInput.value;
-            const comment = this.querySelector('textarea[name="comment"]').value;
-            
-            if (!rating) {
-                showNotification('لطفاً امتیاز خود را انتخاب کنید.', 'error');
-                return;
-            }
-            
-            if (!comment.trim()) {
-                showNotification('لطفاً نظر خود را بنویسید.', 'error');
-                return;
-            }
-            
-            formData.append('rating', rating);
-            formData.append('comment', comment);
-            
-            // Show loading state
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'در حال ارسال...';
-            submitBtn.disabled = true;
-            
-            fetch(`/shop/product/{{ product.id }}/comment/`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Server accepted the comment → hard reload page
-                    window.location.reload();
-                    return Promise.reject('reloading');
-                }
-                // Attempt to parse JSON and handle message
-                return response.json().then(data => {
-                    if (data && data.success) {
-                        window.location.reload();
-                        return Promise.reject('reloading');
-                    }
-                    try { showNotification(data && data.message ? data.message : 'خطا در ارسال نظر', 'error'); } catch (e) {}
-                });
-            })
-            .catch(error => {
-                showNotification('خطا در ارسال نظر. لطفاً دوباره تلاش کنید.', 'error');
-            })
-            .finally(() => {
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            });
-        });
-    }
-});
-</script>
-
-<style>
-.product-tab-content {
-    display: none;
-}
-
-.product-tab-content.active {
-    display: block;
-}
-
-.product-tab-btn.active {
-    border-color: #7c3aed !important;
-    color: #7c3aed !important;
-}
-
-/* Enhanced tab button styling */
-.product-tab-btn {
-    position: relative;
-    transition: all 0.3s ease;
-}
-
-.product-tab-btn:hover {
-    color: #7c3aed !important;
-    transform: translateY(-2px);
-}
-
-.product-tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #7c3aed, #ec4899);
-    border-radius: 2px;
-}
-
-/* Main image transition */
-#main-image-src {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* Mobile responsive improvements */
-@media (max-width: 768px) {
-    .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
-    .grid {
-        gap: 1.5rem;
-    }
-    
-    .text-2xl {
-        font-size: 1.5rem;
-    }
-    
-    .text-3xl {
-        font-size: 1.875rem;
-    }
-    
-    .py-4 {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    
-    .px-6 {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-    }
-    
-    .space-y-6 > * + * {
-        margin-top: 1.5rem;
-    }
-    
-    .space-y-4 > * + * {
-        margin-top: 1rem;
-    }
-    
-    .space-y-3 > * + * {
-        margin-top: 0.75rem;
-    }
-    
-    .space-y-2 > * + * {
-        margin-top: 0.5rem;
-    }
-}
-
-        /* Dark mode improvements */
-        .dark .bg-gray-50 {
-            background-color: #1f2937 !important;
-        }
-        
-        .dark .bg-gray-100 {
-            background-color: #374151 !important;
-        }
-        
-        .dark .text-gray-600 {
-            color: #9ca3af !important;
-        }
-        
-        .dark .text-gray-700 {
-            color: #d1d5db !important;
-        }
-        
-        .dark .border-gray-200 {
-            border-color: #374151 !important;
-        }
-        
-        .dark .border-gray-300 {
-            border-color: #4b5563 !important;
-        }
-        
-        .dark .border-gray-600 {
-            border-color: #4b5563 !important;
-        }
-        
-        .dark .border-gray-700 {
-            border-color: #4b5563 !important;
-        }
-        
-        .dark .focus\:ring-purple-500:focus {
-            --tw-ring-color: #a855f7 !important;
-        }
-        
-        .dark .bg-gray-700 {
-            background-color: #374151 !important;
-        }
-        
-        .dark .bg-gray-800 {
-            background-color: #1f2937 !important;
-        }
-        
-        .dark .hover\:bg-gray-300:hover {
-            background-color: #4b5563 !important;
-        }
-        
-        .dark .hover\:bg-gray-600:hover {
-            background-color: #4b5563 !important;
-        }
-        
-        .dark .hover\:bg-gray-700:hover {
-            background-color: #374151 !important;
-        }
-        
-        .dark .hover\:bg-gray-800:hover {
-            background-color: #1f2937 !important;
-        }
-        
-        /* Light mode improvements for comments */
-        .bg-white {
-            background-color: #ffffff !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-        }
-        
-        .text-gray-800 {
-            color: #1f2937 !important;
-        }
-        
-        .text-gray-600 {
-            color: #4b5563 !important;
-        }
-        
-        .border-gray-200 {
-            border-color: #e5e7eb !important;
-        }
-        
-        .bg-gray-200 {
-            background-color: #e5e7eb !important;
-        }
-        
-        /* Enhanced contrast for better readability */
-        .text-yellow-500 {
-            color: #eab308 !important;
-        }
-        
-        .text-yellow-400 {
-            color: #facc15 !important;
-        }
-</style>
 <br>
 {% endblock %} 
