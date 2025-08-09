@@ -807,25 +807,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     'X-Requested-With': 'XMLHttpRequest',
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(data.message, 'success');
-                    // Reset form and hide it
-                    this.reset();
-                    ratingInput.value = '';
-                    ratingStars.forEach(star => {
-                        star.classList.remove('fas');
-                        star.classList.add('far');
-                    });
-                    commentFormContainer.classList.add('hidden');
-                    showCommentBtn.parentElement.classList.remove('hidden');
-                    
-                    // Reload entire page immediately
+            .then(response => {
+                if (response.ok) {
+                    // Server accepted the comment → hard reload page
                     window.location.reload();
-                } else {
-                    showNotification(data.message, 'error');
+                    return Promise.reject('reloading');
                 }
+                // Attempt to parse JSON and handle message
+                return response.json().then(data => {
+                    if (data && data.success) {
+                        window.location.reload();
+                        return Promise.reject('reloading');
+                    }
+                    try { showNotification(data && data.message ? data.message : 'خطا در ارسال نظر', 'error'); } catch (e) {}
+                });
             })
             .catch(error => {
                 showNotification('خطا در ارسال نظر. لطفاً دوباره تلاش کنید.', 'error');
