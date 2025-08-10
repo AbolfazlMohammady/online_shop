@@ -42,3 +42,9 @@ class Post(models.Model):
         if self.excerpt:
             return self.excerpt
         return self.content[:200] + "..." if len(self.content) > 200 else self.content
+    
+    def get_tags_list(self):
+        """برگرداندن لیست برچسب‌ها"""
+        if self.tags:
+            return [tag.strip() for tag in self.tags.split(',')]
+        return []
