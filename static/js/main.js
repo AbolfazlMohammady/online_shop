@@ -1,7 +1,7 @@
 // Global variables
 let products = []; // Will be populated from API
 let filteredProducts = [];
-let currentView = 'grid';
+
 let cart = [];
 let currentPage = 'home';
 let currentFilter = 'all';
@@ -606,7 +606,7 @@ function renderBlogs() {
 
 // Products Functions
 function renderProducts(productsToRender = products) {
-    console.log('Rendering products:', productsToRender.length, 'in view:', currentView);
+    console.log('Rendering products:', productsToRender.length);
     
     const grid = document.getElementById('products-grid');
     if (!grid) {
@@ -630,16 +630,11 @@ function renderProducts(productsToRender = products) {
         return;
     }
     
-    // Set grid class based on current view
-    if (currentView === 'list') {
-        grid.className = 'space-y-4';
-        renderListView(productsToRender, grid);
-    } else {
-        grid.className = 'products-grid';
-        renderGridView(productsToRender, grid);
-    }
+    // Always use grid view
+    grid.className = 'products-grid';
+    renderGridView(productsToRender, grid);
     
-    console.log('Products rendered successfully in', currentView, 'view');
+    console.log('Products rendered successfully in grid view');
 }
 
 // Cart Functions
@@ -1056,37 +1051,7 @@ function addFilterTag(text, onRemove) {
     activeFiltersContainer.appendChild(tag);
 }
 
-function toggleView(view) {
-    console.log('Toggling view to:', view);
-    currentView = view;
-    
-    const grid = document.getElementById('products-grid');
-    const gridBtn = document.getElementById('grid-view');
-    const listBtn = document.getElementById('list-view');
-    
-    if (!grid) {
-        console.error('Products grid not found!');
-        return;
-    }
-    
-    // Update button states
-    if (gridBtn && listBtn) {
-    if (view === 'grid') {
-            gridBtn.classList.add('bg-purple-600', 'text-white');
-            gridBtn.classList.remove('bg-gray-200', 'text-gray-600');
-            listBtn.classList.add('bg-gray-200', 'text-gray-600');
-            listBtn.classList.remove('bg-purple-600', 'text-white');
-    } else {
-            listBtn.classList.add('bg-purple-600', 'text-white');
-            listBtn.classList.remove('bg-gray-200', 'text-gray-600');
-            gridBtn.classList.add('bg-gray-200', 'text-gray-600');
-            gridBtn.classList.remove('bg-purple-600', 'text-white');
-        }
-    }
-    
-    // Re-render products with new view
-    renderProducts(filteredProducts);
-}
+
 
 function toPersianNumber(num) {
     const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
@@ -2060,62 +2025,7 @@ function renderGridView(productsToRender, grid) {
     });
 }
 
-function renderListView(productsToRender, grid) {
-    productsToRender.forEach(product => {
-        const productCard = `
-            <div class="product-card list-view theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex relative" style="text-decoration: none; color: inherit;" onclick="openProductDetail('${product.slug}')">
-                <div class="product-image-container bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center flex-shrink-0">
-                    ${product.images && product.images.length > 0 
-                        ? `<img src="${product.images[0].image}" alt="${product.name}" class="product-image">`
-                        : `<i class="fas fa-image text-3xl text-gray-400"></i>`
-                    }
-                </div>
-                <div class="product-content flex-1 flex items-center justify-between">
-                    <div class="flex-1">
-                        <div class="product-info">
-                            <h3 class="product-title">${product.name}</h3>
-                            <div class="category-tag">${product.category_name || 'دسته‌بندی'}</div>
-                            
-                            <!-- Short Description -->
-                            <div class="product-short-description">
-                                ${product.description ? product.description.substring(0, 100) + (product.description.length > 100 ? '...' : '') : 'توضیحات محصول'}
-                            </div>
-                            
-                            <div class="product-rating">
-                                <div class="stars">
-                                    ${(() => {
-                                        let stars = '';
-                                        for (let i = 1; i <= 5; i++) {
-                                            stars += i <= Math.round(product.rating) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
-                                        }
-                                        return stars;
-                                    })()}
-                                </div>
-                                <span class="rating-text">(${product.rating || 0})</span>
-                            </div>
-                            
-                            <div class="product-price">
-                                <span class="current-price">${toPersianNumber(product.price)} تومان</span>
-                                ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Action Buttons -->
-                    <div class="product-actions">
-                        <button onclick="addToWishlist(${product.id}, event)" class="wishlist-btn-list" data-product-id="${product.id}">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <button onclick="addToCart(${product.id}, event)" class="cart-button-list" data-product-id="${product.id}">
-                            <i class="fas fa-shopping-cart"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        grid.innerHTML += productCard;
-    });
-}
+
 
 // Product Functions
 function openProductDetail(productSlug) {

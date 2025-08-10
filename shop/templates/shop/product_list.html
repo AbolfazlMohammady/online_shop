@@ -610,199 +610,13 @@
     position: relative !important;
 }
 
-/* Responsive adjustments for list view */
-@media (max-width: 768px) {
-    .wishlist-btn-list,
-    .cart-button-list {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .wishlist-btn-list i,
-    .cart-button-list i {
-        font-size: 12px;
-    }
-}
 
-@media (max-width: 480px) {
-    .wishlist-btn-list,
-    .cart-button-list {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .wishlist-btn-list i,
-    .cart-button-list i {
-        font-size: 11px;
-    }
-}
 
-/* List View Specific Styles */
-.product-card.list-view {
-    display: flex !important;
-    flex-direction: row !important;
-    height: auto !important;
-    min-height: 120px !important;
-    padding: 12px !important;
-    margin-bottom: 16px !important;
-}
 
-.product-card.list-view .product-image-container {
-    width: 120px !important;
-    height: 120px !important;
-    flex-shrink: 0 !important;
-    margin-right: 16px !important;
-}
 
-.product-card.list-view .product-content {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    padding: 0 !important;
-}
 
-.product-card.list-view .product-info {
-    margin-bottom: 12px !important;
-}
 
-.product-card.list-view .product-title {
-    font-size: 16px !important;
-    margin-bottom: 8px !important;
-    line-height: 1.4 !important;
-}
 
-.product-card.list-view .category-tag {
-    font-size: 10px !important;
-    padding: 3px 8px !important;
-    margin-bottom: 8px !important;
-}
-
-.product-card.list-view .product-short-description {
-    font-size: 13px !important;
-    line-height: 1.5 !important;
-    margin-bottom: 12px !important;
-    -webkit-line-clamp: 3 !important;
-    color: #4b5563 !important;
-    font-weight: 400 !important;
-}
-
-.dark .product-card.list-view .product-short-description {
-    color: #d1d5db !important;
-}
-
-.product-card.list-view .product-rating {
-    margin-bottom: 12px !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%) !important;
-    border: 1px solid rgba(147, 51, 234, 0.15) !important;
-    border-radius: 12px !important;
-    padding: 6px 8px !important;
-}
-
-.dark .product-card.list-view .product-rating {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-.product-card.list-view .product-price {
-    margin-bottom: 12px !important;
-    background: linear-gradient(135deg, rgba(147, 51, 234, 0.08) 0%, rgba(147, 51, 234, 0.03) 100%) !important;
-    border: 1px solid rgba(147, 51, 234, 0.2) !important;
-    border-radius: 12px !important;
-    padding: 8px 10px !important;
-}
-
-.dark .product-card.list-view .product-price {
-    background: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(147, 51, 234, 0.08) 100%) !important;
-    border: 1px solid rgba(147, 51, 234, 0.4) !important;
-}
-
-.product-card.list-view .product-actions {
-    position: static !important;
-    display: flex !important;
-    gap: 8px !important;
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-}
-
-.product-card.list-view .wishlist-btn,
-.product-card.list-view .cart-button {
-    position: static !important;
-    width: 36px !important;
-    height: 36px !important;
-}
-
-.product-card.list-view .wishlist-btn i,
-.product-card.list-view .cart-button i {
-    font-size: 14px !important;
-}
-
-/* Responsive List View */
-@media (max-width: 768px) {
-    .product-card.list-view {
-        flex-direction: column !important;
-        padding: 10px !important;
-        min-height: auto !important;
-    }
-    
-    .product-card.list-view .product-image-container {
-        width: 100% !important;
-        height: 140px !important;
-        margin-right: 0 !important;
-        margin-bottom: 12px !important;
-    }
-    
-    .product-card.list-view .product-title {
-        font-size: 14px !important;
-    }
-    
-    .product-card.list-view .product-short-description {
-        font-size: 11px !important;
-    }
-    
-    .product-card.list-view .wishlist-btn,
-    .product-card.list-view .cart-button {
-        width: 32px !important;
-        height: 32px !important;
-    }
-    
-    .product-card.list-view .wishlist-btn i,
-    .product-card.list-view .cart-button i {
-        font-size: 12px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .product-card.list-view {
-        padding: 8px !important;
-    }
-    
-    .product-card.list-view .product-image-container {
-        height: 120px !important;
-        margin-bottom: 8px !important;
-    }
-    
-    .product-card.list-view .product-title {
-        font-size: 13px !important;
-        margin-bottom: 6px !important;
-    }
-    
-    .product-card.list-view .product-short-description {
-        font-size: 10px !important;
-        margin-bottom: 8px !important;
-    }
-    
-    .product-card.list-view .wishlist-btn,
-    .product-card.list-view .cart-button {
-        width: 28px !important;
-        height: 28px !important;
-    }
-    
-    .product-card.list-view .wishlist-btn i,
-    .product-card.list-view .cart-button i {
-        font-size: 11px !important;
-    }
-}
 
 /* Placeholder styles */
 .placeholder-container {
@@ -987,17 +801,10 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button id="grid-view" class="p-2 bg-purple-600 text-white rounded-lg">
-                    <i class="fas fa-th"></i>
-                </button>
-                <button id="list-view" class="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors">
-                    <i class="fas fa-list"></i>
-                </button>
-            </div>
+
         </div>
         
-        <!-- Products Grid -->
+                <!-- Products Grid -->
         <div id="products-grid" class="products-grid">
             <!-- Products will be loaded here by JavaScript -->
         </div>
@@ -1137,21 +944,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // View toggle buttons
-    const gridViewBtn = document.getElementById('grid-view');
-    const listViewBtn = document.getElementById('list-view');
-    
-    if (gridViewBtn) {
-        gridViewBtn.addEventListener('click', function() {
-            toggleView('grid');
-        });
-    }
-    
-    if (listViewBtn) {
-        listViewBtn.addEventListener('click', function() {
-            toggleView('list');
-        });
-    }
+
 });
 
 function clearFilters() {
@@ -1192,41 +985,7 @@ function clearFilters() {
     filterProducts();
 }
 
-function toggleView(view) {
-    const gridView = document.getElementById('grid-view');
-    const listView = document.getElementById('list-view');
-    const productsGrid = document.getElementById('products-grid');
-    
-    if (view === 'grid') {
-        gridView.classList.add('bg-purple-600', 'text-white');
-        gridView.classList.remove('bg-gray-200', 'text-gray-600');
-        listView.classList.add('bg-gray-200', 'text-gray-600');
-        listView.classList.remove('bg-purple-600', 'text-white');
-        productsGrid.classList.remove('grid-cols-1');
-        productsGrid.classList.add('products-grid');
-        
-        // Remove list view classes from all product cards
-        document.querySelectorAll('.product-card').forEach(card => {
-            card.classList.remove('list-view');
-        });
-        
-        console.log('Switched to grid view');
-    } else {
-        listView.classList.add('bg-purple-600', 'text-white');
-        listView.classList.remove('bg-gray-200', 'text-gray-600');
-        gridView.classList.add('bg-gray-200', 'text-gray-600');
-        gridView.classList.remove('bg-purple-600', 'text-white');
-        productsGrid.classList.remove('products-grid');
-        productsGrid.classList.add('grid-cols-1');
-        
-        // Add list view classes to all product cards
-        document.querySelectorAll('.product-card').forEach(card => {
-            card.classList.add('list-view');
-        });
-        
-        console.log('Switched to list view');
-    }
-}
+
 
 function addToCart(productId) {
     // TODO: Implement cart functionality
