@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block contact %}
+<div class="min-h-screen">
+    <!-- Blog Header -->
+    <section class="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4">همه مقالات</h1>
+            <p class="text-lg opacity-90">مجموعه کامل مقالات زیبایی و آرایشی</p>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-4 py-8">
+        <div class="grid lg:grid-cols-4 gap-8">
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="theme-card rounded-xl shadow-lg p-6 sticky top-20">
+                    <!-- Search -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-bold mb-3">جستجو</h3>
+                        <form method="get" class="flex">
+                            <input type="text" name="search" placeholder="جستجو در مقالات..." 
+                                   class="flex-1 p-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <button type="submit" class="bg-purple-600 text-white px-4 py-3 rounded-l-lg hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Categories -->
+                    {% if categories %}
+                    <div class="mb-6">
+                        <h3 class="text-lg font-bold mb-3">دسته‌بندی‌ها</h3>
+                        <div class="space-y-2">
+                            <a href="{% url 'blog:post_list' %}" class="block p-2 rounded-lg hover:bg-purple-50 transition-colors {% if not request.GET.category %}bg-purple-100 text-purple-700{% endif %}">
+                                همه مقالات
+                            </a>
+                            {% for category in categories %}
+                            <a href="{% url 'blog:post_list' %}?category={{ category }}" 
+                               class="block p-2 rounded-lg hover:bg-purple-50 transition-colors {% if request.GET.category == category %}bg-purple-100 text-purple-700{% endif %}">
+                                {{ category }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Featured Posts -->
+                    {% if featured_posts %}
+                    <div>
+                        <h3 class="text-lg font-bold mb-3">مقالات ویژه</h3>
+                        <div class="space-y-3">
+                            {% for post in featured_posts %}
+                            <div class="flex gap-3">
+                                {% if post.image %}
+                                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-16 h-16 object-cover rounded-lg">
+                                {% else %}
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-newspaper text-purple-600"></i>
+                                </div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-sm line-clamp-2">{{ post.title }}</h4>
+                                    <p class="text-xs text-gray-500">{{ post.published_at|date:"Y/m/d" }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                <!-- Results Info -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <span class="text-gray-600">
+                            {% if page_obj %}
+                                نمایش {{ page_obj.start_index }} تا {{ page_obj.end_index }} از {{ page_obj.paginator.count }} مقاله
+                            {% else %}
+                                نمایش همه مقالات
+                            {% endif %}
+                        </span>
+                        {% if request.GET.category %}
+                        <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">
+                            دسته: {{ request.GET.category }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Posts Grid -->
+                {% if posts %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for post in posts %}
+                    <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover">
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                        {% else %}
+                        <div class="w-full h-48 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+                            <i class="fas fa-newspaper text-4xl text-purple-600"></i>
+                        </div>
+                        {% endif %}
+                        <div class="p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-semibold">
+                                    {{ post.category }}
+                                </span>
+                                <span class="text-gray-500 text-sm">{{ post.published_at|date:"Y/m/d" }}</span>
+                                {% if post.is_featured %}
+                                <span class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full text-xs font-semibold">
+                                    <i class="fas fa-star mr-1"></i>ویژه
+                                </span>
+                                {% endif %}
+                            </div>
+                            <h3 class="text-xl font-bold mb-3 line-clamp-2">{{ post.title }}</h3>
+                            <p class="text-gray-600 mb-4 line-clamp-3">{{ post.get_excerpt }}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-user text-gray-400"></i>
+                                        <span class="text-sm text-gray-600">{{ post.author.get_full_name|default:post.author.username }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-eye text-gray-400"></i>
+                                        <span class="text-sm text-gray-600">{{ post.view_count }}</span>
+                                    </div>
+                                </div>
+                                <a href="{% url 'blog:post_detail' post.slug %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ادامه مطلب
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <div class="flex justify-center mt-8">
+                    <nav class="flex items-center gap-2">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                           class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ num }}</span>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                               class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                                {{ num }}
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                           class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-12">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">مقاله‌ای یافت نشد</h3>
+                    <p class="text-gray-600 mb-6">متأسفانه مقاله‌ای با این مشخصات پیدا نکردیم</p>
+                    <a href="{% url 'blog:post_list' %}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+                        مشاهده همه مقالات
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block contact %}
+<div class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 mb-8 text-sm">
+            <a href="{% url 'home' %}" class="text-purple-600 hover:text-purple-700">خانه</a>
+            <i class="fas fa-chevron-left text-gray-400"></i>
+            <a href="{% url 'blog:blog_home' %}" class="text-purple-600 hover:text-purple-700">بلاگ</a>
+            <i class="fas fa-chevron-left text-gray-400"></i>
+            <span class="text-gray-600">{{ post.title }}</span>
+        </nav>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <article class="theme-card rounded-2xl shadow-lg overflow-hidden">
+                    <!-- Featured Image -->
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-64 sm:h-80 object-cover">
+                    {% else %}
+                    <div class="w-full h-64 sm:h-80 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+                        <i class="fas fa-newspaper text-6xl text-purple-600"></i>
+                    </div>
+                    {% endif %}
+
+                    <div class="p-6 sm:p-8">
+                        <!-- Article Header -->
+                        <header class="mb-6">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-semibold">
+                                    {{ post.category }}
+                                </span>
+                                <span class="text-gray-500 text-sm">{{ post.published_at|date:"Y/m/d" }}</span>
+                                {% if post.is_featured %}
+                                <span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-star mr-1"></i>مقاله ویژه
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            <h1 class="text-2xl sm:text-3xl font-bold mb-4">{{ post.title }}</h1>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-purple-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold">{{ post.author.get_full_name|default:post.author.username }}</p>
+                                            <p class="text-sm text-gray-500">نویسنده</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-eye"></i>
+                                        <span>{{ post.view_count }} بازدید</span>
+                                    </div>
+                                    <div class="flex items-center gap-1">
+                                        <i class="fas fa-clock"></i>
+                                        <span>{{ post.published_at|timesince }} پیش</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <!-- Article Content -->
+                        <div class="prose prose-lg max-w-none mb-8">
+                            {{ post.content|linebreaks }}
+                        </div>
+
+                        <!-- Tags -->
+                        {% if post.tags %}
+                        <div class="border-t pt-6 mb-6">
+                            <h3 class="text-lg font-bold mb-3">برچسب‌ها</h3>
+                            <div class="flex flex-wrap gap-2">
+                                {% for tag in post.tags.split ',' %}
+                                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                                    {{ tag.strip }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Share Buttons -->
+                        <div class="border-t pt-6">
+                            <h3 class="text-lg font-bold mb-3">اشتراک‌گذاری</h3>
+                            <div class="flex gap-3">
+                                <a href="https://twitter.com/intent/tweet?text={{ post.title|urlencode }}&url={{ request.build_absolute_uri }}" 
+                                   target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    <i class="fab fa-twitter mr-2"></i>توییتر
+                                </a>
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                                   target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                    <i class="fab fa-facebook mr-2"></i>فیسبوک
+                                </a>
+                                <a href="https://telegram.me/share/url?url={{ request.build_absolute_uri }}&text={{ post.title|urlencode }}" 
+                                   target="_blank" class="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-colors">
+                                    <i class="fab fa-telegram mr-2"></i>تلگرام
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Related Posts -->
+                {% if related_posts %}
+                <section class="mt-12">
+                    <h2 class="text-2xl font-bold mb-6">مقالات مرتبط</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {% for related_post in related_posts %}
+                        <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover">
+                            {% if related_post.image %}
+                            <img src="{{ related_post.image.url }}" alt="{{ related_post.title }}" class="w-full h-40 object-cover">
+                            {% else %}
+                            <div class="w-full h-40 bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center">
+                                <i class="fas fa-newspaper text-3xl text-blue-600"></i>
+                            </div>
+                            {% endif %}
+                            <div class="p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">
+                                        {{ related_post.category }}
+                                    </span>
+                                    <span class="text-gray-500 text-xs">{{ related_post.published_at|date:"Y/m/d" }}</span>
+                                </div>
+                                <h3 class="text-lg font-bold mb-2 line-clamp-2">{{ related_post.title }}</h3>
+                                <p class="text-gray-600 mb-3 line-clamp-2 text-sm">{{ related_post.get_excerpt }}</p>
+                                <a href="{% url 'blog:post_detail' related_post.slug %}" class="text-purple-600 hover:text-purple-700 text-sm font-semibold">
+                                    ادامه مطلب
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="space-y-6">
+                    <!-- Recent Posts -->
+                    {% if recent_posts %}
+                    <div class="theme-card rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-4">آخرین مقالات</h3>
+                        <div class="space-y-4">
+                            {% for recent_post in recent_posts %}
+                            <div class="flex gap-3">
+                                {% if recent_post.image %}
+                                <img src="{{ recent_post.image.url }}" alt="{{ recent_post.title }}" class="w-16 h-16 object-cover rounded-lg">
+                                {% else %}
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-newspaper text-purple-600"></i>
+                                </div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-sm line-clamp-2 mb-1">
+                                        <a href="{% url 'blog:post_detail' recent_post.slug %}" class="hover:text-purple-600 transition-colors">
+                                            {{ recent_post.title }}
+                                        </a>
+                                    </h4>
+                                    <p class="text-xs text-gray-500">{{ recent_post.published_at|date:"Y/m/d" }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Categories -->
+                    <div class="theme-card rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold mb-4">دسته‌بندی‌ها</h3>
+                        <div class="space-y-2">
+                            <a href="{% url 'blog:post_list' %}" class="block p-2 rounded-lg hover:bg-purple-50 transition-colors">
+                                همه مقالات
+                            </a>
+                            <a href="{% url 'blog:post_list' %}?category={{ post.category }}" class="block p-2 rounded-lg bg-purple-100 text-purple-700">
+                                {{ post.category }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="theme-card rounded-xl shadow-lg p-6 bg-gradient-to-br from-purple-500 to-pink-500 text-white">
+                        <h3 class="text-lg font-bold mb-3">خبرنامه</h3>
+                        <p class="text-sm mb-4 opacity-90">برای دریافت آخرین مقالات در ایمیل خود ثبت‌نام کنید</p>
+                        <form class="space-y-3">
+                            <input type="email" placeholder="ایمیل شما" 
+                                   class="w-full p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-white">
+                            <button type="submit" class="w-full bg-white text-purple-600 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                ثبت‌نام
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

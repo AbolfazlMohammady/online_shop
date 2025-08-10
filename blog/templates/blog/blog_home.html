@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block contact %}
+<div class="min-h-screen">
+    <!-- Blog Header -->
+    <section class="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4">وبلاگ زیبایی</h1>
+            <p class="text-xl opacity-90">آخرین اخبار و مقالات زیبایی و آرایشی</p>
+        </div>
+    </section>
+
+    <!-- Featured Posts -->
+    {% if featured_posts %}
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">مقالات ویژه</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for post in featured_posts %}
+                <div class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <div class="w-full h-48 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+                        <i class="fas fa-newspaper text-4xl text-purple-600"></i>
+                    </div>
+                    {% endif %}
+                    <div class="p-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-semibold">
+                                {{ post.category }}
+                            </span>
+                            <span class="text-gray-500 text-sm">{{ post.published_at|date:"Y/m/d" }}</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 line-clamp-2">{{ post.title }}</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-3">{{ post.get_excerpt }}</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-user text-gray-400"></i>
+                                <span class="text-sm text-gray-600">{{ post.author.get_full_name|default:post.author.username }}</span>
+                            </div>
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                ادامه مطلب
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recent Posts -->
+    <section class="py-12 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold">آخرین مقالات</h2>
+                <a href="{% url 'blog:post_list' %}" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors group">
+                    <span>مشاهده همه</span>
+                    <i class="fas fa-arrow-left group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for post in recent_posts %}
+                <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-40 object-cover">
+                    {% else %}
+                    <div class="w-full h-40 bg-gradient-to-br from-blue-200 to-cyan-200 flex items-center justify-center">
+                        <i class="fas fa-newspaper text-3xl text-blue-600"></i>
+                    </div>
+                    {% endif %}
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">
+                                {{ post.category }}
+                            </span>
+                            <span class="text-gray-500 text-xs">{{ post.published_at|date:"Y/m/d" }}</span>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 line-clamp-2">{{ post.title }}</h3>
+                        <p class="text-gray-600 mb-3 line-clamp-2 text-sm">{{ post.get_excerpt }}</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-eye text-gray-400 text-xs"></i>
+                                <span class="text-xs text-gray-600">{{ post.view_count }}</span>
+                            </div>
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="text-purple-600 hover:text-purple-700 text-sm font-semibold">
+                                ادامه مطلب
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    {% if categories %}
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8">دسته‌بندی‌ها</h2>
+            <div class="flex flex-wrap justify-center gap-4">
+                {% for category in categories %}
+                <a href="{% url 'blog:post_list' %}?category={{ category }}" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    {{ category }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
