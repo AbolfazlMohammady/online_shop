@@ -1974,7 +1974,7 @@ function applyPriceFilters() {
 function renderGridView(productsToRender, grid) {
     productsToRender.forEach(product => {
         const productCard = `
-            <div class="product-card">
+            <div class="product-card cursor-pointer" onclick="openProductDetail('${product.slug}')">
                 <!-- Badges -->
                 ${product.has_discount ? `
                     <div class="discount-badge">
@@ -1996,7 +1996,7 @@ function renderGridView(productsToRender, grid) {
                 ` : ''}
                 
                 <!-- Image Container -->
-                <div class="product-image-container" onclick="openProductDetail('${product.slug}')">
+                <div class="product-image-container">
                     ${product.images && product.images.length > 0 
                         ? `<img src="${product.images[0].image}" alt="${product.name}" class="product-image">`
                         : `<div class="placeholder-container">
@@ -2063,33 +2063,26 @@ function renderGridView(productsToRender, grid) {
 function renderListView(productsToRender, grid) {
     productsToRender.forEach(product => {
         const productCard = `
-            <div class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex relative" style="text-decoration: none; color: inherit;">
-                <div class="w-32 h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center flex-shrink-0">
+            <div class="product-card list-view theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex relative" style="text-decoration: none; color: inherit;" onclick="openProductDetail('${product.slug}')">
+                <div class="product-image-container bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center flex-shrink-0">
                     ${product.images && product.images.length > 0 
-                        ? `<img src="${product.images[0].image}" alt="${product.name}" class="w-full h-full object-cover">`
+                        ? `<img src="${product.images[0].image}" alt="${product.name}" class="product-image">`
                         : `<i class="fas fa-image text-3xl text-gray-400"></i>`
                     }
                 </div>
-                <div class="p-4 flex-1 flex items-center justify-between">
+                <div class="product-content flex-1 flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="flex items-start justify-between mb-2">
-                            <div>
-                                <h3 class="text-lg font-bold mb-1">${product.name}</h3>
-                                <div class="flex items-center gap-4 text-sm text-gray-600">
-                                    <span class="flex items-center gap-1">
-                                        <i class="fas fa-tag text-purple-500"></i>
-                                        ${product.category_name || 'دسته‌بندی'}
-                                    </span>
-                                    ${product.brand_name ? `
-                                    <span class="flex items-center gap-1">
-                                        <i class="fas fa-crown text-blue-500"></i>
-                                        ${product.brand_name}
-                                    </span>
-                                    ` : ''}
-                                </div>
+                        <div class="product-info">
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="category-tag">${product.category_name || 'دسته‌بندی'}</div>
+                            
+                            <!-- Short Description -->
+                            <div class="product-short-description">
+                                ${product.description ? product.description.substring(0, 100) + (product.description.length > 100 ? '...' : '') : 'توضیحات محصول'}
                             </div>
-                            <div class="flex items-center gap-2">
-                                <div class="flex text-yellow-400">
+                            
+                            <div class="product-rating">
+                                <div class="stars">
                                     ${(() => {
                                         let stars = '';
                                         for (let i = 1; i <= 5; i++) {
@@ -2100,21 +2093,16 @@ function renderListView(productsToRender, grid) {
                                 </div>
                                 <span class="rating-text">(${product.rating || 0})</span>
                             </div>
-                        </div>
-                        
-                        <!-- Short Description -->
-                        <div class="product-short-description text-sm text-gray-600 mb-2">
-                            ${product.description ? product.description.substring(0, 100) + (product.description.length > 100 ? '...' : '') : 'توضیحات محصول'}
-                        </div>
-                        
-                        <div class="product-price">
-                            <span class="current-price">${toPersianNumber(product.price)} تومان</span>
-                            ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
+                            
+                            <div class="product-price">
+                                <span class="current-price">${toPersianNumber(product.price)} تومان</span>
+                                ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Action Buttons - Right Side -->
-                    <div class="flex flex-col gap-2 ml-4">
+                    <!-- Action Buttons -->
+                    <div class="product-actions">
                         <button onclick="addToWishlist(${product.id}, event)" class="wishlist-btn-list" data-product-id="${product.id}">
                             <i class="far fa-heart"></i>
                         </button>
@@ -2123,9 +2111,6 @@ function renderListView(productsToRender, grid) {
                         </button>
                     </div>
                 </div>
-                
-                <!-- Clickable overlay for product detail -->
-                <div class="absolute inset-0 cursor-pointer" onclick="openProductDetail('${product.slug}')" style="z-index: 1;"></div>
             </div>
         `;
         grid.innerHTML += productCard;
@@ -2140,7 +2125,7 @@ function openProductDetail(productSlug) {
 function addToWishlist(productId, event) {
     event.stopPropagation(); // Prevent card click
     
-    const button = event.target.closest('.wishlist-btn');
+    const button = event.target.closest('.wishlist-btn, .wishlist-btn-list');
     const icon = button.querySelector('i');
     
     if (icon.classList.contains('far')) {
