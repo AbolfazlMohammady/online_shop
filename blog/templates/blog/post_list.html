@@ -2,60 +2,143 @@
 
 {% block contact %}
 <div class="min-h-screen">
+    <div class="container mx-auto px-4 py-4 lg:py-8">
+        <!-- Filter Section -->
+        <div class="mb-6 lg:mb-8">
+            <div class="theme-card rounded-2xl shadow-lg">
+                <!-- Filter Header -->
+                <div class="p-3 lg:p-4 border-b border-gray-200">
+                    <button id="filterToggle" class="flex items-center justify-between w-full text-left">
+                        <h3 class="text-base lg:text-lg font-bold text-gray-800">
+                            <i class="fas fa-filter mr-2 text-purple-600"></i>
+                            فیلترها
+                        </h3>
+                        <i id="filterIcon" class="fas fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                    </button>
+                </div>
 
+                <!-- Filter Content -->
+                <div id="filterContent" class="p-3 lg:p-6">
+                    <div class="grid grid-cols-1 gap-4 lg:gap-6">
+                        <!-- Search -->
+                        <div class="col-span-1">
+                            <h4 class="text-sm lg:text-base font-semibold mb-2 lg:mb-3 text-center lg:text-right text-gray-700">جستجو</h4>
+                            <form method="get" class="flex">
+                                <input type="text" name="search" value="{{ request.GET.search }}" placeholder="جستجو در مقالات..." 
+                                       class="flex-1 p-2 lg:p-3 text-sm lg:text-base border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                {% if request.GET.category %}
+                                <input type="hidden" name="category" value="{{ request.GET.category }}">
+                                {% endif %}
+                                {% if request.GET.date_range %}
+                                <input type="hidden" name="date_range" value="{{ request.GET.date_range }}">
+                                {% endif %}
+                                <button type="submit" class="bg-purple-600 text-white px-3 lg:px-4 py-2 lg:py-3 rounded-l-lg hover:bg-purple-700 transition-colors">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
 
-    <div class="container mx-auto px-4 py-8">
-        <div class="grid lg:grid-cols-4 gap-8">
-            <!-- Sidebar -->
-            <div class="lg:col-span-1">
-                <div class="theme-card rounded-xl shadow-lg p-6 sticky top-20">
-                    <!-- Search -->
-                    <div class="mb-6">
-                        <h3 class="text-lg font-bold mb-3">جستجو</h3>
-                        <form method="get" class="flex">
-                            <input type="text" name="search" placeholder="جستجو در مقالات..." 
-                                   class="flex-1 p-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <button type="submit" class="bg-purple-600 text-white px-4 py-3 rounded-l-lg hover:bg-purple-700 transition-colors">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
-                    </div>
+                        <!-- Categories -->
+                        {% if categories %}
+                        <div class="col-span-1">
+                            <h4 class="text-sm lg:text-base font-semibold mb-2 lg:mb-3 text-center lg:text-right text-gray-700">دسته‌بندی‌ها</h4>
+                            <div class="flex flex-wrap gap-2 justify-center lg:justify-end blog-filter-buttons">
+                                <a href="{% url 'blog:post_list' %}" 
+                                   class="px-3 lg:px-4 py-2 rounded-full text-xs lg:text-sm font-medium transition-all duration-300 {% if not request.GET.category %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                    همه مقالات
+                                </a>
+                                {% for category in categories %}
+                                <a href="{% url 'blog:post_list' %}?category={{ category }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
+                                   class="px-3 lg:px-4 py-2 rounded-full text-xs lg:text-sm font-medium transition-all duration-300 {% if request.GET.category == category %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                    {{ category }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
 
-                    <!-- Categories -->
-                    {% if categories %}
-                    <div class="mb-6">
-                        <h3 class="text-lg font-bold mb-3">دسته‌بندی‌ها</h3>
-                        <div class="space-y-2">
-                            <a href="{% url 'blog:post_list' %}" class="block p-2 rounded-lg hover:bg-purple-50 transition-colors {% if not request.GET.category %}bg-purple-100 text-purple-700{% endif %}">
-                                همه مقالات
-                            </a>
-                            {% for category in categories %}
-                            <a href="{% url 'blog:post_list' %}?category={{ category }}" 
-                               class="block p-2 rounded-lg hover:bg-purple-50 transition-colors {% if request.GET.category == category %}bg-purple-100 text-purple-700{% endif %}">
-                                {{ category }}
-                            </a>
-                            {% endfor %}
+                        <!-- Date Filter -->
+                        <div class="col-span-1">
+                            <h4 class="text-sm lg:text-base font-semibold mb-2 lg:mb-3 text-center lg:text-right text-gray-700">فیلتر تاریخ</h4>
+                            <div class="flex flex-wrap gap-2 justify-center lg:justify-end blog-filter-buttons">
+                                <a href="{% url 'blog:post_list' %}{% if request.GET.category %}?category={{ request.GET.category }}{% endif %}{% if request.GET.search %}{% if request.GET.category %}&{% else %}?{% endif %}search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}{% if request.GET.category or request.GET.search %}&{% else %}?{% endif %}date_range={{ request.GET.date_range }}{% endif %}" 
+                                   class="px-3 lg:px-4 py-2 rounded-full text-xs lg:text-sm font-medium transition-all duration-300 {% if not request.GET.date_range %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                    همه زمان‌ها
+                                </a>
+                                <a href="{% url 'blog:post_list' %}?date_range=today{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                   class="px-0 lg:px-4 py-2 rounded-full text-xs lg:text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'today' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                    امروز
+                                </a>
+                                <a href="{% url 'blog:post_list' %}?date_range=week{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                   class="px-0 lg:px-4 py-2 rounded-full text-xs lg:text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'week' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                    این هفته
+                                </a>
+                                <a href="{% url 'blog:post_list' %}?date_range=month{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                   class="px-0 lg:px-4 py-2 rounded-full text-xs lg:text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'month' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                    این ماه
+                                </a>
+                                <a href="{% url 'blog:post_list' %}?date_range=year{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                   class="px-0 lg:px-4 py-2 rounded-full text-xs lg:text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'year' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                                    این سال
+                                </a>
+                            </div>
                         </div>
                     </div>
-                    {% endif %}
+                </div>
+            </div>
+        </div>
 
+        <!-- Mobile Layout: Featured Posts First -->
+        <div class="lg:hidden mb-6">
+            {% if featured_posts %}
+            <div class="theme-card rounded-xl shadow-lg p-4">
+                <h3 class="text-lg font-bold mb-4 text-center">مقالات ویژه</h3>
+                <div class="space-y-4">
+                    {% for post in featured_posts %}
+                    <div class="flex gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg blog-featured-post">
+                        {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
+                        {% else %}
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-newspaper text-purple-600"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-semibold text-sm line-clamp-2 leading-tight mb-1">{{ post.title }}</h4>
+                            <p class="text-xs text-gray-500 mb-2">{{ post.published_at|date:"Y/m/d" }}</p>
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="text-purple-600 hover:text-purple-700 text-xs font-semibold">
+                                ادامه مطلب
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Desktop Layout: Sidebar + Main Content -->
+        <div class="hidden lg:grid lg:grid-cols-4 gap-8">
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="theme-card rounded-xl shadow-lg p-6 lg:sticky lg:top-20">
                     <!-- Featured Posts -->
                     {% if featured_posts %}
                     <div>
-                        <h3 class="text-lg font-bold mb-3">مقالات ویژه</h3>
+                        <h3 class="text-lg font-bold mb-3 text-right">مقالات ویژه</h3>
                         <div class="space-y-3">
                             {% for post in featured_posts %}
-                            <div class="flex gap-3">
+                            <div class="flex gap-3 blog-featured-post">
                                 {% if post.image %}
-                                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-16 h-16 object-cover rounded-lg">
+                                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
                                 {% else %}
-                                <div class="w-16 h-16 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-purple-200 to-pink-200 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-newspaper text-purple-600"></i>
                                 </div>
                                 {% endif %}
-                                <div class="flex-1">
-                                    <h4 class="font-semibold text-sm line-clamp-2">{{ post.title }}</h4>
-                                    <p class="text-xs text-gray-500">{{ post.published_at|date:"Y/m/d" }}</p>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-semibold text-sm line-clamp-2 leading-tight">{{ post.title }}</h4>
+                                    <p class="text-xs text-gray-500 mt-1">{{ post.published_at|date:"Y/m/d" }}</p>
                                 </div>
                             </div>
                             {% endfor %}
@@ -68,9 +151,9 @@
             <!-- Main Content -->
             <div class="lg:col-span-3">
                 <!-- Results Info -->
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-4">
-                        <span class="text-gray-600">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 lg:mb-6 gap-2">
+                    <div class="flex flex-wrap items-center gap-2 lg:gap-4">
+                        <span class="text-sm lg:text-base text-gray-600">
                             {% if page_obj %}
                                 نمایش {{ page_obj.start_index }} تا {{ page_obj.end_index }} از {{ page_obj.paginator.count }} مقاله
                             {% else %}
@@ -78,8 +161,17 @@
                             {% endif %}
                         </span>
                         {% if request.GET.category %}
-                        <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm">
+                        <span class="bg-purple-100 text-purple-700 px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm">
                             دسته: {{ request.GET.category }}
+                        </span>
+                        {% endif %}
+                        {% if request.GET.date_range %}
+                        <span class="bg-blue-100 text-blue-700 px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm">
+                            {% if request.GET.date_range == 'today' %}امروز
+                            {% elif request.GET.date_range == 'week' %}این هفته
+                            {% elif request.GET.date_range == 'month' %}این ماه
+                            {% elif request.GET.date_range == 'year' %}این سال
+                            {% endif %}
                         </span>
                         {% endif %}
                     </div>
@@ -87,42 +179,41 @@
 
                 <!-- Posts Grid -->
                 {% if posts %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                     {% for post in posts %}
-                    <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover">
+                    <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover blog-post-card">
                         {% if post.image %}
-                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-40 lg:h-48 object-cover">
                         {% else %}
-                        <div class="w-full h-48 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
-                            <i class="fas fa-newspaper text-4xl text-purple-600"></i>
+                        <div class="w-full h-40 lg:h-48 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+                            <i class="fas fa-newspaper text-3xl lg:text-4xl text-purple-600"></i>
                         </div>
                         {% endif %}
-                        <div class="p-6">
-                            <div class="flex items-center gap-2 mb-3">
+                        <div class="p-4 lg:p-6">
+                            <div class="flex flex-wrap items-center gap-1 lg:gap-2 mb-2 lg:mb-3 blog-post-meta">
                                 <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-semibold">
                                     {{ post.category }}
                                 </span>
-                                <span class="text-gray-500 text-sm">{{ post.published_at|date:"Y/m/d" }}</span>
+                                <div class="flex items-center gap-1 lg:gap-2 text-gray-500 text-xs">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>{{ post.published_at|date:"Y/m/d" }}</span>
+                                </div>
                                 {% if post.is_featured %}
                                 <span class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full text-xs font-semibold">
                                     <i class="fas fa-star mr-1"></i>ویژه
                                 </span>
                                 {% endif %}
                             </div>
-                            <h3 class="text-xl font-bold mb-3 line-clamp-2">{{ post.title }}</h3>
-                            <p class="text-gray-600 mb-4 line-clamp-3">{{ post.get_excerpt }}</p>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-4">
+                            <h3 class="text-lg lg:text-xl font-bold mb-2 lg:mb-3 line-clamp-2 leading-tight">{{ post.title }}</h3>
+                            <p class="text-sm lg:text-base text-gray-600 mb-3 lg:mb-4 line-clamp-3 leading-relaxed">{{ post.get_excerpt }}</p>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 blog-post-actions">
+                                <div class="flex items-center gap-2 lg:gap-4">
                                     <div class="flex items-center gap-1">
-                                        <i class="fas fa-user text-gray-400"></i>
-                                        <span class="text-sm text-gray-600">{{ post.author.get_full_name|default:post.author.username }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-1">
-                                        <i class="fas fa-eye text-gray-400"></i>
-                                        <span class="text-sm text-gray-600">{{ post.view_count }}</span>
+                                        <i class="fas fa-user text-gray-400 text-xs"></i>
+                                        <span class="text-xs text-gray-600">{{ post.author.get_full_name|default:post.author.username }}</span>
                                     </div>
                                 </div>
-                                <a href="{% url 'blog:post_detail' post.slug %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                <a href="{% url 'blog:post_detail' post.slug %}" class="bg-purple-600 hover:bg-purple-700 text-white px-3 lg:px-4 py-2 rounded-lg transition-colors text-sm w-full sm:w-auto text-center">
                                     ادامه مطلب
                                 </a>
                             </div>
@@ -136,7 +227,7 @@
                 <div class="flex justify-center mt-8">
                     <nav class="flex items-center gap-2">
                         {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
                            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                             <i class="fas fa-chevron-right"></i>
                         </a>
@@ -146,7 +237,7 @@
                             {% if page_obj.number == num %}
                             <span class="px-4 py-2 bg-purple-600 text-white rounded-lg">{{ num }}</span>
                             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                            <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                            <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                                 {{ num }}
                             </a>
@@ -154,7 +245,7 @@
                         {% endfor %}
 
                         {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
                            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                             <i class="fas fa-chevron-left"></i>
                         </a>
@@ -174,6 +265,140 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- Mobile Posts Grid -->
+        {% if posts %}
+        <div class="lg:hidden">
+            <div class="grid grid-cols-1 gap-4">
+                {% for post in posts %}
+                <div class="theme-card rounded-xl shadow-lg overflow-hidden card-hover blog-post-card">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                    {% else %}
+                    <div class="w-full h-48 bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+                        <i class="fas fa-newspaper text-4xl text-purple-600"></i>
+                    </div>
+                    {% endif %}
+                    <div class="p-4">
+                        <div class="flex flex-wrap items-center gap-2 mb-3 blog-post-meta">
+                            <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-semibold">
+                                {{ post.category }}
+                            </span>
+                            <div class="flex items-center gap-1 text-gray-500 text-xs">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>{{ post.published_at|date:"Y/m/d" }}</span>
+                            </div>
+                            {% if post.is_featured %}
+                            <span class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full text-xs font-semibold">
+                                <i class="fas fa-star mr-1"></i>ویژه
+                            </span>
+                            {% endif %}
+                        </div>
+                        <h3 class="text-lg font-bold mb-3 line-clamp-2 leading-tight">{{ post.title }}</h3>
+                        <p class="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">{{ post.get_excerpt }}</p>
+                        <div class="flex flex-col gap-3 blog-post-actions">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-user text-gray-400 text-xs"></i>
+                                <span class="text-xs text-gray-600">{{ post.author.get_full_name|default:post.author.username }}</span>
+                            </div>
+                            <a href="{% url 'blog:post_detail' post.slug %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm w-full text-center">
+                                ادامه مطلب
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Mobile Pagination -->
+            {% if is_paginated %}
+            <div class="flex justify-center mt-6">
+                <nav class="flex items-center gap-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
+                       class="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <span class="px-3 py-2 bg-purple-600 text-white rounded-lg text-sm">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
+                        <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
+                           class="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm">
+                            {{ num }}
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
+                       class="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterToggle = document.getElementById('filterToggle');
+    const filterContent = document.getElementById('filterContent');
+    const filterIcon = document.getElementById('filterIcon');
+    
+    // Hide filters by default on mobile
+    if (window.innerWidth < 1024) {
+        filterContent.classList.add('hidden');
+        filterContent.classList.add('blog-filter-content');
+    }
+    
+    filterToggle.addEventListener('click', function() {
+        filterContent.classList.toggle('hidden');
+        filterIcon.classList.toggle('rotate-180');
+        
+        // Add smooth animation for mobile
+        if (window.innerWidth < 1024) {
+            if (filterContent.classList.contains('hidden')) {
+                filterContent.classList.remove('blog-filter-content', 'active');
+            } else {
+                filterContent.classList.add('blog-filter-content', 'active');
+            }
+        }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 1024) {
+            filterContent.classList.remove('hidden', 'blog-filter-content', 'active');
+            filterIcon.classList.remove('rotate-180');
+        } else {
+            filterContent.classList.add('blog-filter-content');
+            if (!filterContent.classList.contains('hidden')) {
+                filterContent.classList.add('active');
+            }
+        }
+    });
+    
+    // Add touch support for mobile
+    let touchStartY = 0;
+    let touchEndY = 0;
+    
+    filterToggle.addEventListener('touchstart', function(e) {
+        touchStartY = e.changedTouches[0].screenY;
+    });
+    
+    filterToggle.addEventListener('touchend', function(e) {
+        touchEndY = e.changedTouches[0].screenY;
+        if (Math.abs(touchStartY - touchEndY) < 10) {
+            filterToggle.click();
+        }
+    });
+});
+</script>

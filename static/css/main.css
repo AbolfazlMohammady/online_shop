@@ -357,6 +357,159 @@ body::before {
     display: block;
 }
 
+/* Blog specific mobile improvements */
+@media (max-width: 768px) {
+    .blog-filter-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .blog-filter-content.active {
+        max-height: 500px;
+    }
+    
+    .blog-post-card {
+        margin-bottom: 1rem;
+    }
+    
+    .blog-post-image {
+        height: 200px;
+    }
+    
+    .blog-featured-post {
+        padding: 0.75rem;
+    }
+    
+    .blog-featured-post img {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .newsletter-section {
+        padding: 1.5rem 1rem;
+    }
+    
+    .newsletter-section h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .newsletter-section p {
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .newsletter-form input,
+    .newsletter-form button {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .blog-filter-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .blog-filter-buttons a {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .blog-post-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .blog-post-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .blog-post-actions a {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .blog-featured-post {
+        padding: 0.5rem;
+    }
+    
+    .blog-featured-post img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .newsletter-section {
+        padding: 1rem 0.75rem;
+    }
+    
+    .newsletter-section h2,
+    .newsletter-section h3 {
+        font-size: 1.125rem;
+    }
+    
+    .newsletter-section p {
+        font-size: 0.75rem;
+    }
+    
+    .newsletter-form input,
+    .newsletter-form button {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Additional blog improvements */
+.blog-filter-content {
+    transition: all 0.3s ease;
+}
+
+.blog-filter-content.hidden {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.blog-filter-content:not(.hidden) {
+    max-height: 1000px;
+    opacity: 1;
+}
+
+.blog-post-card {
+    transition: all 0.3s ease;
+}
+
+.blog-post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.blog-featured-post {
+    transition: all 0.3s ease;
+}
+
+.blog-featured-post:hover {
+    background-color: rgba(147, 51, 234, 0.05);
+}
+
+.newsletter-section {
+    transition: all 0.3s ease;
+}
+
+.newsletter-section:hover {
+    transform: scale(1.01);
+}
+
 /* Auth Pages Styles */
 .tab-button {
     padding: 1rem 2rem;

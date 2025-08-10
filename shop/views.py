@@ -355,6 +355,9 @@ def get_products_json(request):
             'images': images,
             'description': product.description,
             'short_description': product.short_description,
+            'telegram_link': product.telegram_link,
+            'instagram_link': product.instagram_link,
+            'facebook_link': product.facebook_link,
         })
     
     return JsonResponse({

@@ -2009,6 +2009,27 @@ function renderGridView(productsToRender, grid) {
                         </div>
                     </div>
                     
+                    <!-- Social Media Links -->
+                    ${(product.telegram_link || product.instagram_link || product.facebook_link) ? `
+                        <div class="product-social-links">
+                            ${product.telegram_link ? `
+                                <a href="${product.telegram_link}" target="_blank" class="social-link telegram-link" onclick="event.stopPropagation()">
+                                    <i class="fab fa-telegram"></i>
+                                </a>
+                            ` : ''}
+                            ${product.instagram_link ? `
+                                <a href="${product.instagram_link}" target="_blank" class="social-link instagram-link" onclick="event.stopPropagation()">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            ` : ''}
+                            ${product.facebook_link ? `
+                                <a href="${product.facebook_link}" target="_blank" class="social-link facebook-link" onclick="event.stopPropagation()">
+                                    <i class="fab fa-facebook"></i>
+                                </a>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                    
                     <!-- Action Buttons - Bottom Right -->
                     <div class="product-actions">
                         <button onclick="addToWishlist(${product.id}, event)" class="wishlist-btn" data-product-id="${product.id}">

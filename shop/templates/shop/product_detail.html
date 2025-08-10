@@ -98,6 +98,28 @@
                                 {% endif %}
                             {% endfor %}
                         </div>
+                        
+                        <!-- Social Media Links -->
+                        {% if product.telegram_link or product.instagram_link or product.facebook_link %}
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">اشتراک‌گذاری:</span>
+                            {% if product.telegram_link %}
+                            <a href="{{ product.telegram_link }}" target="_blank" class="w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center text-white transition-colors">
+                                <i class="fab fa-telegram text-sm"></i>
+                            </a>
+                            {% endif %}
+                            {% if product.instagram_link %}
+                            <a href="{{ product.instagram_link }}" target="_blank" class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center text-white transition-colors">
+                                <i class="fab fa-instagram text-sm"></i>
+                            </a>
+                            {% endif %}
+                            {% if product.facebook_link %}
+                            <a href="{{ product.facebook_link }}" target="_blank" class="w-8 h-8 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white transition-colors">
+                                <i class="fab fa-facebook text-sm"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                              <div class="flex items-center gap-2">
                                  <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ product.rating|floatformat:1 }}</span>
                                  <span class="text-gray-600 dark:text-gray-400 text-sm">({{ comments.count }} نظر)</span>

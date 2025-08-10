@@ -121,6 +121,11 @@ class Product(models.Model):
     meta_description = models.TextField(blank=True, verbose_name="توضیحات متا")
     meta_keywords = models.CharField(max_length=500, blank=True, verbose_name="کلمات کلیدی متا")
     
+    # Social Media
+    telegram_link = models.URLField(blank=True, verbose_name="لینک تلگرام")
+    instagram_link = models.URLField(blank=True, verbose_name="لینک اینستاگرام")
+    facebook_link = models.URLField(blank=True, verbose_name="لینک فیسبوک")
+    
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")

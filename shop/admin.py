@@ -94,7 +94,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = [
         'name', 'category', 'brand', 'price', 'original_price', 'discount_percentage', 
-        'stock_quantity', 'rating', 'is_active', 'is_featured', 'is_bestseller'
+        'stock_quantity', 'rating', 'is_active', 'is_featured', 'is_bestseller', 'get_social_links'
     ]
     list_filter = [
         'category', 'brand', 'is_active', 'is_featured', 'is_bestseller', 'is_new', 
@@ -131,11 +131,29 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('meta_title', 'meta_description', 'meta_keywords'),
             'classes': ('collapse',)
         }),
+        ('شبکه‌های اجتماعی', {
+            'fields': ('telegram_link', 'instagram_link', 'facebook_link'),
+            'classes': ('collapse',)
+        }),
         ('تاریخ‌ها', {
             'fields': ('created_at', 'updated_at', 'published_at'),
             'classes': ('collapse',)
         }),
     )
+    
+    def get_social_links(self, obj):
+        links = []
+        if obj.telegram_link:
+            links.append(f'<a href="{obj.telegram_link}" target="_blank" style="color: #0088cc; margin-left: 5px;"><i class="fab fa-telegram"></i></a>')
+        if obj.instagram_link:
+            links.append(f'<a href="{obj.instagram_link}" target="_blank" style="color: #e4405f; margin-left: 5px;"><i class="fab fa-instagram"></i></a>')
+        if obj.facebook_link:
+            links.append(f'<a href="{obj.facebook_link}" target="_blank" style="color: #1877f2; margin-left: 5px;"><i class="fab fa-facebook"></i></a>')
+        
+        if links:
+            return format_html(''.join(links))
+        return "بدون لینک"
+    get_social_links.short_description = 'شبکه‌های اجتماعی'
     
     def save_model(self, request, obj, form, change):
         if obj.discount_percentage > 0 and not obj.original_price:

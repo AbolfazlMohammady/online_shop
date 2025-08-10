@@ -24,8 +24,11 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
     published_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ انتشار")
-    view_count = models.PositiveIntegerField(default=0, verbose_name="تعداد بازدید")
     is_featured = models.BooleanField(default=False, verbose_name="مقاله ویژه")
+    
+    # Social Media Links
+    instagram_link = models.URLField(blank=True, verbose_name="لینک اینستاگرام")
+    telegram_link = models.URLField(blank=True, verbose_name="لینک تلگرام")
     
     class Meta:
         verbose_name = "مقاله"
@@ -48,3 +51,17 @@ class Post(models.Model):
         if self.tags:
             return [tag.strip() for tag in self.tags.split(',')]
         return []
+
+
+class NewsletterSubscription(models.Model):
+    email = models.EmailField(unique=True, verbose_name="ایمیل")
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
+    subscribed_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ اشتراک")
+    
+    class Meta:
+        verbose_name = "اشتراک خبرنامه"
+        verbose_name_plural = "اشتراک‌های خبرنامه"
+        ordering = ['-subscribed_at']
+    
+    def __str__(self):
+        return self.email

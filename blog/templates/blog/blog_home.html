@@ -24,7 +24,10 @@
                             <span class="bg-purple-100 text-purple-600 px-2 py-1 rounded-full text-xs font-semibold">
                                 {{ post.category }}
                             </span>
-                            <span class="text-gray-500 text-sm">{{ post.published_at|date:"Y/m/d" }}</span>
+                            <div class="flex items-center gap-2 text-gray-500 text-xs">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>{{ post.published_at|date:"Y/m/d" }}</span>
+                            </div>
                         </div>
                         <h3 class="text-xl font-bold mb-3 line-clamp-2">{{ post.title }}</h3>
                         <p class="text-gray-600 mb-4 line-clamp-3">{{ post.get_excerpt }}</p>
@@ -70,15 +73,14 @@
                             <span class="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">
                                 {{ post.category }}
                             </span>
-                            <span class="text-gray-500 text-xs">{{ post.published_at|date:"Y/m/d" }}</span>
+                            <div class="flex items-center gap-1 text-gray-500 text-xs">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>{{ post.published_at|date:"Y/m/d" }}</span>
+                            </div>
                         </div>
                         <h3 class="text-lg font-bold mb-2 line-clamp-2">{{ post.title }}</h3>
                         <p class="text-gray-600 mb-3 line-clamp-2 text-sm">{{ post.get_excerpt }}</p>
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-eye text-gray-400 text-xs"></i>
-                                <span class="text-xs text-gray-600">{{ post.view_count }}</span>
-                            </div>
                             <a href="{% url 'blog:post_detail' post.slug %}" class="text-purple-600 hover:text-purple-700 text-sm font-semibold">
                                 ادامه مطلب
                             </a>
@@ -87,6 +89,24 @@
                 </div>
                 {% endfor %}
             </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-6 lg:py-8 bg-gradient-to-br from-purple-500 to-pink-500 newsletter-section">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-xl lg:text-2xl font-bold text-white mb-2 lg:mb-3">خبرنامه</h2>
+            <p class="text-white opacity-90 mb-4 lg:mb-6 max-w-lg mx-auto text-sm lg:text-base">برای دریافت آخرین مقالات و اخبار زیبایی و آرایشی در ایمیل خود ثبت‌نام کنید</p>
+            <form method="post" action="{% url 'blog:newsletter_subscribe' %}" class="max-w-sm mx-auto">
+                {% csrf_token %}
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 newsletter-form">
+                    <input type="email" name="email" placeholder="ایمیل شما" required
+                           class="flex-1 p-2 lg:p-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-white text-sm">
+                    <button type="submit" class="bg-white text-purple-600 px-4 lg:px-6 py-2 lg:py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm">
+                        ثبت‌نام
+                    </button>
+                </div>
+            </form>
         </div>
     </section>
 

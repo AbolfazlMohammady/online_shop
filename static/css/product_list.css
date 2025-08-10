@@ -337,6 +337,56 @@
     color: #e5e7eb;
 }
 
+/* Social media links */
+.product-social-links {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    gap: 4px;
+    z-index: 10;
+}
+
+.social-link {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 10px;
+    color: white;
+}
+
+.telegram-link {
+    background: linear-gradient(135deg, #0088cc 0%, #0077b3 100%);
+}
+
+.telegram-link:hover {
+    background: linear-gradient(135deg, #0077b3 0%, #006699 100%);
+    transform: scale(1.1);
+}
+
+.instagram-link {
+    background: linear-gradient(135deg, #e4405f 0%, #d63384 100%);
+}
+
+.instagram-link:hover {
+    background: linear-gradient(135deg, #d63384 0%, #c2255c 100%);
+    transform: scale(1.1);
+}
+
+.facebook-link {
+    background: linear-gradient(135deg, #1877f2 0%, #166fe5 100%);
+}
+
+.facebook-link:hover {
+    background: linear-gradient(135deg, #166fe5 0%, #1464d2 100%);
+    transform: scale(1.1);
+}
+
 /* Product actions container */
 .product-actions {
     position: relative;

@@ -1,7 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
-from .models import Post
+from django.contrib import messages
+from django.http import JsonResponse
+from .models import Post, NewsletterSubscription
 
 # Create your views here.
 
@@ -18,6 +20,25 @@ class PostListView(ListView):
         category = self.request.GET.get('category')
         if category:
             queryset = queryset.filter(category=category)
+        
+        # فیلتر بر اساس تاریخ
+        date_range = self.request.GET.get('date_range')
+        if date_range:
+            from django.utils import timezone
+            from datetime import timedelta
+            
+            now = timezone.now()
+            if date_range == 'today':
+                queryset = queryset.filter(published_at__date=now.date())
+            elif date_range == 'week':
+                week_ago = now - timedelta(days=7)
+                queryset = queryset.filter(published_at__gte=week_ago)
+            elif date_range == 'month':
+                month_ago = now - timedelta(days=30)
+                queryset = queryset.filter(published_at__gte=month_ago)
+            elif date_range == 'year':
+                year_ago = now - timedelta(days=365)
+                queryset = queryset.filter(published_at__gte=year_ago)
         
         # جستجو
         search = self.request.GET.get('search')
@@ -47,9 +68,6 @@ class PostDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # افزایش تعداد بازدید
-        self.object.view_count += 1
-        self.object.save()
         
         # مقالات مرتبط
         context['related_posts'] = Post.objects.filter(
@@ -76,3 +94,31 @@ def blog_home(request):
         'categories': categories,
     }
     return render(request, 'blog/blog_home.html', context)
+
+
+def newsletter_subscribe(request):
+    """اشتراک در خبرنامه"""
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        if email:
+            try:
+                subscription, created = NewsletterSubscription.objects.get_or_create(
+                    email=email,
+                    defaults={'is_active': True}
+                )
+                if created:
+                    messages.success(request, 'اشتراک شما با موفقیت ثبت شد!')
+                else:
+                    if subscription.is_active:
+                        messages.info(request, 'این ایمیل قبلاً در خبرنامه ثبت شده است.')
+                    else:
+                        subscription.is_active = True
+                        subscription.save()
+                        messages.success(request, 'اشتراک شما مجدداً فعال شد!')
+            except Exception as e:
+                messages.error(request, 'خطا در ثبت اشتراک. لطفاً دوباره تلاش کنید.')
+        else:
+            messages.error(request, 'لطفاً ایمیل خود را وارد کنید.')
+    
+    # Redirect back to the referring page
+    return redirect(request.META.get('HTTP_REFERER', 'blog:blog_home'))
