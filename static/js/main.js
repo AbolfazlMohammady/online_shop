@@ -9,6 +9,17 @@ let currentSort = 'default';
 let currentSearch = '';
 let currentPriceRange = { min: 0, max: 1000000 };
 
+// Filter variables
+let activeFilters = {
+    search: '',
+    category: '',
+    brand: '',
+    sort: 'default',
+    minPrice: null,
+    maxPrice: null,
+    quickFilter: null
+};
+
 // Infinite scroll variables
 let currentPageNumber = 1;
 let isLoading = false;
@@ -216,16 +227,6 @@ const sampleProducts = [
         ]
     }
 ];
-
-let activeFilters = {
-    search: '',
-    category: '',
-    brand: '',
-    sort: 'default',
-    minPrice: null,
-    maxPrice: null,
-    quickFilter: null
-};
 
 // Countdown Timer Function - تایمر شمارش معکوس
 function startCountdown() {
@@ -642,7 +643,11 @@ function renderProducts(productsToRender = products) {
 }
 
 // Cart Functions
-function addToCart(productId) {
+function addToCart(productId, event) {
+    if (event) {
+        event.stopPropagation(); // Prevent card click
+    }
+    
     const product = products.find(p => p.id === productId);
     if (!product) return;
     
@@ -1494,15 +1499,52 @@ function toggleCompact() {
 }
 
 function setCategoryFilter(category) {
-    // Update active state
+    // Remove active class from all category pills
     document.querySelectorAll('.category-pill').forEach(pill => {
         pill.classList.remove('active');
+        pill.classList.remove('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+        pill.classList.add('bg-gradient-to-r', 'from-red-200', 'to-pink-200', 'text-red-700');
     });
-    event.target.classList.add('active');
     
-    // Set filter
+    // Add active class to clicked pill
+    event.target.classList.add('active');
+    event.target.classList.remove('bg-gradient-to-r', 'from-red-200', 'to-pink-200', 'text-red-700');
+    event.target.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+    
+    // Update filter
     activeFilters.category = category;
     filterProducts();
+}
+
+function setBrandFilter(brand) {
+    // Remove active class from all brand pills
+    document.querySelectorAll('.brand-pill').forEach(pill => {
+        pill.classList.remove('active');
+        pill.classList.remove('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+        pill.classList.add('bg-gradient-to-r', 'from-blue-200', 'to-indigo-200', 'text-blue-700');
+    });
+    
+    // Add active class to clicked pill
+    event.target.classList.add('active');
+    event.target.classList.remove('bg-gradient-to-r', 'from-blue-200', 'to-indigo-200', 'text-blue-700');
+    event.target.classList.add('bg-gradient-to-r', 'from-gray-200', 'to-gray-300', 'text-gray-700');
+    
+    // Update filter
+    activeFilters.brand = brand;
+    filterProducts();
+}
+
+function formatPriceInput(input) {
+    // Remove all non-digit characters
+    let value = input.value.replace(/[^\d]/g, '');
+    
+    // Add thousands separators
+    if (value.length > 0) {
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    
+    // Update input value
+    input.value = value;
 }
 
 // ===== CORE APP JAVASCRIPT FUNCTIONS =====
@@ -1932,7 +1974,7 @@ function applyPriceFilters() {
 function renderGridView(productsToRender, grid) {
     productsToRender.forEach(product => {
         const productCard = `
-            <a href="/shop/product/${product.slug}/" class="product-card" style="text-decoration: none; color: inherit;">
+            <div class="product-card">
                 <!-- Badges -->
                 ${product.has_discount ? `
                     <div class="discount-badge">
@@ -1952,8 +1994,9 @@ function renderGridView(productsToRender, grid) {
                         جدید
                     </div>
                 ` : ''}
+                
                 <!-- Image Container -->
-                <div class="product-image-container">
+                <div class="product-image-container" onclick="openProductDetail('${product.slug}')">
                     ${product.images && product.images.length > 0 
                         ? `<img src="${product.images[0].image}" alt="${product.name}" class="product-image">`
                         : `<div class="placeholder-container">
@@ -1974,8 +2017,14 @@ function renderGridView(productsToRender, grid) {
                         </div>
                     </div>
                 </div>
+                
                 <div class="product-content">
                     <div class="product-info">
+                        <!-- Short Description -->
+                        <div class="product-short-description text-sm text-gray-600 mb-2">
+                            ${product.description ? product.description.substring(0, 80) + (product.description.length > 80 ? '...' : '') : 'توضیحات محصول'}
+                        </div>
+                        
                         <div class="product-rating">
                             <div class="stars">
                                 ${(() => {
@@ -1988,13 +2037,24 @@ function renderGridView(productsToRender, grid) {
                             </div>
                             <span class="rating-text">(${product.rating || 0})</span>
                         </div>
+                        
                         <div class="product-price">
                             <span class="current-price">${toPersianNumber(product.price)} تومان</span>
                             ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
                         </div>
                     </div>
+                    
+                    <!-- Action Buttons - Bottom Right -->
+                    <div class="product-actions">
+                        <button onclick="addToWishlist(${product.id}, event)" class="wishlist-btn" data-product-id="${product.id}">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button onclick="addToCart(${product.id}, event)" class="cart-button" data-product-id="${product.id}">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
-            </a>
+            </div>
         `;
         grid.innerHTML += productCard;
     });
@@ -2003,16 +2063,16 @@ function renderGridView(productsToRender, grid) {
 function renderListView(productsToRender, grid) {
     productsToRender.forEach(product => {
         const productCard = `
-            <a href="/shop/product/${product.slug}/" class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex" style="text-decoration: none; color: inherit;">
+            <div class="theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer flex relative" style="text-decoration: none; color: inherit;">
                 <div class="w-32 h-32 bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center flex-shrink-0">
                     ${product.images && product.images.length > 0 
                         ? `<img src="${product.images[0].image}" alt="${product.name}" class="w-full h-full object-cover">`
                         : `<i class="fas fa-image text-3xl text-gray-400"></i>`
                     }
                 </div>
-                <div class="p-6 flex-1 flex items-center justify-between">
+                <div class="p-4 flex-1 flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-start justify-between mb-2">
                             <div>
                                 <h3 class="text-lg font-bold mb-1">${product.name}</h3>
                                 <div class="flex items-center gap-4 text-sm text-gray-600">
@@ -2041,14 +2101,59 @@ function renderListView(productsToRender, grid) {
                                 <span class="rating-text">(${product.rating || 0})</span>
                             </div>
                         </div>
+                        
+                        <!-- Short Description -->
+                        <div class="product-short-description text-sm text-gray-600 mb-2">
+                            ${product.description ? product.description.substring(0, 100) + (product.description.length > 100 ? '...' : '') : 'توضیحات محصول'}
+                        </div>
+                        
                         <div class="product-price">
                             <span class="current-price">${toPersianNumber(product.price)} تومان</span>
                             ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
                         </div>
                     </div>
+                    
+                    <!-- Action Buttons - Right Side -->
+                    <div class="flex flex-col gap-2 ml-4">
+                        <button onclick="addToWishlist(${product.id}, event)" class="wishlist-btn-list" data-product-id="${product.id}">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button onclick="addToCart(${product.id}, event)" class="cart-button-list" data-product-id="${product.id}">
+                            <i class="fas fa-shopping-cart"></i>
+                        </button>
+                    </div>
                 </div>
-            </a>
+                
+                <!-- Clickable overlay for product detail -->
+                <div class="absolute inset-0 cursor-pointer" onclick="openProductDetail('${product.slug}')" style="z-index: 1;"></div>
+            </div>
         `;
         grid.innerHTML += productCard;
     });
+}
+
+// Product Functions
+function openProductDetail(productSlug) {
+    window.location.href = `/shop/product/${productSlug}/`;
+}
+
+function addToWishlist(productId, event) {
+    event.stopPropagation(); // Prevent card click
+    
+    const button = event.target.closest('.wishlist-btn');
+    const icon = button.querySelector('i');
+    
+    if (icon.classList.contains('far')) {
+        // Add to wishlist
+        icon.classList.remove('far');
+        icon.classList.add('fas');
+        button.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+        console.log('Added to wishlist:', productId);
+    } else {
+        // Remove from wishlist
+        icon.classList.remove('fas');
+        icon.classList.add('far');
+        button.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+        console.log('Removed from wishlist:', productId);
+    }
 }
