@@ -474,6 +474,58 @@ body::before {
     transition: all 0.3s ease;
 }
 
+/* Filter icon rotation */
+#filterIcon {
+    transition: transform 0.3s ease;
+}
+
+#filterIcon.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* Ensure filter content is properly hidden */
+#filterContent.hidden {
+    display: none !important;
+}
+
+/* Filter open state */
+#filterContent.filter-open {
+    max-height: 500px !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+}
+
+/* Shop-style filter animations */
+@keyframes shimmer {
+    0% { transform: translateX(-100%) skewX(-12deg); }
+    100% { transform: translateX(200%) skewX(-12deg); }
+}
+
+.animate-shimmer {
+    animation: shimmer 2s infinite;
+}
+
+.animate-ping {
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+    75%, 100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* Filter toggle button styling */
+#filterToggle {
+    cursor: pointer;
+    user-select: none;
+}
+
+#filterToggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 .blog-filter-content.hidden {
     max-height: 0;
     opacity: 0;
