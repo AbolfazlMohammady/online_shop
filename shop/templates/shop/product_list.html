@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}محصولات - فروشگاه زیبایی{% endblock %}
+{% block meta %}
+    <meta name="description" content="مرور و فیلتر محصولات آرایشی و بهداشتی با فیلترهای پیشرفته و مرتب‌سازی.">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="محصولات - فروشگاه زیبایی">
+    <meta property="og:description" content="مرور و فیلتر محصولات آرایشی و بهداشتی با فیلترهای پیشرفته و مرتب‌سازی.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="محصولات - فروشگاه زیبایی">
+    <meta name="twitter:description" content="مرور و فیلتر محصولات آرایشی و بهداشتی با فیلترهای پیشرفته و مرتب‌سازی.">
+{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/product_list.css' %}">

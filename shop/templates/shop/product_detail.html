@@ -1,5 +1,20 @@
 {% extends "base.html" %}
 {% load date_filters static %}
+{% block title %}{{ product.meta_title|default:product.name }}{% endblock %}
+{% block meta %}
+    <meta name="description" content="{{ product.meta_description|default:product.short_description|default:product.description|truncatechars:160 }}">
+    {% if product.meta_keywords %}<meta name="keywords" content="{{ product.meta_keywords }}">{% endif %}
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{{ product.meta_title|default:product.name }}">
+    <meta property="og:description" content="{{ product.meta_description|default:product.short_description|default:product.description|truncatechars:160 }}">
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if product.images.first %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.images.first.image.url }}">{% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ product.meta_title|default:product.name }}">
+    <meta name="twitter:description" content="{{ product.meta_description|default:product.short_description|default:product.description|truncatechars:160 }}">
+    {% if product.images.first %}<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.images.first.image.url }}">{% endif %}
+{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/product_detail.css' %}">
 {% endblock %}

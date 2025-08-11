@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Post, NewsletterSubscription
 
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'category', 'status', 'published_at', 'is_featured')
@@ -19,6 +20,10 @@ class PostAdmin(admin.ModelAdmin):
         }),
         ('تنظیمات انتشار', {
             'fields': ('status', 'published_at', 'is_featured')
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_description', 'meta_keywords'),
+            'classes': ('collapse',)
         }),
         ('شبکه‌های اجتماعی', {
             'fields': ('instagram_link', 'telegram_link'),

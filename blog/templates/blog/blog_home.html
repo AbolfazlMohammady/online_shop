@@ -1,8 +1,22 @@
 {% extends "base.html" %}
 
+{% block title %}بلاگ زیبایی - مقاله‌های ویژه و آخرین مطالب{% endblock %}
+{% block meta %}
+    <meta name="description" content="جدیدترین مقالات زیبایی، آرایشی و بهداشتی. نکات کاربردی، معرفی محصولات و ترندهای روز را در بلاگ بخوانید.">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="بلاگ زیبایی - مقاله‌های ویژه و آخرین مطالب">
+    <meta property="og:description" content="جدیدترین مقالات زیبایی، آرایشی و بهداشتی. نکات کاربردی، معرفی محصولات و ترندهای روز را در بلاگ بخوانید.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="بلاگ زیبایی - مقاله‌های ویژه و آخرین مطالب">
+    <meta name="twitter:description" content="جدیدترین مقالات زیبایی، آرایشی و بهداشتی. نکات کاربردی، معرفی محصولات و ترندهای روز را در بلاگ بخوانید.">
+{% endblock %}
+
 {% block contact %}
 <div class="min-h-screen">
 
+    
 
     <!-- Featured Posts -->
     {% if featured_posts %}

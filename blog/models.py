@@ -26,6 +26,11 @@ class Post(models.Model):
     published_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ انتشار")
     is_featured = models.BooleanField(default=False, verbose_name="مقاله ویژه")
     
+    # SEO
+    meta_title = models.CharField(max_length=200, blank=True, verbose_name="عنوان متا")
+    meta_description = models.TextField(blank=True, verbose_name="توضیحات متا")
+    meta_keywords = models.CharField(max_length=500, blank=True, verbose_name="کلمات کلیدی متا")
+    
     # Social Media Links
     instagram_link = models.URLField(blank=True, verbose_name="لینک اینستاگرام")
     telegram_link = models.URLField(blank=True, verbose_name="لینک تلگرام")
@@ -45,6 +50,21 @@ class Post(models.Model):
         if self.excerpt:
             return self.excerpt
         return self.content[:200] + "..." if len(self.content) > 200 else self.content
+    
+    def get_meta_title(self):
+        return self.meta_title or self.title
+    
+    def get_meta_description(self):
+        if self.meta_description:
+            return self.meta_description
+        if self.excerpt:
+            return self.excerpt[:160]
+        return (self.content[:160] + "...") if len(self.content) > 160 else self.content
+    
+    def get_meta_keywords(self):
+        if self.meta_keywords:
+            return self.meta_keywords
+        return ", ".join(self.get_tags_list())
     
     def get_tags_list(self):
         """برگرداندن لیست برچسب‌ها"""

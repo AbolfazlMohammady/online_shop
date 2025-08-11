@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 
+{% block title %}محصولات برند {{ brand.name }}{% endblock %}
+{% block meta %}
+    <meta name="description" content="محصولات برند {{ brand.name }}. مرور، مقایسه و خرید با فیلترهای متنوع.">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="محصولات برند {{ brand.name }}">
+    <meta property="og:description" content="محصولات برند {{ brand.name }}. مرور، مقایسه و خرید با فیلترهای متنوع.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="محصولات برند {{ brand.name }}">
+    <meta name="twitter:description" content="محصولات برند {{ brand.name }}. مرور، مقایسه و خرید با فیلترهای متنوع.">
+{% endblock %}
+
 {% block contact %}
 <div class="min-h-screen">
     <div class="container mx-auto px-4 py-8">

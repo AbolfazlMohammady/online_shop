@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 
+{% block title %}{{ post.get_meta_title }}{% endblock %}
+{% block meta %}
+    <meta name="description" content="{{ post.get_meta_description }}">
+    {% if post.get_meta_keywords %}<meta name="keywords" content="{{ post.get_meta_keywords }}">{% endif %}
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="{{ post.get_meta_title }}">
+    <meta property="og:description" content="{{ post.get_meta_description }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if post.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.image.url }}">{% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ post.get_meta_title }}">
+    <meta name="twitter:description" content="{{ post.get_meta_description }}">
+    {% if post.image %}<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.image.url }}">{% endif %}
+{% endblock %}
+
 {% block contact %}
 <div class="min-h-screen">
     <div class="container mx-auto px-4 py-8">
