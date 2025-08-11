@@ -298,6 +298,106 @@ class Comment(models.Model):
         # Update product rating when comment is saved
         self.product.update_rating()
 
+
+# Cart, Wishlist, and Order models
+class Cart(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='carts', verbose_name="کاربر")
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
+
+    class Meta:
+        verbose_name = "سبد خرید"
+        verbose_name_plural = "سبدهای خرید"
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return f"سبد {self.user} ({'فعال' if self.is_active else 'غیرفعال'})"
+
+    def get_total_amount(self):
+        total = 0
+        for item in self.items.select_related('product'):
+            total += int(item.price) * item.quantity
+        return total
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items', verbose_name="سبد")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='cart_items', verbose_name="محصول")
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)], verbose_name="تعداد")
+    price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="قیمت در زمان افزودن")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "آیتم سبد"
+        verbose_name_plural = "آیتم‌های سبد"
+        unique_together = ('cart', 'product')
+
+    def __str__(self):
+        return f"{self.product.name} × {self.quantity}"
+
+
+class Wishlist(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist', verbose_name="کاربر")
+    products = models.ManyToManyField(Product, related_name='wishlisted_by', blank=True, verbose_name="محصولات")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "علاقه‌مندی"
+        verbose_name_plural = "علاقه‌مندی‌ها"
+
+    def __str__(self):
+        return f"علاقه‌مندی‌های {self.user}"
+
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'در انتظار پرداخت'),
+        ('paid', 'پرداخت شده'),
+        ('processing', 'در حال پردازش'),
+        ('shipped', 'ارسال شد'),
+        ('delivered', 'تحویل شد'),
+        ('canceled', 'لغو شده'),
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders', verbose_name="کاربر")
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="وضعیت")
+    subtotal_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, verbose_name="جمع جزء")
+    shipping_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, verbose_name="هزینه ارسال")
+    total_amount = models.DecimalField(max_digits=12, decimal_places=0, default=0, verbose_name="مبلغ کل")
+
+    # Shipping info snapshot
+    receiver_name = models.CharField(max_length=100, verbose_name="نام گیرنده")
+    receiver_phone = models.CharField(max_length=20, verbose_name="شماره تماس")
+    province_name = models.CharField(max_length=100, verbose_name="استان")
+    city_name = models.CharField(max_length=100, verbose_name="شهر")
+    address_detail = models.CharField(max_length=300, verbose_name="آدرس کامل")
+    postal_code = models.CharField(max_length=20, verbose_name="کد پستی")
+
+    class Meta:
+        verbose_name = "سفارش"
+        verbose_name_plural = "سفارش‌ها"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"سفارش #{self.id} - {self.user}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', verbose_name="سفارش")
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name='order_items', verbose_name="محصول")
+    quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)], verbose_name="تعداد")
+    unit_price = models.DecimalField(max_digits=10, decimal_places=0, verbose_name="قیمت واحد")
+    total_price = models.DecimalField(max_digits=12, decimal_places=0, verbose_name="قیمت کل")
+
+    class Meta:
+        verbose_name = "آیتم سفارش"
+        verbose_name_plural = "آیتم‌های سفارش"
+
+    def __str__(self):
+        return f"{self.product.name} × {self.quantity}"
+
 # Signals for deleting old images
 @receiver(pre_delete, sender=ProductImage)
 def delete_product_image_file(sender, instance, **kwargs):

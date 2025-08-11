@@ -6,6 +6,22 @@ from .models import User, Province, City
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
+from django.db.models import F
+
+def home(request):
+    """Home page with latest/most viewed products and recent blog posts"""
+    from shop.models import Product
+    from blog.models import Post
+
+    latest_products = Product.objects.filter(is_active=True).order_by('-created_at')[:5]
+    most_viewed_products = Product.objects.filter(is_active=True).order_by('-view_count')[:5]
+    recent_posts = Post.objects.filter(status='published').order_by('-published_at')[:3]
+
+    return render(request, 'home.html', {
+        'latest_products': latest_products,
+        'most_viewed_products': most_viewed_products,
+        'recent_posts': recent_posts,
+    })
 
 def user_login(request):
     if request.method == 'POST':

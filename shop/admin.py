@@ -7,7 +7,7 @@ from django.contrib.admin import AdminSite
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
-from .models import Category, Product, ProductImage, ProductSpecification, Brand, Comment
+from .models import Category, Product, ProductImage, ProductSpecification, Brand, Comment, Cart, CartItem, Wishlist, Order, OrderItem
 
 # Custom Admin Site
 class BeautyShopAdminSite(AdminSite):
@@ -293,3 +293,46 @@ class CommentAdmin(CommentStatsWidget):
         css = {
             'all': ('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',)
         }
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['user', 'is_active', 'created_at', 'updated_at', 'total']
+    list_filter = ['is_active', 'created_at']
+    search_fields = ['user__email', 'user__first_name', 'user__last_name']
+    readonly_fields = ['created_at', 'updated_at']
+
+    def total(self, obj):
+        return f"{obj.get_total_amount():,}"
+
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+    list_display = ['cart', 'product', 'quantity', 'price', 'created_at']
+    list_filter = ['created_at', 'product__category']
+    search_fields = ['product__name', 'cart__user__email']
+
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ['user', 'created_at', 'products_count']
+    search_fields = ['user__email', 'user__first_name', 'user__last_name']
+
+    def products_count(self, obj):
+        return obj.products.count()
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    readonly_fields = ['total_price']
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'status', 'total_amount', 'created_at']
+    list_filter = ['status', 'created_at']
+    search_fields = ['user__email']
+    inlines = [OrderItemInline]
+    readonly_fields = ['created_at']
+
