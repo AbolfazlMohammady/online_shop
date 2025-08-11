@@ -23,12 +23,12 @@
             <div class="theme-card rounded-2xl shadow-lg">
                 <!-- Filter Header -->
                 <div class="p-4 border-b border-gray-200">
-                    <button id="filterToggle" class="flex items-center justify-between w-full text-left">
+                    <button type="button" id="filterToggle" class="flex items-center justify-between w-full text-left">
                         <h3 class="text-lg font-bold text-gray-800">
                             <i class="fas fa-filter mr-2 text-purple-600"></i>
                             فیلترها
                         </h3>
-                        <i id="filterIcon" class="fas fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                        <i id="filterIcon" class="fas fa-chevron-down text-gray-500 transition-transform transform duration-300"></i>
                     </button>
                 </div>
 
@@ -63,7 +63,7 @@
                                     همه مقالات
                                 </a>
                                 {% for category in categories %}
-                                <a href="{% url 'blog:post_list' %}?category={{ category }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range }}{% endif %}" 
+                                <a href="{% url 'blog:post_list' %}?category={{ category|urlencode }}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}{% if request.GET.date_range %}&date_range={{ request.GET.date_range|urlencode }}{% endif %}" 
                                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 {% if request.GET.category == category %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
                                     {{ category }}
                                 </a>
@@ -76,23 +76,23 @@
                         <div class="flex-1">
                             <h4 class="text-md font-semibold mb-3 text-center lg:text-right text-gray-700">فیلتر تاریخ</h4>
                             <div class="flex flex-wrap gap-2 justify-center lg:justify-end">
-                                <a href="{% url 'blog:post_list' %}{% if request.GET.category %}?category={{ request.GET.category }}{% endif %}{% if request.GET.search %}{% if request.GET.category %}&{% else %}?{% endif %}search={{ request.GET.search }}{% endif %}" 
+                                <a href="{% url 'blog:post_list' %}{% if request.GET.category %}?category={{ request.GET.category|urlencode }}{% endif %}{% if request.GET.search %}{% if request.GET.category %}&{% else %}?{% endif %}search={{ request.GET.search|urlencode }}{% endif %}" 
                                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 {% if not request.GET.date_range %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
                                     همه زمان‌ها
                                 </a>
-                                <a href="{% url 'blog:post_list' %}?date_range=today{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                <a href="{% url 'blog:post_list' %}?date_range=today{% if request.GET.category %}&category={{ request.GET.category|urlencode }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}" 
                                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'today' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
                                     امروز
                                 </a>
-                                <a href="{% url 'blog:post_list' %}?date_range=week{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                <a href="{% url 'blog:post_list' %}?date_range=week{% if request.GET.category %}&category={{ request.GET.category|urlencode }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}" 
                                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'week' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
                                     این هفته
                                 </a>
-                                <a href="{% url 'blog:post_list' %}?date_range=month{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                <a href="{% url 'blog:post_list' %}?date_range=month{% if request.GET.category %}&category={{ request.GET.category|urlencode }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}" 
                                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'month' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
                                     این ماه
                                 </a>
-                                <a href="{% url 'blog:post_list' %}?date_range=year{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                <a href="{% url 'blog:post_list' %}?date_range=year{% if request.GET.category %}&category={{ request.GET.category|urlencode }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search|urlencode }}{% endif %}" 
                                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 {% if request.GET.date_range == 'year' %}bg-purple-600 text-white shadow-lg{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
                                     این سال
                                 </a>
@@ -255,15 +255,17 @@
 </div>
 {% endblock %}
 
+{% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const filterToggle = document.getElementById('filterToggle');
-    const filterContent = document.getElementById('filterContent');
-    const filterIcon = document.getElementById('filterIcon');
-    
+    var filterToggle = document.getElementById('filterToggle');
+    var filterContent = document.getElementById('filterContent');
+    var filterIcon = document.getElementById('filterIcon');
+    if (!filterToggle || !filterContent || !filterIcon) return;
     filterToggle.addEventListener('click', function() {
         filterContent.classList.toggle('hidden');
         filterIcon.classList.toggle('rotate-180');
     });
 });
 </script>
+{% endblock %}
