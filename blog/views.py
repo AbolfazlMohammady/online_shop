@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.http import JsonResponse
 from .models import Post, NewsletterSubscription
 
-# Create your views here.
 
 class PostListView(ListView):
     model = Post
