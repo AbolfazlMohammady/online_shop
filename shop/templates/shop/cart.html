@@ -44,6 +44,11 @@
           <button onclick="checkout()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-lg transition-colors">
             ادامه خرید
           </button>
+          
+          <!-- Clear Cart Button -->
+          <button onclick="clearCart()" class="w-full mt-3 bg-red-600 hover:bg-red-700 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold text-sm transition-colors">
+            پاک کردن سبد خرید
+          </button>
         </div>
       </div>
     </div>
@@ -189,6 +194,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // Redirect to checkout page
     window.location.href = '{% url "shop:checkout" %}';
+  };
+
+  // Clear Cart function
+  window.clearCart = function() {
+    console.log('Clearing cart...');
+    cart = [];
+    localStorage.removeItem('cart');
+    updateCartCount();
+    renderCartItems();
+    updateCartSummary();
+    console.log('Cart cleared. Current cart:', cart);
+  };
+  
+  // Clear all localStorage function
+  window.clearAllStorage = function() {
+    console.log('Clearing all localStorage...');
+    localStorage.clear();
+    cart = [];
+    updateCartCount();
+    renderCartItems();
+    updateCartSummary();
+    console.log('All localStorage cleared. Current cart:', cart);
   };
 });
 </script>
