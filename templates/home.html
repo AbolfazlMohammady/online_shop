@@ -47,7 +47,7 @@
                     {% if latest_products %}
                     <div class="flex gap-3 sm:gap-4 overflow-x-auto pb-2" style="scroll-behavior: smooth; scrollbar-width: thin;">
                         {% for product in latest_products %}
-                        <div class="min-w-[200px] sm:min-w-[240px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover relative">
+                        <div class="min-w-[200px] sm:min-w-[240px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover relative cursor-pointer" onclick="window.location.href='{% url 'shop:product_detail' product.slug %}'">
                             <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-lg text-[11px] font-bold">جدید</div>
                             <div class="h-28 sm:h-32 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                                 {% if product.images.first %}
@@ -62,11 +62,8 @@
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs sm:text-sm font-bold text-purple-600">{{ product.price|floatformat:0|add_commas }} تومان</span>
                                     <div class="flex items-center gap-2">
-                                        <button class="wishlist-btn w-8 h-8 rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" data-product-id="{{ product.id }}">
+                                        <button class="wishlist-btn w-8 h-8 rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" data-product-id="{{ product.id }}" onclick="event.stopPropagation(); toggleWishlistHome('{{ product.id }}', this)">
                                             <i class="far fa-heart"></i>
-                                        </button>
-                                        <button class="cart-button w-8 h-8 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center justify-center" data-product-id="{{ product.id }}">
-                                            <i class="fas fa-cart-plus"></i>
                                         </button>
                                     </div>
                                 </div>

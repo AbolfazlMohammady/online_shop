@@ -62,12 +62,8 @@
 
                 <!-- Actions -->
                 <div class="flex items-center gap-3">
-                    <button onclick="toggleTheme()" class="nav-link px-2 py-2 rounded-lg font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 transition-all duration-300 relative group text-gray-700 dark:text-gray-300">
-                        <span class="socket" aria-hidden="true">
-                            <span class="socket-shadow"></span>
-                            <i id="theme-icon" class="fas fa-moon text-lg text-gray-700 dark:text-gray-200"></i>
-                        </span>
-                        <span class="sr-only">Toggle theme</span>
+                    <button onclick="toggleTheme()" class="p-2 text-gray-700 dark:text-gray-200 hover:text-purple-600 transition-colors">
+                        <i id="theme-icon" class="fas fa-moon text-lg"></i>
                     </button>
                     <a href="{% url 'shop:cart' %}" class="nav-link px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 transition-all duration-300 relative group text-gray-700 dark:text-gray-300">
                         <i class="fas fa-shopping-cart text-lg text-gray-600 dark:text-gray-200"></i>
