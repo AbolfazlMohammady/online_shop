@@ -765,26 +765,74 @@ function renderCart() {
         `;
     } else {
         cartItems.innerHTML = cart.map(item => `
-            <div class="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl bg-white dark:bg-gray-800 shadow-sm">
-                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${item.color} rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-                    ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded-lg sm:rounded-xl">` : `<i class="fas fa-image text-lg sm:text-xl ${item.iconColor}"></i>`}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-sm sm:text-base line-clamp-1 text-gray-900 dark:text-white">${item.name}</h4>
-                    <p class="text-purple-600 font-semibold text-xs sm:text-sm">${item.price.toLocaleString()} تومان</p>
-                </div>
-                <div class="flex items-center gap-1 sm:gap-3">
-                    <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-full flex items-center justify-center transition-colors">
-                        <i class="fas fa-minus text-xs text-gray-700 dark:text-gray-300"></i>
+            <div class="theme-card product-card bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer group">
+                <!-- Product Image -->
+                <div class="aspect-square bg-gradient-to-br ${item.color || 'from-pink-200 to-purple-200'} relative overflow-hidden">
+                    ${item.image ? 
+                        `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">` : 
+                        `<div class="w-full h-full flex items-center justify-center">
+                            <i class="fas fa-image text-6xl ${item.iconColor || 'text-gray-400'}"></i>
+                        </div>`
+                    }
+                    
+                    <!-- Quick Actions Overlay -->
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                        <button onclick="event.stopPropagation(); updateQuantity(${item.id}, ${item.quantity - 1})" class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+                            <i class="fas fa-minus text-lg"></i>
+                        </button>
+                        <span class="text-white font-bold text-xl">${item.quantity}</span>
+                        <button onclick="event.stopPropagation(); updateQuantity(${item.id}, ${item.quantity + 1})" class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors">
+                            <i class="fas fa-plus text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Remove Button -->
+                    <button onclick="event.stopPropagation(); removeFromCart(${item.id})" class="absolute top-3 right-3 w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white transition-colors opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-trash text-sm"></i>
                     </button>
-                    <span class="w-6 sm:w-8 text-center font-semibold text-sm sm:text-base text-gray-900 dark:text-white">${item.quantity}</span>
-                    <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-full flex items-center justify-center transition-colors">
-                        <i class="fas fa-plus text-xs text-gray-700 dark:text-gray-300"></i>
-                    </button>
                 </div>
-                <button onclick="removeFromCart(${item.id})" class="text-red-600 hover:text-red-700 p-1 sm:p-2 transition-colors">
-                    <i class="fas fa-trash text-sm"></i>
-                </button>
+                
+                <!-- Product Info -->
+                <div class="p-4 sm:p-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-white text-xs font-bold">
+                            <i class="fas fa-tag mr-1"></i>
+                            سبد خرید
+                        </div>
+                    </div>
+                    
+                    <h4 class="product-title font-bold text-lg sm:text-xl mb-3 text-gray-900 dark:text-white line-clamp-2 group-hover:text-purple-600 transition-colors">
+                        ${item.name}
+                    </h4>
+                    
+                    <!-- Price -->
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-purple-600 font-bold text-lg sm:text-xl">${(item.price * item.quantity).toLocaleString()}</span>
+                            <span class="text-gray-500 text-sm">تومان</span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            ${item.price.toLocaleString()} × ${item.quantity}
+                        </div>
+                    </div>
+                    
+                    <!-- Quantity Controls -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <button onclick="event.stopPropagation(); updateQuantity(${item.id}, ${item.quantity - 1})" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-lg flex items-center justify-center transition-colors">
+                                <i class="fas fa-minus text-xs text-gray-700 dark:text-gray-300"></i>
+                            </button>
+                            <span class="w-8 text-center font-semibold text-gray-900 dark:text-white">${item.quantity}</span>
+                            <button onclick="event.stopPropagation(); updateQuantity(${item.id}, ${item.quantity + 1})" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-lg flex items-center justify-center transition-colors">
+                                <i class="fas fa-plus text-xs text-gray-700 dark:text-gray-300"></i>
+                            </button>
+                        </div>
+                        
+                        <button onclick="event.stopPropagation(); removeFromCart(${item.id})" class="text-red-600 hover:text-red-700 p-2 transition-colors">
+                            <i class="fas fa-trash text-lg"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         `).join('');
     }

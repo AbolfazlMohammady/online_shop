@@ -239,11 +239,50 @@
         function addToCartLocalFromCard(productId, btn) {
           try {
             const card = btn.closest('a, .theme-card, .product-card') || document;
-            const name = card.querySelector('h4, .product-title')?.textContent?.trim() || 'محصول';
-            const priceText = (card.querySelector('.text-purple-600, .current-price')?.textContent || '').replace(/[^\d]/g, '') || '0';
-            const price = parseInt(priceText) || 0;
+            
+            // Try to get product name from the card
+            let name = card.querySelector('h4, .product-title')?.textContent?.trim();
+            if (!name) {
+              // Fallback: try to get from parent elements
+              const parentCard = btn.closest('.theme-card');
+              if (parentCard) {
+                name = parentCard.querySelector('h4')?.textContent?.trim() || 'محصول';
+              } else {
+                name = 'محصول';
+              }
+            }
+            
+            // Try to get price from the card
+            let priceText = card.querySelector('.text-purple-600, .current-price')?.textContent || '';
+            if (!priceText) {
+              // Fallback: try to get from parent elements
+              const parentCard = btn.closest('.theme-card');
+              if (parentCard) {
+                priceText = parentCard.querySelector('.text-purple-600')?.textContent || '0';
+              } else {
+                priceText = '0';
+              }
+            }
+            
+            // Clean price text and convert to number
+            const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
+            
+            // Try to get image from the card
+            let image = null;
             const imgEl = card.querySelector('img');
-            const image = imgEl ? imgEl.getAttribute('src') : null;
+            if (imgEl) {
+              image = imgEl.getAttribute('src');
+            } else {
+              // Fallback: try to get from parent elements
+              const parentCard = btn.closest('.theme-card');
+              if (parentCard) {
+                const parentImg = parentCard.querySelector('img');
+                if (parentImg) {
+                  image = parentImg.getAttribute('src');
+                }
+              }
+            }
+            
             const raw = localStorage.getItem('cart') || '[]';
             const cart = JSON.parse(raw);
             const existing = cart.find(it => it.id === productId);
@@ -327,7 +366,62 @@
               addToCartHome(productId, this);
             });
           });
+          
+          // Add click event for cart buttons in latest products
+          document.querySelectorAll('.cart-button[data-product-id]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              const productId = parseInt(this.getAttribute('data-product-id'));
+              addToCartHome(productId, this);
+            });
+          });
         });
+        
+        // Function to add products to cart from latest products section
+        function addToCart(productId) {
+          const btn = document.querySelector(`.cart-button[data-product-id="${productId}"]`);
+          if (btn) {
+            addToCartHome(productId, btn);
+          }
+        }
+        
+        // Notification function
+        function showNotification(message, type = 'success') {
+          // Create notification element
+          const notification = document.createElement('div');
+          notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full ${
+            type === 'error' ? 'bg-red-500 text-white' : 
+            type === 'warning' ? 'bg-yellow-500 text-white' : 
+            'bg-green-500 text-white'
+          }`;
+          notification.innerHTML = `
+            <div class="flex items-center gap-2">
+              <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 
+                              type === 'warning' ? 'fa-exclamation-triangle' : 
+                              'fa-check-circle'}"></i>
+              <span>${message}</span>
+            </div>
+          `;
+          
+          // Add to page
+          document.body.appendChild(notification);
+          
+          // Animate in
+          setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+          }, 100);
+          
+          // Remove after 3 seconds
+          setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+              if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+              }
+            }, 300);
+          }, 3000);
+        }
         </script>
         {% endblock %}
 

@@ -32,7 +32,7 @@
             </div>
             <div class="flex justify-between text-sm sm:text-base">
               <span>هزینه ارسال:</span>
-              <span id="shipping">{{ shipping_settings.shipping_cost|floatformat:0|add_commas }} تومان</span>
+              <span id="shipping">۷۰,۰۰۰ تومان</span>
             </div>
             <hr class="theme-border">
             <div class="flex justify-between text-base sm:text-lg font-bold">
@@ -54,35 +54,30 @@
 // Cart page specific JavaScript
 document.addEventListener('DOMContentLoaded', function() {
   // Load cart from localStorage
-  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
   
-  // Shipping settings - will be loaded from API
+  // Shipping settings
   let shippingSettings = {
     shippingCost: 70000,
     freeShippingThreshold: 500000
   };
   
-  // Load shipping settings from API
-  fetch('/shop/api/shipping-settings/')
-    .then(response => response.json())
-    .then(data => {
-      shippingSettings = data;
-      updateCartSummary();
-    })
-    .catch(error => {
-      console.error('Error loading shipping settings:', error);
-      updateCartSummary();
-    });
-  
   // Initialize cart count in navbar
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const countElement = document.getElementById('cart-count');
-  if (countElement) {
-    countElement.textContent = cartCount;
-  }
+  updateCartCount();
   
   // Render cart items
   renderCartItems();
+  
+  // Update cart summary
+  updateCartSummary();
+  
+  function updateCartCount() {
+    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+    const countElement = document.getElementById('cart-count');
+    if (countElement) {
+      countElement.textContent = cartCount;
+    }
+  }
   
   function renderCartItems() {
     const cartItemsContainer = document.getElementById('cart-items');
@@ -127,9 +122,21 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function updateCartSummary() {
-    const subtotal = cart.reduce((total, item) => total + ((item.price || 0) * item.quantity), 0);
-    const shipping = subtotal > shippingSettings.freeShippingThreshold ? 0 : shippingSettings.shippingCost;
+    console.log('Updating cart summary, cart:', cart);
+    const subtotal = cart.reduce((total, item) => {
+      // Convert price to number and handle both string and number types
+      const itemPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.]/g, '')) : parseFloat(item.price) || 0;
+      const itemQuantity = parseInt(item.quantity) || 0;
+      const itemTotal = itemPrice * itemQuantity;
+      console.log(`Item: ${item.name}, Price: ${itemPrice}, Quantity: ${itemQuantity}, Total: ${itemTotal}`);
+      return total + itemTotal;
+    }, 0);
+    console.log('Subtotal calculated:', subtotal);
+    
+    const shipping = subtotal >= shippingSettings.freeShippingThreshold ? 0 : shippingSettings.shippingCost;
     const total = subtotal + shipping;
+    
+    console.log('Final calculations - Subtotal:', subtotal, 'Shipping:', shipping, 'Total:', total);
     
     const subtotalEl = document.getElementById('subtotal');
     const shippingEl = document.getElementById('shipping');
@@ -142,17 +149,15 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Global functions for cart operations
   window.removeFromCart = function(productId) {
+    console.log('Removing product with ID:', productId);
+    // Remove item from cart
     cart = cart.filter(item => item.id !== productId);
     localStorage.setItem('cart', JSON.stringify(cart));
     
     // Update cart count in navbar
-    const newCount = cart.reduce((total, item) => total + item.quantity, 0);
-    const countElement = document.getElementById('cart-count');
-    if (countElement) {
-      countElement.textContent = newCount;
-    }
+    updateCartCount();
     
-    // Re-render cart instead of reloading
+    // Re-render cart
     renderCartItems();
     updateCartSummary();
   };
@@ -169,13 +174,9 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('cart', JSON.stringify(cart));
       
       // Update cart count in navbar
-      const newCount = cart.reduce((total, item) => total + item.quantity, 0);
-      const countElement = document.getElementById('cart-count');
-      if (countElement) {
-        countElement.textContent = newCount;
-      }
+      updateCartCount();
       
-      // Re-render cart instead of reloading
+      // Re-render cart
       renderCartItems();
       updateCartSummary();
     }
