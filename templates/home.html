@@ -248,6 +248,23 @@
             const cart = JSON.parse(raw);
             const existing = cart.find(it => it.id === productId);
             
+            // Check if we have product data from main.js for stock validation
+            const product = window.products ? window.products.find(p => p.id === productId) : null;
+            if (product) {
+              const stockQuantity = parseInt(product.stock_quantity) || 0;
+              const currentQuantity = existing ? existing.quantity : 0;
+              
+              if (stockQuantity <= 0) {
+                showNotification(`محصول "${product.name}" موجود نیست. موجودی: ${stockQuantity} عدد`, 'error');
+                return;
+              }
+              
+              if (currentQuantity >= stockQuantity) {
+                showNotification(`موجودی محصول "${product.name}" کافی نیست. موجودی: ${stockQuantity} عدد`, 'error');
+                return;
+              }
+            }
+            
             if (existing) {
               existing.quantity += 1;
               pulseCartCount(cart.reduce((t, it) => t + it.quantity, 0));

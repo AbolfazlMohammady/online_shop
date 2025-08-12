@@ -57,6 +57,9 @@ async function loadProducts(page = 1, append = false) {
                 console.log('Replaced products, total:', products.length);
             }
             
+            // Make products globally available
+            window.products = products;
+            
             // Update pagination state
             hasMoreProducts = data.has_next;
             currentPageNumber = data.current_page;
@@ -93,6 +96,22 @@ async function loadProducts(page = 1, append = false) {
         console.error('Error loading products:', error);
     } finally {
         window.isLoadingProducts = false;
+    }
+}
+
+// Load products globally for stock validation
+async function loadProductsForStockValidation() {
+    if (!window.products || window.products.length === 0) {
+        try {
+            const response = await fetch('/shop/api/products/?page=1');
+            const data = await response.json();
+            if (data.products && Array.isArray(data.products)) {
+                window.products = data.products;
+                console.log('Loaded products for stock validation:', window.products.length);
+            }
+        } catch (error) {
+            console.error('Error loading products for stock validation:', error);
+        }
     }
 }
 
@@ -658,6 +677,11 @@ function addToCart(productId, event) {
     const stockQuantity = parseInt(product.stock_quantity) || 0;
     const existingItem = cart.find(item => item.id === productId);
     const currentQuantity = existingItem ? existingItem.quantity : 0;
+    
+    if (stockQuantity <= 0) {
+        showNotification(`محصول "${product.name}" موجود نیست. موجودی: ${stockQuantity} عدد`, 'error');
+        return;
+    }
     
     if (currentQuantity >= stockQuantity) {
         showNotification(`موجودی محصول "${product.name}" کافی نیست. موجودی: ${stockQuantity} عدد`, 'error');
@@ -1767,6 +1791,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start lantern animation
     startLanternAnimation();
+    
+    // Load products globally for stock validation
+    loadProductsForStockValidation();
     
     // Load products from API
     loadProducts();

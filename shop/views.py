@@ -411,6 +411,7 @@ def get_products_json(request):
             'is_new': product.is_new,
             'is_featured': product.is_featured,
             'is_luxury': product.is_luxury,
+            'stock_quantity': product.stock_quantity,
             'images': images,
             'description': product.description,
             'short_description': product.short_description,

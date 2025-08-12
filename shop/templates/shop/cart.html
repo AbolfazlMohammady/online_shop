@@ -142,17 +142,19 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Global functions for cart operations
   window.removeFromCart = function(productId) {
-    const updatedCart = cart.filter(item => item.id !== productId);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem('cart', JSON.stringify(cart));
     
     // Update cart count in navbar
-    const newCount = updatedCart.reduce((total, item) => total + item.quantity, 0);
+    const newCount = cart.reduce((total, item) => total + item.quantity, 0);
     const countElement = document.getElementById('cart-count');
     if (countElement) {
       countElement.textContent = newCount;
     }
     
-    window.location.reload(); // Simple reload for now
+    // Re-render cart instead of reloading
+    renderCartItems();
+    updateCartSummary();
   };
   
   window.updateQuantity = function(productId, newQuantity) {
@@ -173,7 +175,9 @@ document.addEventListener('DOMContentLoaded', function() {
         countElement.textContent = newCount;
       }
       
-      window.location.reload(); // Simple reload for now
+      // Re-render cart instead of reloading
+      renderCartItems();
+      updateCartSummary();
     }
   };
   

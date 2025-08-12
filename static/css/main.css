@@ -369,6 +369,48 @@ body::before {
     display: none;
 }
 
+/* Night/Day toggle socket styles */
+.socket {
+    position: relative;
+    inset: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem; /* 8px */
+    border-radius: 0.75rem; /* 12px */
+    background: #e5e7eb; /* light: gray-200 */
+    box-shadow: 0.05em 0.1em 0.2em -0.2em white;
+    transition: background-color .2s ease, box-shadow .2s ease, transform .15s ease;
+}
+
+.dark .socket {
+    background: #0f172a; /* dark: slate-900 */
+    box-shadow: 0.05em 0.1em 0.2em -0.2em rgba(255,255,255,0.2);
+}
+
+.socket-shadow {
+    position: absolute;
+    inset: 0 0em;
+    opacity: 0;
+    border-radius: inherit;
+    box-shadow: 0em 0.075em 0.1em 0em white;
+    pointer-events: none;
+    transition: opacity .2s ease;
+}
+
+.dark .socket-shadow {
+    box-shadow: 0em 0.075em 0.1em 0em rgba(255,255,255,0.25);
+}
+
+.socket:hover .socket-shadow,
+.socket:focus-visible .socket-shadow {
+    opacity: 1;
+}
+
+.socket:hover {
+    transform: translateY(-1px);
+}
+
 .tab-content.active {
     display: block;
 }
