@@ -21,34 +21,22 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block font-semibold mb-2 text-sm sm:text-base">نام و نام خانوادگی *</label>
-                <input type="text" name="receiver_name" value="{{ initial.receiver_name }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base">
+                <input type="text" name="receiver_name" value="{{ initial.receiver_name }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100" readonly>
               </div>
               <div>
                 <label class="block font-semibold mb-2 text-sm sm:text-base">شماره تماس *</label>
-                <input type="tel" name="receiver_phone" value="{{ initial.receiver_phone }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base" placeholder="09xxxxxxxxx">
+                <input type="tel" name="receiver_phone" value="{{ initial.receiver_phone }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100" placeholder="09xxxxxxxxx" readonly>
               </div>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block font-semibold mb-2 text-sm sm:text-base">استان *</label>
-                <select name="province_name" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base">
-                  <option value="">انتخاب کنید</option>
-                  <option value="تهران">تهران</option>
-                  <option value="اصفهان">اصفهان</option>
-                  <option value="خراسان رضوی">خراسان رضوی</option>
-                  <option value="فارس">فارس</option>
-                  <option value="آذربایجان شرقی">آذربایجان شرقی</option>
-                  <option value="مازندران">مازندران</option>
-                  <option value="گیلان">گیلان</option>
-                  <option value="خوزستان">خوزستان</option>
-                  <option value="آذربایجان غربی">آذربایجان غربی</option>
-                  <option value="قم">قم</option>
-                </select>
+                <input type="text" name="province_name" value="{{ initial.province_name }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100" readonly>
               </div>
               <div>
                 <label class="block font-semibold mb-2 text-sm sm:text-base">شهر *</label>
-                <input type="text" name="city_name" value="{{ initial.city_name }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base">
+                <input type="text" name="city_name" value="{{ initial.city_name }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100" readonly>
               </div>
             </div>
             

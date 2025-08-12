@@ -563,6 +563,8 @@ def checkout(request):
         'province_name': getattr(user.province, 'name', ''),
         'city_name': getattr(user.city, 'name', ''),
         'address_detail': user.address or '',
+        'province_name': getattr(user.province, 'name', ''),
+        'city_name': getattr(user.city, 'name', ''),
     }
     context = {
         'shipping_settings': shipping_settings,
@@ -719,3 +721,22 @@ def order_detail(request, order_id):
         'order': order
     }
     return render(request, 'shop/order_detail.html', context)
+
+
+@login_required
+def pay_order(request, order_id):
+    """شبیه‌سازی شروع پرداخت: کاربر به درگاه فرضی هدایت می‌شود و سپس به همان سفارش باز می‌گردد.
+    در محیط واقعی این‌جا توکن درگاه ایجاد و ریدایرکت انجام می‌شود."""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # اگر سفارش قبلاً پرداخت شده است، برگردیم به جزئیات
+    if order.status == 'paid':
+        messages.info(request, 'این سفارش قبلاً پرداخت شده است.')
+        return redirect('shop:order_detail', order_id=order.id)
+    
+    # شبیه‌سازی پرداخت موفق
+    order.status = 'paid'
+    order.save(update_fields=['status'])
+    
+    messages.success(request, f'پرداخت سفارش #{order.id} با موفقیت انجام شد.')
+    return redirect('shop:order_detail', order_id=order.id)

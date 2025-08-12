@@ -34,8 +34,8 @@
               {{ order.get_status_display }}
             </span>
           </div>
-          <div class="text-sm text-gray-600">
-            <p>تاریخ ثبت سفارش: {{ order.created_at|date:"Y/m/d H:i" }}</p>
+          <div class="text-sm text-gray-600 dark:text-gray-300">
+            <p>تاریخ ثبت سفارش: {{ order.created_at|jalali_datetime }}</p>
           </div>
         </div>
 
@@ -115,6 +115,11 @@
               <span>مجموع:</span>
               <span class="text-purple-600">{{ order.total_amount|floatformat:0|add_commas }} تومان</span>
             </div>
+            {% if order.status == 'pending' %}
+            <a href="{% url 'shop:pay_order' order.id %}" class="block w-full bg-green-600 hover:bg-green-700 text-white text-center py-3 rounded-lg font-semibold transition-colors">
+              پرداخت سفارش
+            </a>
+            {% endif %}
           </div>
 
           <div class="space-y-3">

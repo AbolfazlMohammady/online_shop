@@ -38,6 +38,7 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('process-order/', views.process_order, name='process_order'),
     path('order/<int:order_id>/', views.order_detail, name='order_detail'),
+    path('order/<int:order_id>/pay/', views.pay_order, name='pay_order'),
     # Shipping settings API
     path('api/shipping-settings/', views.get_shipping_settings_api, name='shipping_settings_api'),
     

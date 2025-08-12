@@ -72,6 +72,22 @@
     border-color: #4b5563 !important;
 }
 
+/* Improve form controls visibility in dark mode */
+.dark input[type="text"],
+.dark input[type="tel"],
+.dark input[type="number"],
+.dark textarea, 
+.dark select {
+    background-color: #374151 !important;
+    color: #e5e7eb !important;
+    border-color: #4b5563 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #9ca3af !important;
+}
+
 .dark .theme-card {
     background: #1e293b !important;
     border-color: #334155 !important;

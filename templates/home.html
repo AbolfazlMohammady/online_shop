@@ -306,7 +306,7 @@
           document.querySelectorAll('.cart-button').forEach(btn => {
             btn.addEventListener('click', function(e) {
               e.preventDefault();
-              const productId = this.getAttribute('data-product-id');
+              const productId = parseInt(this.getAttribute('data-product-id'));
               addToCartHome(productId, this);
             });
           });
