@@ -7,7 +7,7 @@ from django.contrib.admin import AdminSite
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
-from .models import Category, Product, ProductImage, ProductSpecification, Brand, Comment, Cart, CartItem, Wishlist, Order, OrderItem
+from .models import Category, Product, ProductImage, ProductSpecification, Brand, Comment, Cart, CartItem, Wishlist, Order, OrderItem, Settings
 
 # Custom Admin Site
 class BeautyShopAdminSite(AdminSite):
@@ -335,4 +335,13 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ['user__email']
     inlines = [OrderItemInline]
     readonly_fields = ['created_at']
+
+
+@admin.register(Settings)
+class SettingsAdmin(admin.ModelAdmin):
+    list_display = ['key', 'value', 'description', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['key', 'value', 'description']
+    readonly_fields = ['created_at', 'updated_at']
+    ordering = ['key']
 

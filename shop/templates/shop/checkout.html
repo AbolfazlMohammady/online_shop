@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% load static %}
+{% load date_filters %}
+{% block title %}تکمیل خرید{% endblock %}
+{% block extra_js %}
+<!-- صفحه اختصاصی پرداخت: از اسکریپت اختصاصی همین صفحه استفاده می‌شود -->
+{% endblock %}
+{% block contact %}
+
+<div class="min-h-screen" id="checkout-page">
+  <div class="container mx-auto px-4 py-6 sm:py-8">
+    <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">تکمیل خرید</h2>
+
+    <div class="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+      <!-- Checkout Form -->
+      <div class="lg:col-span-2">
+        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+          <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">اطلاعات تحویل گیرنده</h3>
+          
+          <form id="checkout-form" class="space-y-4 sm:space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-semibold mb-2 text-sm sm:text-base">نام و نام خانوادگی *</label>
+                <input type="text" name="receiver_name" value="{{ initial.receiver_name }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base">
+              </div>
+              <div>
+                <label class="block font-semibold mb-2 text-sm sm:text-base">شماره تماس *</label>
+                <input type="tel" name="receiver_phone" value="{{ initial.receiver_phone }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base" placeholder="09xxxxxxxxx">
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-semibold mb-2 text-sm sm:text-base">استان *</label>
+                <select name="province_name" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base">
+                  <option value="">انتخاب کنید</option>
+                  <option value="تهران">تهران</option>
+                  <option value="اصفهان">اصفهان</option>
+                  <option value="خراسان رضوی">خراسان رضوی</option>
+                  <option value="فارس">فارس</option>
+                  <option value="آذربایجان شرقی">آذربایجان شرقی</option>
+                  <option value="مازندران">مازندران</option>
+                  <option value="گیلان">گیلان</option>
+                  <option value="خوزستان">خوزستان</option>
+                  <option value="آذربایجان غربی">آذربایجان غربی</option>
+                  <option value="قم">قم</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold mb-2 text-sm sm:text-base">شهر *</label>
+                <input type="text" name="city_name" value="{{ initial.city_name }}" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base">
+              </div>
+            </div>
+            
+            <div>
+              <label class="block font-semibold mb-2 text-sm sm:text-base">آدرس کامل *</label>
+              <textarea name="address_detail" required rows="3" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base" placeholder="آدرس کامل پستی شامل خیابان، کوچه، پلاک و واحد">{{ initial.address_detail }}</textarea>
+            </div>
+            
+            <div>
+              <label class="block font-semibold mb-2 text-sm sm:text-base">کد پستی *</label>
+              <input type="text" name="postal_code" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm sm:text-base" placeholder="10 رقم کد پستی">
+            </div>
+            
+            <div class="pt-4">
+              <button type="submit" id="submit-order" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-lg transition-colors">
+                <span id="submit-text">ثبت سفارش</span>
+                <span id="loading-text" class="hidden">
+                  <i class="fas fa-spinner fa-spin ml-2"></i>
+                  در حال پردازش...
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="lg:col-span-1">
+        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 sticky top-20 sm:top-24">
+          <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">خلاصه سفارش</h3>
+
+          <div id="order-summary" class="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+            <!-- Order items will be loaded here -->
+          </div>
+
+          <div class="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+            <div class="flex justify-between text-sm sm:text-base">
+              <span>قیمت کالاها:</span>
+              <span id="subtotal">۰ تومان</span>
+            </div>
+            <div class="flex justify-between text-sm sm:text-base">
+              <span>هزینه ارسال:</span>
+              <span id="shipping">{{ shipping_settings.shipping_cost|floatformat:0|add_commas }} تومان</span>
+            </div>
+            <hr class="theme-border">
+            <div class="flex justify-between text-base sm:text-lg font-bold">
+              <span>مجموع:</span>
+              <span id="total" class="text-purple-600">۰ تومان</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Load cart from localStorage
+  const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  
+  // Shipping settings
+  let shippingSettings = {
+    shippingCost: {{ shipping_settings.shipping_cost }},
+    freeShippingThreshold: {{ shipping_settings.free_shipping_threshold }}
+  };
+  
+  // Initialize order summary
+  renderOrderSummary();
+  
+  function renderOrderSummary() {
+    const orderSummary = document.getElementById('order-summary');
+    const subtotalEl = document.getElementById('subtotal');
+    const shippingEl = document.getElementById('shipping');
+    const totalEl = document.getElementById('total');
+    
+    if (cart.length === 0) {
+      orderSummary.innerHTML = `
+        <div class="text-center py-4">
+          <i class="fas fa-shopping-cart text-2xl text-gray-300 mb-2"></i>
+          <p class="text-gray-600 text-sm">سبد خرید شما خالی است</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Render cart items
+    orderSummary.innerHTML = cart.map(item => `
+      <div class="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg">
+        <div class="w-10 h-10 bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg flex items-center justify-center flex-shrink-0">
+          ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded-lg">` : `<i class="fas fa-image text-gray-400"></i>`}
+        </div>
+        <div class="flex-1 min-w-0">
+          <h4 class="font-semibold text-sm line-clamp-1">${item.name}</h4>
+          <p class="text-purple-600 text-xs">${item.price ? item.price.toLocaleString() : '0'} تومان × ${item.quantity}</p>
+        </div>
+        <div class="text-left">
+          <span class="font-bold text-sm">${((item.price || 0) * item.quantity).toLocaleString()} تومان</span>
+        </div>
+      </div>
+    `).join('');
+    
+    // Calculate totals
+    const subtotal = cart.reduce((total, item) => total + ((item.price || 0) * item.quantity), 0);
+    const shipping = subtotal > shippingSettings.freeShippingThreshold ? 0 : shippingSettings.shippingCost;
+    const total = subtotal + shipping;
+    
+    // Update summary
+    if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString() + ' تومان';
+    if (shippingEl) shippingEl.textContent = shipping === 0 ? 'رایگان' : shipping.toLocaleString() + ' تومان';
+    if (totalEl) totalEl.textContent = total.toLocaleString() + ' تومان';
+  }
+  
+  // Handle form submission
+  document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submit-order');
+    const submitText = document.getElementById('submit-text');
+    const loadingText = document.getElementById('loading-text');
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitText.classList.add('hidden');
+    loadingText.classList.remove('hidden');
+    
+    try {
+      const formData = new FormData(this);
+      formData.append('cart_data', JSON.stringify(cart));
+      
+      const response = await fetch('{% url "shop:process_order" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': getCsrfToken()
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Clear cart
+        localStorage.removeItem('cart');
+        
+        // Show success message
+        showNotification(result.message, 'success');
+        
+        // Redirect to order detail
+        setTimeout(() => {
+          window.location.href = result.redirect_url;
+        }, 2000);
+      } else {
+        showNotification(result.message, 'error');
+      }
+    } catch (error) {
+      console.error('Error processing order:', error);
+      showNotification('خطا در پردازش سفارش. لطفاً دوباره تلاش کنید.', 'error');
+    } finally {
+      // Reset button state
+      submitBtn.disabled = false;
+      submitText.classList.remove('hidden');
+      loadingText.classList.add('hidden');
+    }
+  });
+  
+  function getCsrfToken() {
+    const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+  }
+  
+  function showNotification(message, type = 'info') {
+    // Use existing notification system
+    if (typeof window.showNotification === 'function') {
+      window.showNotification(message, type);
+    } else {
+      alert(message);
+    }
+  }
+});
+</script>
+
+{% endblock %}
+

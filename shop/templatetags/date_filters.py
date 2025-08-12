@@ -5,6 +5,18 @@ from datetime import datetime, timedelta
 register = template.Library()
 
 @register.filter
+def add_commas(value):
+    """اضافه کردن کاما به اعداد برای نمایش بهتر قیمت‌ها"""
+    if value is None:
+        return '0'
+    try:
+        # تبدیل به عدد و سپس به رشته با کاما
+        num = int(float(value))
+        return f"{num:,}"
+    except (ValueError, TypeError):
+        return str(value)
+
+@register.filter
 def timesince_fa(value):
     """نمایش زمان به صورت فارسی"""
     if not value:

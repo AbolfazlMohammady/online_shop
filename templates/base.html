@@ -65,7 +65,7 @@
                     <button onclick="toggleTheme()" class="nav-link px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 transition-all duration-300 relative group text-gray-700 dark:text-gray-300">
                         <i id="theme-icon" class="fas fa-moon text-lg text-gray-600 dark:text-gray-200"></i>
                     </button>
-                    <a href="#" onclick="showPage('cart'); return false;" class="nav-link px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 transition-all duration-300 relative group text-gray-700 dark:text-gray-300">
+                    <a href="{% url 'shop:cart' %}" class="nav-link px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:text-purple-600 transition-all duration-300 relative group text-gray-700 dark:text-gray-300">
                         <i class="fas fa-shopping-cart text-lg text-gray-600 dark:text-gray-200"></i>
                         <span id="cart-count" class="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg animate-pulse">0</span>
                     </a>
@@ -108,7 +108,7 @@
                 <i class="fas fa-newspaper"></i>
                 <span>وبلاگ</span>
             </a>
-            <a href="#" class="mobile-nav-item" data-page="cart">
+            <a href="{% url 'shop:cart' %}" class="mobile-nav-item" data-page="cart">
                 <i class="fas fa-shopping-cart"></i>
                 <span>سبد خرید</span>
             </a>
@@ -154,6 +154,8 @@
     <!-- Contact Block -->
     {% block contact %}
     {% endblock %}
+
+    
 
     <!-- Footer -->
     <footer class="theme-bg border-t theme-border py-8">

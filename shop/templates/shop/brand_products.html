@@ -1,6 +1,9 @@
 {% extends "base.html" %}
-
-{% block title %}محصولات برند {{ brand.name }}{% endblock %}
+{% load static %}
+{% block title %}{{ brand.name }} - محصولات{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %}
 {% block meta %}
     <meta name="description" content="محصولات برند {{ brand.name }}. مرور، مقایسه و خرید با فیلترهای متنوع.">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
@@ -184,8 +187,73 @@ function openProductModal(productId) {
 }
 
 function addToCart(productId) {
-    // TODO: Implement cart functionality
-    console.log('Adding product to cart:', productId);
+    // Find the product card to get product information
+    const productCard = document.querySelector(`[data-product-id="${productId}"]`) || 
+                       document.querySelector(`.product-card:has(button[onclick*="${productId}"])`);
+    
+    if (!productCard) {
+        console.error('Product card not found for ID:', productId);
+        return;
+    }
+    
+    // Extract product information from the card
+    const name = productCard.querySelector('h3, h4, .product-title')?.textContent?.trim() || 'محصول';
+    const priceText = (productCard.querySelector('.text-purple-600, .current-price')?.textContent || '').replace(/[^\d]/g, '') || '0';
+    const price = parseInt(priceText) || 0;
+    const imgEl = productCard.querySelector('img');
+    const image = imgEl ? imgEl.getAttribute('src') : null;
+    
+    // Add to cart
+    try {
+        const raw = localStorage.getItem('cart') || '[]';
+        const cart = JSON.parse(raw);
+        const existing = cart.find(item => item.id === productId);
+        
+        if (existing) {
+            existing.quantity += 1;
+            showNotification(`تعداد ${name} به ${existing.quantity} عدد افزایش یافت!`);
+        } else {
+            cart.push({
+                id: productId,
+                name: name,
+                price: price,
+                quantity: 1,
+                image: image,
+                color: 'from-pink-200 to-purple-200',
+                iconColor: 'text-gray-400'
+            });
+            showNotification(`${name} به سبد خرید اضافه شد!`);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart count
+        const countEl = document.getElementById('cart-count');
+        if (countEl) {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            countEl.textContent = count;
+            countEl.classList.add('animate-pulse');
+            setTimeout(() => countEl.classList.remove('animate-pulse'), 600);
+        }
+        
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('خطا در افزودن به سبد خرید', 'error');
+    }
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    const bg = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full ${bg}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.classList.remove('translate-x-full'), 50);
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, 2500);
 }
 </script>
 {% endblock %} 

@@ -2,7 +2,7 @@
 let products = []; // Will be populated from API
 let filteredProducts = [];
 
-let cart = [];
+let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let currentPage = 'home';
 let currentFilter = 'all';
 let currentSort = 'default';
@@ -643,31 +643,54 @@ function addToCart(productId, event) {
         event.stopPropagation(); // Prevent card click
     }
     
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+    console.log('Adding to cart, productId:', productId);
+    console.log('Available products:', products);
     
+    const product = products.find(p => p.id === productId);
+    if (!product) {
+        console.error('Product not found for ID:', productId);
+        return;
+    }
+    
+    console.log('Found product:', product);
+    
+    // Check stock availability
+    const stockQuantity = parseInt(product.stock_quantity) || 0;
     const existingItem = cart.find(item => item.id === productId);
+    const currentQuantity = existingItem ? existingItem.quantity : 0;
+    
+    if (currentQuantity >= stockQuantity) {
+        showNotification(`موجودی محصول "${product.name}" کافی نیست. موجودی: ${stockQuantity} عدد`, 'error');
+        return;
+    }
+    
     if (existingItem) {
         existingItem.quantity += 1;
+        console.log('Updated existing item quantity:', existingItem.quantity);
+        showNotification(`تعداد ${product.name} به ${existingItem.quantity} عدد افزایش یافت!`);
     } else {
-        cart.push({
+        const newItem = {
             id: product.id,
             name: product.name,
-            price: product.price,
+            price: parseFloat(product.price) || 0,
             quantity: 1,
             image: product.images && product.images.length > 0 ? product.images[0].image : null,
             color: 'from-pink-200 to-purple-200',
             iconColor: 'text-gray-400'
-        });
+        };
+        cart.push(newItem);
+        console.log('Added new item to cart:', newItem);
+        showNotification(`${product.name} به سبد خرید اضافه شد!`);
     }
     
+    localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
     renderCart();
-    showNotification('محصول به سبد خرید اضافه شد!');
 }
 
 function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
     renderCart();
 }
@@ -678,9 +701,19 @@ function updateQuantity(productId, newQuantity) {
         return;
     }
     
+    // Check stock availability
+    const product = products.find(p => p.id === productId);
+    const stockQuantity = parseInt(product?.stock_quantity) || 0;
+    
+    if (newQuantity > stockQuantity) {
+        showNotification(`موجودی محصول "${product?.name}" کافی نیست. موجودی: ${stockQuantity} عدد`, 'error');
+        return;
+    }
+    
     const item = cart.find(item => item.id === productId);
     if (item) {
         item.quantity = newQuantity;
+        localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
         renderCart();
     }
@@ -736,10 +769,12 @@ function renderCart() {
 }
 
 function updateCartSummary() {
+    // این تابع فقط برای سکشن کارت در صفحه خانه/محصولات استفاده می‌شود
+    // محاسبات واقعی سبد در صفحات اختصاصی cart/checkout انجام می‌شود
     const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    // نمایش بدون اعمال تخفیف ساختگی
     const shipping = subtotal > 500000 ? 0 : 25000;
-    const discount = 10000;
-    const total = subtotal + shipping - discount;
+    const total = subtotal + shipping;
     
     const subtotalEl = document.getElementById('subtotal');
     const shippingEl = document.getElementById('shipping');
@@ -1710,8 +1745,20 @@ function changePassword(event) {
 
 // ===== END CORE APP JAVASCRIPT FUNCTIONS =====
 
+// Initialize cart count from localStorage
+function initializeCartCount() {
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const countElement = document.getElementById('cart-count');
+  if (countElement) {
+    countElement.textContent = cartCount;
+  }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize cart count first
+    initializeCartCount();
+    
     // Start countdown timer - شروع تایمر تخفیف
     startCountdown();
     
@@ -1738,8 +1785,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Initialize cart
+    // If we're on dedicated shop cart/checkout pages, skip global cart rendering
+    const isShopCartPage = !!document.getElementById('cart-page');
+    const isShopCheckoutPage = !!document.getElementById('checkout-page');
     updateCartCount();
-    renderCart();
+    if (!isShopCartPage && !isShopCheckoutPage) {
+        renderCart();
+    }
     
     // Add search event listener
     const searchInputEl = document.getElementById('search-input');

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load date_filters %}
 {% block contact %}
     <!-- Main Content -->
     <div class="min-h-screen">
@@ -46,7 +47,8 @@
                     {% if latest_products %}
                     <div class="flex gap-3 sm:gap-4 overflow-x-auto pb-2" style="scroll-behavior: smooth; scrollbar-width: thin;">
                         {% for product in latest_products %}
-                        <a href="{% url 'shop:product_detail' product.slug %}" class="min-w-[200px] sm:min-w-[240px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover block">
+                        <div class="min-w-[200px] sm:min-w-[240px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover relative">
+                            <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-lg text-[11px] font-bold">جدید</div>
                             <div class="h-28 sm:h-32 bg-gradient-to-br from-pink-100 to-purple-100 flex items-center justify-center">
                                 {% if product.images.first %}
                                 <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
@@ -58,11 +60,18 @@
                                 <h4 class="text-sm sm:text-base font-bold mb-1 line-clamp-2">{{ product.name }}</h4>
                                 <p class="theme-text-secondary text-xs mb-2">{{ product.category.name }}</p>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-xs sm:text-sm font-bold text-purple-600">{{ product.price|floatformat:0 }} تومان</span>
-                                    <span class="text-[11px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">جدید</span>
+                                    <span class="text-xs sm:text-sm font-bold text-purple-600">{{ product.price|floatformat:0|add_commas }} تومان</span>
+                                    <div class="flex items-center gap-2">
+                                        <button class="wishlist-btn w-8 h-8 rounded-full bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" data-product-id="{{ product.id }}">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                        <button class="cart-button w-8 h-8 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-colors flex items-center justify-center" data-product-id="{{ product.id }}">
+                                            <i class="fas fa-cart-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                         {% endfor %}
                     </div>
                     {% else %}
@@ -106,9 +115,9 @@
                                         <i class="fas fa-star text-xs"></i>
                                         <i class="fas fa-star text-xs"></i>
                                         <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
+                                        <i class="far fa-star text-xs"></i>
                                     </div>
-                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۶)</span>
+                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۲)</span>
                                 </div>
                                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
                                     <span class="text-xs sm:text-sm font-bold text-purple-600">۸۵,۰۰۰ تومان</span>
@@ -116,203 +125,6 @@
                                         <i class="fas fa-cart-plus text-xs sm:text-sm"></i>
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div class="min-w-[200px] sm:min-w-[280px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="openProductModal(3)">
-                            <div class="h-24 sm:h-32 bg-gradient-to-br from-purple-200 to-indigo-200 flex items-center justify-center">
-                                <i class="fas fa-spray-can text-lg sm:text-2xl text-purple-600"></i>
-                            </div>
-                            <div class="p-3 sm:p-4">
-                                <h4 class="text-sm sm:text-base font-bold mb-1 line-clamp-2">عطر زنانه گل یاس</h4>
-                                <p class="theme-text-secondary text-xs mb-2">عطر</p>
-                                <div class="flex items-center mb-2 sm:mb-3">
-                                    <div class="flex text-yellow-400">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                    </div>
-                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۹)</span>
-                                </div>
-                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
-                                    <span class="text-xs sm:text-sm font-bold text-purple-600">۲۵۰,۰۰۰ تومان</span>
-                                    <button onclick="event.stopPropagation(); addToCart(3)" class="bg-purple-600 hover:bg-purple-700 text-white px-2 sm:px-3 py-1 rounded-lg transition-colors w-full sm:w-auto">
-                                        <i class="fas fa-cart-plus text-xs sm:text-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="min-w-[200px] sm:min-w-[280px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer" onclick="openProductModal(4)">
-                            <div class="h-24 sm:h-32 bg-gradient-to-br from-yellow-200 to-orange-200 flex items-center justify-center">
-                                <i class="fas fa-cut text-lg sm:text-2xl text-yellow-600"></i>
-                            </div>
-                            <div class="p-3 sm:p-4">
-                                <h4 class="text-sm sm:text-base font-bold mb-1 line-clamp-2">گیره مو طلایی</h4>
-                                <p class="theme-text-secondary text-xs mb-2">گیره مو</p>
-                                <div class="flex items-center mb-2 sm:mb-3">
-                                    <div class="flex text-yellow-400">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                    </div>
-                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۳)</span>
-                                </div>
-                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
-                                    <span class="text-xs sm:text-sm font-bold text-purple-600">۳۵,۰۰۰ تومان</span>
-                                    <button onclick="event.stopPropagation(); addToCart(4)" class="bg-purple-600 hover:bg-purple-700 text-white px-2 sm:px-3 py-1 rounded-lg transition-colors w-full sm:w-auto">
-                                        <i class="fas fa-cart-plus text-xs sm:text-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </section>
-
-            <!-- Most Visited Products Section -->
-            <section class="py-16">
-                <div class="container mx-auto px-4">
-                    <div class="flex items-center justify-between mb-12">
-                        <h3 class="text-3xl font-bold">پربازدیدترین محصولات</h3>
-                        <a href="{% url 'shop:product_list' %}" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors group">
-                            <span>مشاهده همه</span>
-                            <i class="fas fa-arrow-left group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                    {% if most_viewed_products %}
-                    <div class="flex gap-3 sm:gap-4 overflow-x-auto pb-2" style="scroll-behavior: smooth; scrollbar-width: thin;">
-                        <div class="min-w-[160px] sm:min-w-[220px] theme-card rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer relative" onclick="openProductModal(5)">
-                            <div class="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1 sm:px-2 py-1 rounded-lg text-xs font-bold">
-                                <i class="fas fa-fire mr-1"></i>
-                                پرفروش
-                            </div>
-                            <div class="h-20 sm:h-24 bg-gradient-to-br from-pink-200 to-rose-200 flex items-center justify-center">
-                                <i class="fas fa-lipstick text-lg sm:text-xl text-pink-600"></i>
-                            </div>
-                            <div class="p-2 sm:p-3">
-                                <h4 class="text-xs sm:text-sm font-bold mb-1 line-clamp-2">رژ لب صورتی</h4>
-                                <p class="theme-text-secondary text-xs mb-1 sm:mb-2">رژ لب</p>
-                                <div class="flex items-center mb-1 sm:mb-2">
-                                    <div class="flex text-yellow-400">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                    </div>
-                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۷)</span>
-                                </div>
-                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-0">
-                                    <span class="text-xs font-bold text-purple-600">۱۱۰,۰۰۰ تومان</span>
-                                    <button onclick="event.stopPropagation(); addToCart(5)" class="bg-purple-600 hover:bg-purple-700 text-white px-1 sm:px-2 py-1 rounded-lg transition-colors w-full sm:w-auto">
-                                        <i class="fas fa-cart-plus text-xs"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="min-w-[280px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer relative" onclick="openProductModal(6)">
-                            <div class="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
-                                <i class="fas fa-eye mr-1"></i>
-                                محبوب
-                            </div>
-                            <div class="h-32 bg-gradient-to-br from-orange-200 to-yellow-200 flex items-center justify-center">
-                                <i class="fas fa-sun text-2xl text-orange-600"></i>
-                            </div>
-                            <div class="p-4">
-                                <h4 class="text-base font-bold mb-1">کرم ضد آفتاب</h4>
-                                <p class="theme-text-secondary text-xs mb-2">کرم</p>
-                                <div class="flex items-center mb-3">
-                                    <div class="flex text-yellow-400">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                    </div>
-                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۵)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-bold text-purple-600">۹۵,۰۰۰ تومان</span>
-                                    <button onclick="event.stopPropagation(); addToCart(6)" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg transition-colors">
-                                        <i class="fas fa-cart-plus text-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="min-w-[280px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer relative" onclick="openProductModal(1)">
-                            <div class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
-                                <i class="fas fa-star mr-1"></i>
-                                امتیاز بالا
-                            </div>
-                            <div class="h-32 bg-gradient-to-br from-green-200 to-emerald-200 flex items-center justify-center">
-                                <i class="fas fa-leaf text-2xl text-green-600"></i>
-                            </div>
-                            <div class="p-4">
-                                <h4 class="text-base font-bold mb-1">سرم ویتامین C</h4>
-                                <p class="theme-text-secondary text-xs mb-2">سرم</p>
-                                <div class="flex items-center mb-3">
-                                    <div class="flex text-yellow-400">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                    </div>
-                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۹)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-bold text-purple-600">۱۸۰,۰۰۰ تومان</span>
-                                    <button onclick="event.stopPropagation(); addToCart(1)" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg transition-colors">
-                                        <i class="fas fa-cart-plus text-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="min-w-[280px] theme-card rounded-2xl shadow-lg overflow-hidden card-hover cursor-pointer relative" onclick="openProductModal(3)">
-                            <div class="absolute top-2 right-2 bg-purple-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
-                                <i class="fas fa-crown mr-1"></i>
-                                لوکس
-                            </div>
-                            <div class="h-32 bg-gradient-to-br from-indigo-200 to-purple-200 flex items-center justify-center">
-                                <i class="fas fa-gem text-2xl text-indigo-600"></i>
-                            </div>
-                            <div class="p-4">
-                                <h4 class="text-base font-bold mb-1">عطر لوکس زنانه</h4>
-                                <p class="theme-text-secondary text-xs mb-2">عطر</p>
-                                <div class="flex items-center mb-3">
-                                    <div class="flex text-yellow-400">
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                        <i class="fas fa-star text-xs"></i>
-                                    </div>
-                                    <span class="mr-1 text-xs theme-text-secondary">(۴.۸)</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm font-bold text-purple-600">۳۲۰,۰۰۰ تومان</span>
-                                    <button onclick="event.stopPropagation(); addToCart(3)" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg transition-colors">
-                                        <i class="fas fa-cart-plus text-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="flex gap-3 sm:gap-4 overflow-x-auto pb-2" style="scroll-behavior: smooth; scrollbar-width: thin;">
-                        <div class="min-w-full">
-                            <div class="theme-card rounded-2xl shadow-lg p-6 text-center">
-                                <i class="fas fa-box-open text-3xl text-gray-300 mb-2"></i>
-                                <p class="text-gray-600 text-sm">محصولی برای نمایش وجود ندارد</p>
                             </div>
                         </div>
                     </div>
@@ -393,6 +205,114 @@
                 </div>
             </section>
         </div>
+
+        {% block extra_js %}
+        <script>
+        async function postJson(url, data) {
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCsrfToken() },
+            body: new URLSearchParams(data)
+          });
+          return resp.json();
+        }
+        function getCsrfToken() {
+          const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+          return match ? decodeURIComponent(match[1]) : '';
+        }
+        async function addToCartHome(productId, btn) {
+          const old = btn.innerHTML;
+          try {
+            btn.disabled = true;
+            
+            // Use localStorage instead of API to avoid CSRF issues
+            addToCartLocalFromCard(productId, btn);
+            
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => { btn.innerHTML = old; btn.disabled = false; }, 1200);
+          } catch(e) {
+            console.error('Error adding to cart:', e);
+            btn.disabled = false;
+          }
+        }
+
+        function addToCartLocalFromCard(productId, btn) {
+          try {
+            const card = btn.closest('a, .theme-card, .product-card') || document;
+            const name = card.querySelector('h4, .product-title')?.textContent?.trim() || 'محصول';
+            const priceText = (card.querySelector('.text-purple-600, .current-price')?.textContent || '').replace(/[^\d]/g, '') || '0';
+            const price = parseInt(priceText) || 0;
+            const imgEl = card.querySelector('img');
+            const image = imgEl ? imgEl.getAttribute('src') : null;
+            const raw = localStorage.getItem('cart') || '[]';
+            const cart = JSON.parse(raw);
+            const existing = cart.find(it => it.id === productId);
+            
+            if (existing) {
+              existing.quantity += 1;
+              pulseCartCount(cart.reduce((t, it) => t + it.quantity, 0));
+              showNotification(`تعداد ${name} به ${existing.quantity} عدد افزایش یافت!`);
+            } else {
+              cart.push({ 
+                id: productId, 
+                name, 
+                price, 
+                quantity: 1, 
+                image, 
+                color: 'from-pink-200 to-purple-200', 
+                iconColor: 'text-gray-400' 
+              });
+              pulseCartCount(cart.reduce((t, it) => t + it.quantity, 0));
+              showNotification(`${name} به سبد خرید اضافه شد!`);
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+          } catch(error) {
+            console.error('Error adding to cart:', error);
+            showNotification('خطا در افزودن به سبد خرید', 'error');
+          }
+        }
+
+        function pulseCartCount(newCount) {
+          const el = document.getElementById('cart-count');
+          if (!el) return;
+          if (typeof newCount === 'number') el.textContent = newCount;
+          el.classList.add('animate-pulse');
+          setTimeout(() => el.classList.remove('animate-pulse'), 600);
+        }
+        async function toggleWishlistHome(productId, btn) {
+          try {
+            btn.disabled = true;
+            const res = await postJson('{% url "shop:toggle_wishlist" %}', { product_id: productId });
+            const icon = btn.querySelector('i');
+            if (res.added) { icon.classList.remove('far'); icon.classList.add('fas'); }
+            else { icon.classList.remove('fas'); icon.classList.add('far'); }
+            btn.disabled = false;
+          } catch(e) { btn.disabled = false; }
+        }
+        
+        // Add event listeners for buttons
+        document.addEventListener('DOMContentLoaded', function() {
+          // Wishlist buttons
+          document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+              e.preventDefault();
+              const productId = this.getAttribute('data-product-id');
+              toggleWishlistHome(productId, this);
+            });
+          });
+          
+          // Cart buttons
+          document.querySelectorAll('.cart-button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+              e.preventDefault();
+              const productId = this.getAttribute('data-product-id');
+              addToCartHome(productId, this);
+            });
+          });
+        });
+        </script>
+        {% endblock %}
 
         <!-- Products Page -->
         <div id="products" class="page">
@@ -576,38 +496,7 @@
                     </div>
                     
                     <!-- Order Summary -->
-                    <div class="lg:col-span-1">
-                        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 sticky top-20 sm:top-24">
-                            <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">خلاصه سفارش</h3>
-                            
-                            <div class="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
-                                <div class="flex justify-between text-sm sm:text-base">
-                                    <span>قیمت کالاها:</span>
-                                    <span id="subtotal">۰ تومان</span>
-                                </div>
-                                <div class="flex justify-between text-sm sm:text-base">
-                                    <span>هزینه ارسال:</span>
-                                    <span id="shipping">۲۵,۰۰۰ تومان</span>
-                                </div>
-                                <div class="flex justify-between text-green-600 text-sm sm:text-base">
-                                    <span>تخفیف:</span>
-                                    <span id="discount">-۱۰,۰۰۰ تومان</span>
-                                </div>
-                                <hr class="theme-border">
-                                <div class="flex justify-between text-base sm:text-lg font-bold">
-                                    <span>مجموع:</span>
-                                    <span id="total" class="text-purple-600">۰ تومان</span>
-                                </div>
-                            </div>
-                            
-                            <button onclick="checkout()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-lg transition-colors">
-                                ادامه خرید
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+ 
 
         <!-- Product Detail Page -->
         <div id="product-detail" class="page">

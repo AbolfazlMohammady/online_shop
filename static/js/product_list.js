@@ -128,40 +128,81 @@ function clearFilters() {
     filterProducts();
 }
 
-function addToCart(productId) {
-    // TODO: Implement cart functionality
-    console.log('Adding product to cart:', productId);
+function addToCart(productId, event) {
+    if (event) {
+        event.stopPropagation(); // Prevent card click
+    }
     
-    // Show success message
-    const button = event.target.closest('.cart-button');
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-check"></i>';
-    button.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-    
-    setTimeout(() => {
-        button.innerHTML = originalText;
-        button.style.background = 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)';
-    }, 1500);
+    // Use the main.js addToCart function
+    if (typeof window.addToCart === 'function') {
+        window.addToCart(productId, event);
+    } else {
+        // Fallback
+        console.log('Adding product to cart:', productId);
+        
+        // Show success message
+        const button = event ? event.target.closest('.cart-button') : null;
+        if (button) {
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check"></i>';
+            button.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.style.background = 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)';
+            }, 1500);
+        }
+    }
 }
 
-function addToWishlist(productId, event) {
+async function addToWishlist(productId, event) {
     event.stopPropagation(); // Prevent card click
     
     const button = event.target.closest('.wishlist-btn');
     const icon = button.querySelector('i');
     
-    if (icon.classList.contains('far')) {
-        // Add to wishlist
-        icon.classList.remove('far');
-        icon.classList.add('fas');
-        button.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-        console.log('Added to wishlist:', productId);
+    try {
+        const response = await fetch('/shop/api/toggle-wishlist/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: `product_id=${productId}`
+        });
+        
+        const result = await response.json();
+        
+        if (result.added) {
+            // Add to wishlist
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            button.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+            showNotification('محصول به علاقه‌مندی‌ها اضافه شد!', 'success');
+        } else {
+            // Remove from wishlist
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+            button.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+            showNotification('محصول از علاقه‌مندی‌ها حذف شد!', 'info');
+        }
+    } catch (error) {
+        console.error('Error toggling wishlist:', error);
+        showNotification('خطا در به‌روزرسانی علاقه‌مندی‌ها', 'error');
+    }
+}
+
+function getCsrfToken() {
+    const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+}
+
+function showNotification(message, type = 'info') {
+    // Use existing notification system if available
+    if (typeof window.showNotification === 'function') {
+        window.showNotification(message, type);
     } else {
-        // Remove from wishlist
-        icon.classList.remove('fas');
-        icon.classList.add('far');
-        button.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
-        console.log('Removed from wishlist:', productId);
+        alert(message);
     }
 }
 

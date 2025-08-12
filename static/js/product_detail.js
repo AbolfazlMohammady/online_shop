@@ -81,11 +81,14 @@
     const currentPriceElement = document.getElementById('current-price');
     const originalPriceElement = document.getElementById('original-price');
     if (currentPriceElement) {
-      const price = parseInt(currentPriceElement.textContent);
+      // Prefer data attribute to avoid parsing localized text
+      const dataPriceAttr = currentPriceElement.getAttribute('data-price');
+      const price = dataPriceAttr ? parseInt(dataPriceAttr) : parseInt(String(currentPriceElement.textContent).replace(/[^\d]/g, ''));
       currentPriceElement.textContent = formatPrice(price);
     }
     if (originalPriceElement) {
-      const originalPrice = parseInt(originalPriceElement.textContent);
+      const dataOriginalAttr = originalPriceElement.getAttribute('data-price');
+      const originalPrice = dataOriginalAttr ? parseInt(dataOriginalAttr) : parseInt(String(originalPriceElement.textContent).replace(/[^\d]/g, ''));
       originalPriceElement.textContent = formatPrice(originalPrice) + ' تومان';
     }
 
@@ -196,18 +199,72 @@
     const addToCartBtn = document.getElementById('btn-add-to-cart');
     const addToWishlistBtn = document.getElementById('btn-add-to-wishlist');
     if (addToCartBtn) {
-      addToCartBtn.addEventListener('click', function() {
-        const productId = root.dataset.productId;
+      addToCartBtn.addEventListener('click', async function() {
+        const productId = parseInt(root.dataset.productId);
         const quantity = qtyInput ? parseInt(qtyInput.value || '1') : 1;
-        console.log('Add to cart', productId, quantity);
+        try {
+          // تلاش برای ارسال به بک‌اند درصورت لاگین
+          const resp = await fetch('/shop/api/add-to-cart/', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({ product_id: productId, quantity })
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            // در هر صورت شمارنده را به صورت خوش‌بینانه آپدیت می‌کنیم
+            const countEl = document.getElementById('cart-count');
+            if (countEl && data && typeof data.cart_items_count !== 'undefined') {
+              countEl.textContent = data.cart_items_count;
+            }
+          } else {
+            // اگر کاربر لاگین نیست یا خطا بود، در لوکال کار کن
+            addToCartFallback(productId, quantity);
+          }
+        } catch (e) {
+          addToCartFallback(productId, quantity);
+        }
         showNotification('محصول به سبد خرید اضافه شد', 'success');
       });
     }
+
+    function addToCartFallback(productId, quantity) {
+      try {
+        // از محصولات موجود در صفحه برای ساخت آیتم استفاده می‌کنیم
+        const priceText = document.getElementById('current-price')?.textContent?.replace(/[^\d]/g, '') || '0';
+        const price = parseInt(priceText) || 0;
+        const name = document.querySelector('#product-detail h1')?.textContent?.trim() || 'محصول';
+        const image = document.getElementById('main-image-src')?.getAttribute('src') || null;
+        const raw = localStorage.getItem('cart') || '[]';
+        const cart = JSON.parse(raw);
+        const existing = cart.find(it => it.id === productId);
+        if (existing) existing.quantity += quantity; else cart.push({ id: productId, name, price, quantity, image, color: 'from-pink-200 to-purple-200', iconColor: 'text-gray-400' });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        const countEl = document.getElementById('cart-count');
+        if (countEl) {
+          const count = cart.reduce((t, it) => t + it.quantity, 0);
+          countEl.textContent = count;
+        }
+      } catch (_) {}
+    }
     if (addToWishlistBtn) {
-      addToWishlistBtn.addEventListener('click', function() {
+      addToWishlistBtn.addEventListener('click', async function() {
         const productId = root.dataset.productId;
-        console.log('Add to wishlist', productId);
-        showNotification('محصول به علاقه‌مندی‌ها اضافه شد', 'success');
+        try {
+          const resp = await fetch('/shop/api/toggle-wishlist/', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: new URLSearchParams({ product_id: productId })
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            showNotification(data.added ? 'به علاقه‌مندی‌ها اضافه شد' : 'از علاقه‌مندی‌ها حذف شد', 'success');
+            return;
+          }
+        } catch (_) {}
+        showNotification('برای استفاده از علاقه‌مندی‌ها وارد شوید', 'error');
       });
     }
   }

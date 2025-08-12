@@ -31,6 +31,15 @@ urlpatterns = [
     path('api/products/', views.get_products_json, name='get_products_json'),
     path('api/categories/', views.get_categories_json, name='get_categories_json'),
     path('api/brands/', views.get_brands_json, name='get_brands_json'),
+    path('api/add-to-cart/', views.add_to_cart, name='add_to_cart'),
+    path('api/toggle-wishlist/', views.toggle_wishlist, name='toggle_wishlist'),
+    # Cart page
+    path('cart/', views.cart_view, name='cart'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('process-order/', views.process_order, name='process_order'),
+    path('order/<int:order_id>/', views.order_detail, name='order_detail'),
+    # Shipping settings API
+    path('api/shipping-settings/', views.get_shipping_settings_api, name='shipping_settings_api'),
     
     # Test view
     path('test/', views.test_products, name='test_products'),

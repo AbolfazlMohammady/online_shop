@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+{% load date_filters %}
+{% block title %}فاکتور سفارش #{{ order.id }}{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %}
+{% block contact %}
+
+<div class="min-h-screen" id="order-detail-page">
+  <div class="container mx-auto px-4 py-6 sm:py-8">
+    <div class="flex items-center justify-between mb-6 sm:mb-8">
+      <h2 class="text-2xl sm:text-3xl font-bold">فاکتور سفارش #{{ order.id }}</h2>
+      <a href="{% url 'core:profile' %}" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors">
+        <i class="fas fa-arrow-right"></i>
+        <span>بازگشت به پروفایل</span>
+      </a>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+      <!-- Order Details -->
+      <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+        <!-- Order Status -->
+        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg sm:text-xl font-bold">وضعیت سفارش</h3>
+            <span class="px-3 py-1 rounded-full text-sm font-semibold
+              {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+              {% elif order.status == 'paid' %}bg-green-100 text-green-800
+              {% elif order.status == 'processing' %}bg-blue-100 text-blue-800
+              {% elif order.status == 'shipped' %}bg-purple-100 text-purple-800
+              {% elif order.status == 'delivered' %}bg-green-100 text-green-800
+              {% else %}bg-red-100 text-red-800{% endif %}">
+              {{ order.get_status_display }}
+            </span>
+          </div>
+          <div class="text-sm text-gray-600">
+            <p>تاریخ ثبت سفارش: {{ order.created_at|date:"Y/m/d H:i" }}</p>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+          <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">محصولات سفارش</h3>
+          <div class="space-y-3 sm:space-y-4">
+            {% for item in order.items.all %}
+            <div class="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+              <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg flex items-center justify-center flex-shrink-0">
+                {% if item.product.images.first %}
+                <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover rounded-lg">
+                {% else %}
+                <i class="fas fa-image text-gray-400"></i>
+                {% endif %}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-sm sm:text-base line-clamp-1">{{ item.product.name }}</h4>
+                <p class="text-purple-600 font-semibold text-xs sm:text-sm">{{ item.unit_price|floatformat:0|add_commas }} تومان × {{ item.quantity }}</p>
+              </div>
+              <div class="text-left">
+                <span class="font-bold text-sm sm:text-base">{{ item.total_price|floatformat:0|add_commas }} تومان</span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Shipping Information -->
+        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+          <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">اطلاعات ارسال</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-semibold mb-1 text-sm">نام گیرنده:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.receiver_name }}</p>
+            </div>
+            <div>
+              <label class="block font-semibold mb-1 text-sm">شماره تماس:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.receiver_phone }}</p>
+            </div>
+            <div>
+              <label class="block font-semibold mb-1 text-sm">استان:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.province_name }}</p>
+            </div>
+            <div>
+              <label class="block font-semibold mb-1 text-sm">شهر:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.city_name }}</p>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-semibold mb-1 text-sm">آدرس کامل:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.address_detail }}</p>
+            </div>
+            <div>
+              <label class="block font-semibold mb-1 text-sm">کد پستی:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.postal_code }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="lg:col-span-1">
+        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 sticky top-20 sm:top-24">
+          <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">خلاصه فاکتور</h3>
+
+          <div class="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+            <div class="flex justify-between text-sm sm:text-base">
+              <span>قیمت کالاها:</span>
+              <span>{{ order.subtotal_amount|floatformat:0|add_commas }} تومان</span>
+            </div>
+            <div class="flex justify-between text-sm sm:text-base">
+              <span>هزینه ارسال:</span>
+              <span>{% if order.shipping_amount == 0 %}رایگان{% else %}{{ order.shipping_amount|floatformat:0|add_commas }} تومان{% endif %}</span>
+            </div>
+            <hr class="theme-border">
+            <div class="flex justify-between text-base sm:text-lg font-bold">
+              <span>مجموع:</span>
+              <span class="text-purple-600">{{ order.total_amount|floatformat:0|add_commas }} تومان</span>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <button onclick="printInvoice()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
+              <i class="fas fa-print ml-2"></i>
+              چاپ فاکتور
+            </button>
+            <a href="{% url 'shop:product_list' %}" class="block w-full bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg font-semibold transition-colors text-center">
+              <i class="fas fa-shopping-cart ml-2"></i>
+              خرید مجدد
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function printInvoice() {
+  window.print();
+}
+</script>
+
+<style>
+@media print {
+  .theme-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+  
+  #order-detail-page {
+    background: white !important;
+  }
+  
+  .container {
+    max-width: none !important;
+  }
+}
+</style>
+
+{% endblock %}
+

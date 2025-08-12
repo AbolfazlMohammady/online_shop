@@ -398,6 +398,44 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.product.name} × {self.quantity}"
 
+class Settings(models.Model):
+    """تنظیمات کلی فروشگاه"""
+    key = models.CharField(max_length=100, unique=True, verbose_name="کلید")
+    value = models.TextField(verbose_name="مقدار")
+    description = models.TextField(blank=True, verbose_name="توضیحات")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
+
+    class Meta:
+        verbose_name = "تنظیمات"
+        verbose_name_plural = "تنظیمات"
+        ordering = ['key']
+
+    def __str__(self):
+        return f"{self.key}: {self.value}"
+
+    @classmethod
+    def get_value(cls, key, default=None):
+        """دریافت مقدار تنظیمات"""
+        try:
+            setting = cls.objects.get(key=key)
+            return setting.value
+        except cls.DoesNotExist:
+            return default
+
+    @classmethod
+    def set_value(cls, key, value, description=""):
+        """تنظیم مقدار"""
+        setting, created = cls.objects.get_or_create(
+            key=key,
+            defaults={'value': str(value), 'description': description}
+        )
+        if not created:
+            setting.value = str(value)
+            setting.description = description
+            setting.save()
+        return setting
+
 # Signals for deleting old images
 @receiver(pre_delete, sender=ProductImage)
 def delete_product_image_file(sender, instance, **kwargs):

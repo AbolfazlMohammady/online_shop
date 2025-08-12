@@ -144,14 +144,14 @@
                      
                      <!-- Price Section -->
                      <div class="mb-6">
-                         <div class="flex items-center gap-3 mb-2">
-                             <span class="text-3xl lg:text-4xl font-bold text-purple-600" id="current-price">{{ product.price|floatformat:0 }}</span>
+                          <div class="flex items-center gap-3 mb-2">
+                              <span class="text-3xl lg:text-4xl font-bold text-purple-600" id="current-price" data-price="{{ product.price|floatformat:0 }}">{{ product.price|floatformat:0 }}</span>
                              <span class="text-lg text-gray-500">تومان</span>
                          </div>
                          
-                         {% if product.original_price and product.original_price > product.price %}
+                          {% if product.original_price and product.original_price > product.price %}
                          <div class="flex items-center gap-3">
-                             <span class="text-xl text-gray-500 line-through" id="original-price">{{ product.original_price|floatformat:0 }}</span>
+                              <span class="text-xl text-gray-500 line-through" id="original-price" data-price="{{ product.original_price|floatformat:0 }}">{{ product.original_price|floatformat:0 }}</span>
                              <span class="px-3 py-1 bg-red-100 text-red-600 text-sm font-bold rounded-full animate-pulse">
                                  {{ product.discount_percentage }}٪ تخفیف
                              </span>

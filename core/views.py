@@ -192,8 +192,18 @@ def user_logout(request):
 def profile(request):
     """Profile view - display user information"""
     user = request.user
+    # سفارش‌ها و علاقه‌مندی‌ها برای نمایش در تب‌ها
+    from shop.models import Order, Wishlist
+    orders = Order.objects.filter(user=user).order_by('-created_at')
+    wishlist = None
+    try:
+        wishlist = Wishlist.objects.get(user=user)
+    except Wishlist.DoesNotExist:
+        wishlist = None
     return render(request, 'core/profile.html', {
-        'user': user
+        'user': user,
+        'orders': orders,
+        'wishlist': wishlist,
     })
 
 def get_cities(request):
