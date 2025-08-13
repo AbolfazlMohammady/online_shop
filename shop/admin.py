@@ -7,7 +7,7 @@ from django.contrib.admin import AdminSite
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
-from .models import Category, Product, ProductImage, ProductSpecification, Brand, Comment, Cart, CartItem, Wishlist, Order, OrderItem, Settings
+from .models import Category, Product, ProductImage, ProductSpecification, Brand, Comment, Cart, CartItem, Wishlist, Order, OrderItem, Settings, Banner, ShippingSettings
 
 # Custom Admin Site
 class BeautyShopAdminSite(AdminSite):
@@ -61,10 +61,17 @@ class CommentInline(admin.TabularInline):
     readonly_fields = ['name', 'email', 'rating', 'comment', 'created_at']
     fields = ['name', 'rating', 'comment', 'is_approved', 'created_at']
     can_delete = False
-    max_num = 10
+    max_num = 5
+    verbose_name = "کامنت"
+    verbose_name_plural = "کامنت‌ها"
     
     def has_add_permission(self, request, obj=None):
         return False
+    
+    def get_queryset(self, request):
+        # فقط 5 کامنت آخر را نمایش بده
+        qs = super().get_queryset(request)
+        return qs.order_by('-created_at')
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
@@ -102,8 +109,8 @@ class ProductAdmin(admin.ModelAdmin):
     ]
     search_fields = ['name', 'description', 'brand__name', 'model']
     prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ['rating', 'review_count', 'created_at', 'updated_at']
-    inlines = [ProductImageInline, ProductSpecificationInline, CommentInline]
+    readonly_fields = ['rating', 'review_count', 'created_at', 'updated_at', 'get_comments_summary']
+    inlines = [ProductImageInline, ProductSpecificationInline]
     
     fieldsets = (
         ('اطلاعات پایه', {
@@ -121,8 +128,8 @@ class ProductAdmin(admin.ModelAdmin):
         ('ویژگی‌ها', {
             'fields': ('is_featured', 'is_bestseller', 'is_new', 'is_luxury', 'has_discount')
         }),
-        ('امتیازات', {
-            'fields': ('rating', 'review_count')
+        ('امتیازات و کامنت‌ها', {
+            'fields': ('rating', 'review_count', 'get_comments_summary')
         }),
         ('وضعیت', {
             'fields': ('status', 'is_active')
@@ -140,6 +147,29 @@ class ProductAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+    
+    def get_comments_summary(self, obj):
+        """نمایش خلاصه کامنت‌ها"""
+        comments_count = obj.comments.count()
+        if comments_count == 0:
+            return "بدون کامنت"
+        
+        approved_count = obj.comments.filter(is_approved=True).count()
+        pending_count = comments_count - approved_count
+        
+        summary = f"کل: {comments_count} | تایید شده: {approved_count}"
+        if pending_count > 0:
+            summary += f" | در انتظار: {pending_count}"
+        
+        # لینک به صفحه کامنت‌ها
+        admin_url = reverse('admin:shop_comment_changelist')
+        filter_url = f"{admin_url}?product__id__exact={obj.id}"
+        
+        return format_html(
+            '{}<br><a href="{}" target="_blank" style="color: #007cba; font-size: 12px;">مشاهده همه کامنت‌ها</a>',
+            summary, filter_url
+        )
+    get_comments_summary.short_description = 'خلاصه کامنت‌ها'
     
     def get_social_links(self, obj):
         links = []
@@ -344,4 +374,55 @@ class SettingsAdmin(admin.ModelAdmin):
     search_fields = ['key', 'value', 'description']
     readonly_fields = ['created_at', 'updated_at']
     ordering = ['key']
+
+
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    list_display = ['title', 'banner_type', 'image_preview', 'discount_percentage', 'countdown_hours', 'is_active', 'created_at']
+    list_filter = ['banner_type', 'is_active', 'created_at']
+    search_fields = ['title', 'subtitle']
+    list_editable = ['is_active', 'discount_percentage', 'countdown_hours']
+    readonly_fields = ['created_at', 'updated_at', 'countdown_end_time', 'is_expired', 'image_preview']
+    
+    fieldsets = (
+        ('اطلاعات اصلی', {
+            'fields': ('title', 'subtitle', 'image', 'banner_type', 'is_active')
+        }),
+        ('تنظیمات دکمه', {
+            'fields': ('button_text', 'button_url')
+        }),
+        ('تنظیمات تخفیف', {
+            'fields': ('discount_percentage', 'countdown_hours')
+        }),
+        ('پیش‌نمایش', {
+            'fields': ('image_preview',),
+            'classes': ('collapse',)
+        }),
+        ('اطلاعات زمانی', {
+            'fields': ('created_at', 'updated_at', 'countdown_end_time', 'is_expired'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="max-height: 100px; max-width: 200px;" />', obj.image.url)
+        return "بدون تصویر"
+    image_preview.short_description = "پیش‌نمایش تصویر"
+    
+    def countdown_end_time(self, obj):
+        return obj.countdown_end_time
+    countdown_end_time.short_description = "زمان پایان شمارش معکوس"
+    
+    def is_expired(self, obj):
+        return obj.is_expired
+    is_expired.boolean = True
+    is_expired.short_description = "منقضی شده"
+
+
+@admin.register(ShippingSettings)
+class ShippingSettingsAdmin(admin.ModelAdmin):
+    list_display = ['shipping_cost', 'free_shipping_threshold']
+    list_editable = ['free_shipping_threshold']
+    list_display_links = ['shipping_cost']
 

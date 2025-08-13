@@ -1659,3 +1659,25 @@ function addToCart(productId) {
     </script>
 </body>
 </html>
+TypeError at /admin/shop/product/15/change/
+Cannot filter a query once a slice has been taken.
+Request Method:	GET
+Request URL:	http://127.0.0.1:8000/admin/shop/product/15/change/
+Django Version:	5.0.6
+Exception Type:	TypeError
+Exception Value:	
+Cannot filter a query once a slice has been taken.
+Exception Location:	C:\Users\Abolfazl\miniconda3\Lib\site-packages\django\db\models\query.py, line 1488, in _filter_or_exclude
+Raised during:	django.contrib.admin.options.change_view
+Python Executable:	C:\Users\Abolfazl\miniconda3\python.exe
+Python Version:	3.12.8
+Python Path:	
+['A:\\Develop\\project\\onlin_shop',
+ 'C:\\Users\\Abolfazl\\miniconda3\\python312.zip',
+ 'C:\\Users\\Abolfazl\\miniconda3\\DLLs',
+ 'C:\\Users\\Abolfazl\\miniconda3\\Lib',
+ 'C:\\Users\\Abolfazl\\miniconda3',
+ 'C:\\Users\\Abolfazl\\miniconda3\\Lib\\site-packages']
+Server time:	Tue, 12 Aug 2025 18:10:33 +0000 این درست نشده 
+بنر هم کامل نشوون داده نمیشه با اینکه  متن چی بهش اضافه کردمبا تخفیف برسیکن ببین مشکل چیه
+درستش کن

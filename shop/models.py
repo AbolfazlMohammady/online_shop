@@ -436,6 +436,61 @@ class Settings(models.Model):
             setting.save()
         return setting
 
+class ShippingSettings(models.Model):
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=0, default=70000)
+    free_shipping_threshold = models.DecimalField(max_digits=10, decimal_places=0, default=500000)
+    
+    class Meta:
+        verbose_name = "تنظیمات ارسال"
+        verbose_name_plural = "تنظیمات ارسال"
+    
+    def __str__(self):
+        return f"تنظیمات ارسال - هزینه: {self.shipping_cost} تومان"
+
+
+class Banner(models.Model):
+    BANNER_TYPES = [
+        ('hero', 'بنر اصلی'),
+        ('promo', 'بنر تبلیغاتی'),
+        ('category', 'بنر دسته‌بندی'),
+    ]
+    
+    title = models.CharField(max_length=200, verbose_name="عنوان بنر")
+    subtitle = models.CharField(max_length=300, blank=True, verbose_name="زیرعنوان")
+    image = models.ImageField(upload_to='banners/', blank=True, null=True, verbose_name="تصویر بنر")
+    button_text = models.CharField(max_length=50, default="همین حالا خرید کنید", verbose_name="متن دکمه")
+    button_url = models.CharField(max_length=200, default="#", verbose_name="لینک دکمه")
+    discount_percentage = models.IntegerField(default=30, verbose_name="درصد تخفیف")
+    countdown_hours = models.IntegerField(default=48, verbose_name="ساعت باقی‌مانده")
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
+    banner_type = models.CharField(max_length=20, choices=BANNER_TYPES, default='hero', verbose_name="نوع بنر")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
+    
+    class Meta:
+        verbose_name = "بنر"
+        verbose_name_plural = "بنرها"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.get_banner_type_display()}"
+    
+    @property
+    def countdown_end_time(self):
+        """محاسبه زمان پایان شمارش معکوس"""
+        from django.utils import timezone
+        if self.updated_at:
+            return self.updated_at + timezone.timedelta(hours=self.countdown_hours)
+        return None
+    
+    @property
+    def is_expired(self):
+        """بررسی انقضای بنر"""
+        from django.utils import timezone
+        if self.countdown_end_time:
+            return timezone.now() > self.countdown_end_time
+        return False
+
 # Signals for deleting old images
 @receiver(pre_delete, sender=ProductImage)
 def delete_product_image_file(sender, instance, **kwargs):
@@ -457,6 +512,17 @@ def delete_brand_logo_file(sender, instance, **kwargs):
                 os.remove(instance.logo.path)
         except (FileNotFoundError, OSError, Exception) as e:
             print(f"Error deleting logo file {instance.logo.path}: {e}")
+            pass
+
+@receiver(pre_delete, sender=Banner)
+def delete_banner_image_file(sender, instance, **kwargs):
+    """حذف فایل تصویر بنر از سرور هنگام حذف بنر"""
+    if instance.image and hasattr(instance.image, 'path'):
+        try:
+            if os.path.isfile(instance.image.path):
+                os.remove(instance.image.path)
+        except (FileNotFoundError, OSError, Exception) as e:
+            print(f"Error deleting banner image file {instance.image.path}: {e}")
             pass
 
 @receiver(post_save, sender=ProductImage)

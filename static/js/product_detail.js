@@ -70,8 +70,10 @@
 
     const prevBtn = document.getElementById('btn-prev');
     const nextBtn = document.getElementById('btn-next');
+    const backBtn = document.getElementById('btn-back');
     if (prevBtn) prevBtn.addEventListener('click', pdPreviousImage);
     if (nextBtn) nextBtn.addEventListener('click', pdNextImage);
+    if (backBtn) backBtn.addEventListener('click', () => window.history.back());
 
     document.querySelectorAll('#product-detail .thumbnail-img').forEach((el, idx) => {
       el.addEventListener('click', () => pdChangeMainImage(productImages[idx]));

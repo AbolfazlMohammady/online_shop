@@ -37,11 +37,19 @@ async function addToCartHome(productId, btn) {
 
 function addToCartLocalFromCard(productId, btn) {
   try {
-    const card = btn.closest('a, .theme-card, .product-card') || document;
-    const name = card.querySelector('h4, .product-title')?.textContent?.trim() || 'محصول';
-    const priceText = (card.querySelector('.text-purple-600, .current-price')?.textContent || '').replace(/[^\d]/g, '') || '0';
+    const card = btn.closest('.product-card, .theme-card') || document;
+    
+    // Find the product card that contains the button
+    const productCard = btn.closest('.product-card') || btn.closest('.theme-card');
+    if (!productCard) {
+      console.error('Product card not found');
+      return;
+    }
+    
+    const name = productCard.querySelector('h4, .product-title, .product-name')?.textContent?.trim() || 'محصول';
+    const priceText = (productCard.querySelector('.text-purple-600, .current-price, .product-price')?.textContent || '').replace(/[^\d]/g, '') || '0';
     const price = parseInt(priceText) || 0;
-    const imgEl = card.querySelector('img');
+    const imgEl = productCard.querySelector('img');
     const image = imgEl ? imgEl.getAttribute('src') : null;
     const raw = localStorage.getItem('cart') || '[]';
     const cart = JSON.parse(raw);

@@ -6,31 +6,41 @@
         <!-- Home Page -->
         <div id="home" class="page active">
             <!-- Discount Banner -->
-            <section class="bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 text-white py-3 sm:py-4 text-center relative overflow-hidden">
+            {% if active_banner %}
+            <section class="banner-section">
                 <div class="container mx-auto px-4">
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-fire text-yellow-300 animate-pulse text-sm sm:text-base"></i>
-                            <span class="font-bold text-sm sm:text-base">تخفیف ویژه!</span>
+                    <div class="banner-content">
+                        <div class="banner-title">
+                            <i class="fas fa-fire fire-icon"></i>
+                            <span class="banner-text">تخفیف ویژه!</span>
                         </div>
-                        <span class="text-sm sm:text-lg font-semibold text-center">بهترین محصولات آرایشی و بهداشتی با ۳۰٪ تخفیف</span>
-                        <div id="countdown-timer-hero" class="flex items-center gap-1 sm:gap-2 bg-black/20 px-2 sm:px-4 py-1 sm:py-2 rounded-lg">
-                            <i class="fas fa-clock text-yellow-300 text-xs sm:text-sm"></i>
-                            <span class="font-bold text-xs sm:text-sm">باقی‌مانده:</span>
+                        <span class="banner-text">
+                            {% if active_banner.subtitle %}
+                                {{ active_banner.subtitle }}
+                            {% else %}
+                                بهترین محصولات آرایشی و بهداشتی با {{ active_banner.discount_percentage }}٪ تخفیف
+                            {% endif %}
+                        </span>
+                        <div id="countdown-timer-hero" class="banner-countdown" data-end-time="{{ active_banner.countdown_end_time|date:'c' }}">
+                            <i class="fas fa-clock clock-icon"></i>
+                            <span class="time-label">باقی‌مانده:</span>
                             <div class="flex gap-1">
-                                <span id="hours-hero" class="bg-white/20 px-1 sm:px-2 py-1 rounded text-xs sm:text-sm font-mono">00</span>
-                                <span class="text-xs sm:text-sm">:</span>
-                                <span id="minutes-hero" class="bg-white/20 px-1 sm:px-2 py-1 rounded text-xs sm:text-sm font-mono">00</span>
-                                <span class="text-xs sm:text-sm">:</span>
-                                <span id="seconds-hero" class="bg-white/20 px-1 sm:px-2 py-1 rounded text-xs sm:text-sm font-mono">00</span>
+                                <span id="days-hero" class="time-value">00</span>
+                                <span class="time-separator">:</span>
+                                <span id="hours-hero" class="time-value">00</span>
+                                <span class="time-separator">:</span>
+                                <span id="minutes-hero" class="time-value">00</span>
+                                <span class="time-separator">:</span>
+                                <span id="seconds-hero" class="time-value">00</span>
                             </div>
                         </div>
-                        <a href="{% url 'shop:product_list' %}" class="bg-white text-red-600 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg font-bold hover:bg-gray-100 transition-colors shadow-lg transform hover:scale-105 text-xs sm:text-sm">
-                            همین حالا خرید کنید
+                        <a href="{{ active_banner.button_url|default:'#' }}" class="banner-button">
+                            {{ active_banner.button_text|default:"همین حالا خرید کنید" }}
                         </a>
                     </div>
                 </div>
             </section>
+            {% endif %}
 
 
 
@@ -422,272 +432,111 @@
         </script>
         {% endblock %}
 
-        <!-- Products Page -->
-        <div id="products" class="page">
-            <div class="container mx-auto px-4 py-8">
-                <h2 class="text-3xl font-bold text-center mb-8">محصولات ما</h2>
-                
-                <!-- Circular Cosmetic Filter Box -->
-                <div class="relative mb-8 flex justify-end">
-                    <!-- Circular Compact Design -->
-                    <div id="cosmetic-compact" class="relative">
-                        <!-- Compact Base (Closed State) -->
-                        <div id="compact-base" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-500 shadow-2xl cursor-pointer transform transition-all duration-500 hover:scale-110 relative overflow-hidden border-4 border-white/30" onclick="toggleCompact()">
-                            <!-- Mirror Effect -->
-                            <div class="absolute inset-1 rounded-full bg-gradient-to-br from-pink-200/80 to-purple-200/80 shadow-inner border-2 border-white/60">
-                                <!-- Reflection -->
-                                <div class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 w-3 h-3 sm:w-4 sm:h-4 bg-white/40 rounded-full blur-sm"></div>
-                                <div class="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white/30 rounded-full blur-sm"></div>
+        <!-- Footer Section -->
+        <footer class="theme-bg border-t theme-border py-6 mt-12">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                    <!-- Brand Section -->
+                    <div class="text-center md:text-right">
+                        <div class="flex items-center justify-center md:justify-start gap-2 mb-3">
+                            <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-gem text-white text-sm md:text-base"></i>
                             </div>
-                            
-                            <!-- Brand Logo -->
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="text-center">
-                                    <i class="fas fa-sliders-h text-lg sm:text-2xl text-white drop-shadow-lg"></i>
-                                </div>
+                            <div>
+                                <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white">زیبایی شاپ</h3>
+                                <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">فروشگاه آرایشی و بهداشتی</p>
                             </div>
-                            
-                            <!-- Shimmer Effect -->
-                            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 animate-shimmer"></div>
-                            
-                            <!-- Pulse Ring -->
-                            <div class="absolute inset-0 rounded-full border-2 border-white/20 animate-ping"></div>
                         </div>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4 text-xs md:text-sm leading-relaxed max-w-md mx-auto md:mx-0">
+                            فروشگاه آنلاین محصولات آرایشی و بهداشتی با بهترین کیفیت و قیمت.
+                        </p>
                         
-                        <!-- Expanded Filter Panel -->
-                        <div id="filter-panel" class="fixed top-0 right-0 w-80 h-full bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-600 shadow-2xl transform translate-x-full transition-all duration-700 ease-out z-50 overflow-y-auto" style="border-radius: 50px 0 0 50px;">
-                            <!-- Close Button -->
-                            <button onclick="toggleCompact()" class="absolute top-6 left-6 w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors z-20">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            
-                            <!-- Filter Content -->
-                            <div class="p-6 pt-20 h-full">
-                                <!-- Search -->
-                                <div class="mb-4">
-                                    <div class="relative">
-                                        <input type="text" id="search-input" placeholder="جستجو..." class="w-full p-3 pr-10 border-2 border-pink-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700 backdrop-blur-sm rounded-full focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 text-sm">
-                                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-pink-400">
-                                            <i class="fas fa-search"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Category Pills -->
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-bold mb-2 text-center">دسته‌بندی</h4>
-                                    <div class="flex flex-wrap gap-1 justify-center">
-                                        <button onclick="setCategoryFilter('')" class="category-pill active px-3 py-1 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 text-gray-700 dark:text-gray-200 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
-                                            همه
-                                        </button>
-                                        <button onclick="setCategoryFilter('رژ لب')" class="category-pill px-3 py-1 bg-gradient-to-r from-red-200 to-pink-200 text-red-700 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
-                                            💄 رژ
-                                        </button>
-                                        <button onclick="setCategoryFilter('کرم')" class="category-pill px-3 py-1 bg-gradient-to-r from-blue-200 to-cyan-200 text-blue-700 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
-                                            🧴 کرم
-                                        </button>
-                                        <button onclick="setCategoryFilter('عطر')" class="category-pill px-3 py-1 bg-gradient-to-r from-purple-200 to-indigo-200 text-purple-700 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
-                                            🌸 عطر
-                                        </button>
-                                        <button onclick="setCategoryFilter('سرم')" class="category-pill px-3 py-1 bg-gradient-to-r from-green-200 to-emerald-200 text-green-700 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105">
-                                            💧 سرم
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Price Range -->
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-bold mb-2 text-center">قیمت</h4>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <input type="number" id="min-price" placeholder="حداقل" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs">
-                                        <input type="number" id="max-price" placeholder="حداکثر" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs">
-                                    </div>
-                                </div>
-                                
-                                <!-- Sort -->
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-bold mb-2 text-center">مرتب‌سازی</h4>
-                                    <select id="sort-filter" class="w-full p-2 border border-purple-200 dark:border-gray-600 bg-white/80 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-400 text-xs appearance-none cursor-pointer">
-                                        <option value="default">پیش‌فرض</option>
-                                        <option value="price-low">💰 ارزان‌ترین</option>
-                                        <option value="price-high">💎 گران‌ترین</option>
-                                        <option value="rating">⭐ بهترین</option>
-                                        <option value="name">🔤 الفبایی</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Quick Filters -->
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-bold mb-2 text-center">فیلتر سریع</h4>
-                                    <div class="flex flex-wrap gap-1 justify-center">
-                                        <button onclick="quickFilter('bestseller')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-red-100 to-pink-100 text-red-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-red-200">
-                                            🔥 پرفروش
-                                        </button>
-                                        <button onclick="quickFilter('discount')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-orange-100 to-yellow-100 text-orange-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-orange-200">
-                                            💸 تخفیف
-                                        </button>
-                                        <button onclick="quickFilter('new')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-green-100 to-emerald-100 text-green-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-green-200">
-                                            ✨ جدید
-                                        </button>
-                                        <button onclick="quickFilter('luxury')" class="quick-filter-btn px-2 py-1 bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-600 rounded-full text-xs font-medium transition-all duration-300 hover:scale-105 border border-purple-200">
-                                            👑 لوکس
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Action Buttons -->
-                                <div class="flex gap-2 justify-center">
-                                    <button onclick="applyFilters()" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                        اعمال
-                                    </button>
-                                    <button onclick="clearFilters()" class="px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                        پاک کردن
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Results Info -->
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-4">
-                        <span id="results-count" class="text-gray-600">نمایش همه محصولات</span>
-                        <div id="active-filters" class="flex gap-2">
-                            <!-- Active filters will be shown here -->
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleView('grid')" id="grid-view" class="p-2 bg-purple-600 text-white rounded-lg">
-                            <i class="fas fa-th"></i>
-                        </button>
-                        <button onclick="toggleView('list')" id="list-view" class="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition-colors">
-                            <i class="fas fa-list"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Products Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" id="products-grid">
-                    <!-- Products will be rendered here -->
-                </div>
-                
-                <!-- No Results Message -->
-                <div id="no-results" class="text-center py-12 hidden">
-                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                    <h3 class="text-xl font-bold mb-2">محصولی یافت نشد</h3>
-                    <p class="text-gray-600 mb-6">متأسفانه محصولی با این مشخصات پیدا نکردیم</p>
-                    <button onclick="clearFilters()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
-                        پاک کردن فیلترها
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- Cart Page -->
-        <div id="cart" class="page">
-            <div class="container mx-auto px-4 py-6 sm:py-8">
-                <h2 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">سبد خرید</h2>
-                
-                <div class="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                    <!-- Cart Items -->
-                    <div class="lg:col-span-2">
-                        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
-                            <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">محصولات انتخابی شما</h3>
-                            
-                            <div id="cart-items" class="space-y-3 sm:space-y-4">
-                                <!-- Cart items will be rendered here -->
-                            </div>
+                        <!-- Social Media -->
+                        <div class="flex justify-center md:justify-start gap-2 md:gap-3">
+                            <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition-all duration-300 transform hover:scale-110">
+                                <i class="fab fa-telegram text-sm md:text-base"></i>
+                            </a>
+                            <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-pink-600 rounded-lg flex items-center justify-center text-white hover:bg-pink-700 transition-all duration-300 transform hover:scale-110">
+                                <i class="fab fa-instagram text-sm md:text-base"></i>
+                            </a>
+                            <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-green-600 rounded-lg flex items-center justify-center text-white hover:bg-green-700 transition-all duration-300 transform hover:scale-110">
+                                <i class="fab fa-whatsapp text-sm md:text-base"></i>
+                            </a>
                         </div>
                     </div>
                     
-                    <!-- Order Summary -->
- 
-
-        <!-- Product Detail Page -->
-        <div id="product-detail" class="page">
-            <div class="container mx-auto px-4 py-8">
-                <button onclick="goBack()" class="flex items-center gap-2 text-purple-600 hover:text-purple-700 font-semibold mb-8 transition-colors group">
-                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                    <span>بازگشت</span>
-                </button>
-                
-                <div class="grid lg:grid-cols-2 gap-12" id="product-detail-content">
-                    <!-- Product detail content will be rendered here -->
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- Contact Page -->
-        <div id="contact" class="page">
-            <div class="container mx-auto px-4 py-8">
-                <h2 class="text-3xl font-bold text-center mb-12">تماس با ما</h2>
-                
-                <div class="grid lg:grid-cols-2 gap-12">
-                    <!-- Contact Form -->
-                    <div class="theme-card rounded-2xl shadow-lg p-8">
-                        <h3 class="text-2xl font-bold mb-6">پیام خود را ارسال کنید</h3>
-                        <form class="space-y-6">
-                            <div>
-                                <label class="block font-semibold mb-2">نام و نام خانوادگی</label>
-                                <input type="text" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="نام خود را وارد کنید">
-                            </div>
-                            <div>
-                                <label class="block font-semibold mb-2">ایمیل</label>
-                                <input type="email" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="ایمیل خود را وارد کنید">
-                            </div>
-                            <div>
-                                <label class="block font-semibold mb-2">پیام</label>
-                                <textarea rows="5" class="w-full p-4 border theme-border theme-input rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="پیام خود را بنویسید"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors">
-                                ارسال پیام
-                            </button>
-                        </form>
+                    <!-- Quick Links -->
+                    <div class="text-center md:text-right">
+                        <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4 text-gray-900 dark:text-white">لینک‌های مفید</h4>
+                        <ul class="space-y-1 md:space-y-2">
+                            <li>
+                                <a href="{% url 'home' %}" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                                    <i class="fas fa-home text-xs"></i>
+                                    <span>صفحه اصلی</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'shop:product_list' %}" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                                    <i class="fas fa-shopping-bag text-xs"></i>
+                                    <span>محصولات</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'blog:blog_home' %}" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                                    <i class="fas fa-newspaper text-xs"></i>
+                                    <span>وبلاگ</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                                    <i class="fas fa-phone text-xs"></i>
+                                    <span>تماس با ما</span>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
 
                     <!-- Contact Info -->
-                    <div class="space-y-8">
-                        <div class="theme-card rounded-2xl shadow-lg p-8">
-                            <h3 class="text-2xl font-bold mb-6">اطلاعات تماس</h3>
-                            <div class="space-y-6">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-phone text-purple-600"></i>
+                    <div class="text-center md:text-right">
+                        <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4 text-gray-900 dark:text-white">تماس با ما</h4>
+                        <div class="space-y-2 md:space-y-3">
+                            <div class="flex items-center justify-center md:justify-start gap-2 md:gap-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-phone text-purple-600 dark:text-purple-400 text-xs md:text-sm"></i>
                                     </div>
-                                    <div>
-                                        <h4 class="font-semibold">تلفن</h4>
-                                        <p class="theme-text-secondary">۰۲۱-۱۲۳۴۵۶۷۸</p>
-                                    </div>
+                                <div class="text-right">
+                                    <p class="text-gray-900 dark:text-white font-medium text-xs md:text-sm">تلفن</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">۰۲۱-۱۲۳۴۵۶۷۸</p>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-envelope text-blue-600"></i>
                                     </div>
-                                    <div>
-                                        <h4 class="font-semibold">ایمیل</h4>
-                                        <p class="theme-text-secondary">info@beautyshop.com</p>
+                            <div class="flex items-center justify-center md:justify-start gap-2 md:gap-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-envelope text-blue-600 dark:text-blue-400 text-xs md:text-sm"></i>
                                     </div>
+                                <div class="text-right">
+                                    <p class="text-gray-900 dark:text-white font-medium text-xs md:text-sm">ایمیل</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">info@beautyshop.com</p>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-map-marker-alt text-red-600"></i>
                                     </div>
-                                    <div>
-                                        <h4 class="font-semibold">آدرس</h4>
-                                        <p class="theme-text-secondary">تهران، خیابان ولیعصر، پلاک ۱۲۳</p>
+                            <div class="flex items-center justify-center md:justify-start gap-2 md:gap-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-map-marker-alt text-red-600 dark:text-red-400 text-xs md:text-sm"></i>
                                     </div>
+                                <div class="text-right">
+                                    <p class="text-gray-900 dark:text-white font-medium text-xs md:text-sm">آدرس</p>
+                                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">تهران، خیابان ولیعصر</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Bottom Section -->
+                <div class="border-t border-gray-300 dark:border-gray-700 mt-6 pt-4 text-center">
+                    <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">&copy; ۱۴۰۲ زیبایی شاپ. تمامی حقوق محفوظ است.</p>
+                </div>
             </div>
-        </div>
+        </footer>
     </div>
 
     <!-- Notification Container -->

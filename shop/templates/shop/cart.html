@@ -3,7 +3,7 @@
 {% load date_filters %}
 {% block title %}سبد خرید{% endblock %}
 {% block extra_js %}
-<!-- صفحه اختصاصی سبد خرید: از اسکریپت اختصاصی همین صفحه استفاده می‌شود -->
+<script src="{% static 'js/cart.js' %}"></script>
 {% endblock %}
 {% block contact %}
 
@@ -55,170 +55,111 @@
   </div>
 </div>
 
-<script>
-// Cart page specific JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-  // Load cart from localStorage
-  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  
-  // Shipping settings
-  let shippingSettings = {
-    shippingCost: 70000,
-    freeShippingThreshold: 500000
-  };
-  
-  // Initialize cart count in navbar
-  updateCartCount();
-  
-  // Render cart items
-  renderCartItems();
-  
-  // Update cart summary
-  updateCartSummary();
-  
-  function updateCartCount() {
-    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-    const countElement = document.getElementById('cart-count');
-    if (countElement) {
-      countElement.textContent = cartCount;
-    }
-  }
-  
-  function renderCartItems() {
-    const cartItemsContainer = document.getElementById('cart-items');
-    if (!cartItemsContainer) return;
-    
-    if (cart.length === 0) {
-      cartItemsContainer.innerHTML = `
-        <div class="text-center py-8 sm:py-12">
-          <i class="fas fa-shopping-cart text-4xl sm:text-6xl text-gray-300 mb-3 sm:mb-4"></i>
-          <h3 class="text-lg sm:text-xl font-bold mb-2 text-gray-900 dark:text-white">سبد خرید شما خالی است</h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">برای خرید محصولات به صفحه محصولات بروید</p>
-          <a href="{% url 'shop:product_list' %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold transition-colors text-sm sm:text-base">
-            مشاهده محصولات
-          </a>
+<!-- Footer Section -->
+<footer class="theme-bg border-t theme-border py-6 mt-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <!-- Brand Section -->
+            <div class="text-center md:text-right">
+                <div class="flex items-center justify-center md:justify-start gap-2 mb-3">
+                    <div class="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-gem text-white text-sm md:text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base md:text-lg font-bold text-gray-900 dark:text-white">زیبایی شاپ</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">فروشگاه آرایشی و بهداشتی</p>
+                    </div>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4 text-xs md:text-sm leading-relaxed max-w-md mx-auto md:mx-0">
+                    فروشگاه آنلاین محصولات آرایشی و بهداشتی با بهترین کیفیت و قیمت.
+                </p>
+                
+                <!-- Social Media -->
+                <div class="flex justify-center md:justify-start gap-2 md:gap-3">
+                    <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-telegram text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-pink-600 rounded-lg flex items-center justify-center text-white hover:bg-pink-700 transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-instagram text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="w-8 h-8 md:w-10 md:h-10 bg-green-600 rounded-lg flex items-center justify-center text-white hover:bg-green-700 transition-all duration-300 transform hover:scale-110">
+                        <i class="fab fa-whatsapp text-sm md:text-base"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="text-center md:text-right">
+                <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4 text-gray-900 dark:text-white">لینک‌های مفید</h4>
+                <ul class="space-y-1 md:space-y-2">
+                    <li>
+                        <a href="{% url 'home' %}" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                            <i class="fas fa-home text-xs"></i>
+                            <span>صفحه اصلی</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'shop:product_list' %}" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                            <i class="fas fa-shopping-bag text-xs"></i>
+                            <span>محصولات</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'blog:blog_home' %}" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                            <i class="fas fa-newspaper text-xs"></i>
+                            <span>وبلاگ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                            <i class="fas fa-phone text-xs"></i>
+                            <span>تماس با ما</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="text-center md:text-right">
+                <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4 text-gray-900 dark:text-white">تماس با ما</h4>
+                <div class="space-y-2 md:space-y-3">
+                    <div class="flex items-center justify-center md:justify-start gap-2 md:gap-3">
+                        <div class="w-8 h-8 md:w-10 md:h-10 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-phone text-purple-600 dark:text-purple-400 text-xs md:text-sm"></i>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-900 dark:text-white font-medium text-xs md:text-sm">تلفن</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">۰۲۱-۱۲۳۴۵۶۷۸</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center md:justify-start gap-2 md:gap-3">
+                        <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-envelope text-blue-600 dark:text-blue-400 text-xs md:text-sm"></i>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-900 dark:text-white font-medium text-xs md:text-sm">ایمیل</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">info@beautyshop.com</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center md:justify-start gap-2 md:gap-3">
+                        <div class="w-8 h-8 md:w-10 md:h-10 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-map-marker-alt text-red-600 dark:text-red-400 text-xs md:text-sm"></i>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-900 dark:text-white font-medium text-xs md:text-sm">آدرس</p>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">تهران، خیابان ولیعصر</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      `;
-    } else {
-      cartItemsContainer.innerHTML = cart.map(item => `
-        <div class="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl bg-white dark:bg-gray-800 shadow-sm">
-          <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${item.color || 'from-pink-200 to-purple-200'} rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-            ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded-lg sm:rounded-xl">` : `<i class="fas fa-image text-lg sm:text-xl ${item.iconColor || 'text-gray-400'}"></i>`}
-          </div>
-          <div class="flex-1 min-w-0">
-            <h4 class="font-bold text-sm sm:text-base line-clamp-1 text-gray-900 dark:text-white">${item.name}</h4>
-            <p class="text-purple-600 font-semibold text-xs sm:text-sm">${item.price ? item.price.toLocaleString() : '0'} تومان</p>
-          </div>
-          <div class="flex items-center gap-1 sm:gap-3">
-            <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-full flex items-center justify-center transition-colors">
-              <i class="fas fa-minus text-xs text-gray-700 dark:text-gray-300"></i>
-            </button>
-            <span class="w-6 sm:w-8 text-center font-semibold text-sm sm:text-base text-gray-900 dark:text-white">${item.quantity}</span>
-            <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 rounded-full flex items-center justify-center transition-colors">
-              <i class="fas fa-plus text-xs text-gray-700 dark:text-gray-300"></i>
-            </button>
-          </div>
-          <button onclick="removeFromCart(${item.id})" class="text-red-600 hover:text-red-700 p-1 sm:p-2 transition-colors">
-            <i class="fas fa-trash text-sm"></i>
-          </button>
+        
+        <!-- Bottom Section -->
+        <div class="border-t border-gray-300 dark:border-gray-700 mt-6 pt-4 text-center">
+            <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm">&copy; ۱۴۰۲ زیبایی شاپ. تمامی حقوق محفوظ است.</p>
         </div>
-      `).join('');
-    }
-  }
-  
-  function updateCartSummary() {
-    console.log('Updating cart summary, cart:', cart);
-    const subtotal = cart.reduce((total, item) => {
-      // Convert price to number and handle both string and number types
-      const itemPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.]/g, '')) : parseFloat(item.price) || 0;
-      const itemQuantity = parseInt(item.quantity) || 0;
-      const itemTotal = itemPrice * itemQuantity;
-      console.log(`Item: ${item.name}, Price: ${itemPrice}, Quantity: ${itemQuantity}, Total: ${itemTotal}`);
-      return total + itemTotal;
-    }, 0);
-    console.log('Subtotal calculated:', subtotal);
-    
-    const shipping = subtotal >= shippingSettings.freeShippingThreshold ? 0 : shippingSettings.shippingCost;
-    const total = subtotal + shipping;
-    
-    console.log('Final calculations - Subtotal:', subtotal, 'Shipping:', shipping, 'Total:', total);
-    
-    const subtotalEl = document.getElementById('subtotal');
-    const shippingEl = document.getElementById('shipping');
-    const totalEl = document.getElementById('total');
-    
-    if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString() + ' تومان';
-    if (shippingEl) shippingEl.textContent = shipping === 0 ? 'رایگان' : shipping.toLocaleString() + ' تومان';
-    if (totalEl) totalEl.textContent = total.toLocaleString() + ' تومان';
-  }
-  
-  // Global functions for cart operations
-  window.removeFromCart = function(productId) {
-    console.log('Removing product with ID:', productId);
-    // Remove item from cart
-    cart = cart.filter(item => item.id !== productId);
-    localStorage.setItem('cart', JSON.stringify(cart));
-    
-    // Update cart count in navbar
-    updateCartCount();
-    
-    // Re-render cart
-    renderCartItems();
-    updateCartSummary();
-  };
-  
-  window.updateQuantity = function(productId, newQuantity) {
-    if (newQuantity <= 0) {
-      window.removeFromCart(productId);
-      return;
-    }
-    
-    const item = cart.find(item => item.id === productId);
-    if (item) {
-      item.quantity = newQuantity;
-      localStorage.setItem('cart', JSON.stringify(cart));
-      
-      // Update cart count in navbar
-      updateCartCount();
-      
-      // Re-render cart
-      renderCartItems();
-      updateCartSummary();
-    }
-  };
-  
-  window.checkout = function() {
-    if (cart.length === 0) {
-      alert('سبد خرید شما خالی است!');
-      return;
-    }
-    // Redirect to checkout page
-    window.location.href = '{% url "shop:checkout" %}';
-  };
-
-  // Clear Cart function
-  window.clearCart = function() {
-    console.log('Clearing cart...');
-    cart = [];
-    localStorage.removeItem('cart');
-    updateCartCount();
-    renderCartItems();
-    updateCartSummary();
-    console.log('Cart cleared. Current cart:', cart);
-  };
-  
-  // Clear all localStorage function
-  window.clearAllStorage = function() {
-    console.log('Clearing all localStorage...');
-    localStorage.clear();
-    cart = [];
-    updateCartCount();
-    renderCartItems();
-    updateCartSummary();
-    console.log('All localStorage cleared. Current cart:', cart);
-  };
-});
-</script>
+    </div>
+</footer>
 
 {% endblock %}
 

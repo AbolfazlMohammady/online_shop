@@ -10,17 +10,21 @@ from django.db.models import F
 
 def home(request):
     """Home page with latest/most viewed products and recent blog posts"""
-    from shop.models import Product
+    from shop.models import Product, Banner
     from blog.models import Post
 
     latest_products = Product.objects.filter(is_active=True).order_by('-created_at')[:5]
     most_viewed_products = Product.objects.filter(is_active=True).order_by('-view_count')[:5]
     recent_posts = Post.objects.filter(status='published').order_by('-published_at')[:3]
+    
+    # Get active banner
+    active_banner = Banner.objects.filter(is_active=True).first()
 
     return render(request, 'home.html', {
         'latest_products': latest_products,
         'most_viewed_products': most_viewed_products,
         'recent_posts': recent_posts,
+        'active_banner': active_banner,
     })
 
 def user_login(request):
