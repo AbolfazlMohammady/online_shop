@@ -216,9 +216,11 @@
                      </button>
                      
                       <button id="btn-add-to-wishlist"
-                             class="w-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
-                         <i class="fas fa-heart text-xl"></i>
-                         افزودن به علاقه‌مندی‌ها
+                             class="w-full {% if is_in_wishlist %}bg-red-100 hover:bg-red-200 dark:bg-red-700 dark:hover:bg-red-600{% else %}bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600{% endif %} text-gray-700 dark:text-gray-300 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
+                             data-product-id="{{ product.id }}"
+                             onclick="toggleWishlistDetail('{{ product.id }}', this)">
+                         <i class="{% if is_in_wishlist %}fas{% else %}far{% endif %} fa-heart text-xl"></i>
+                         {% if is_in_wishlist %}حذف از علاقه‌مندی‌ها{% else %}افزودن به علاقه‌مندی‌ها{% endif %}
                      </button>
                  </div>
              </div>
@@ -539,6 +541,51 @@
 </div>
 
 <!-- All page-specific scripts and styles were moved to static files -->
+
+{% block extra_js %}
+<script>
+async function postJson(url, data) {
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCsrfToken() },
+    body: new URLSearchParams(data)
+  });
+  return resp.json();
+}
+
+function getCsrfToken() {
+  const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : '';
+}
+
+async function toggleWishlistDetail(productId, btn) {
+  try {
+    btn.disabled = true;
+    const res = await postJson('{% url "shop:toggle_wishlist" %}', { product_id: productId });
+    const icon = btn.querySelector('i');
+    const buttonText = btn.textContent.trim();
+    
+    if (res.added) { 
+      icon.classList.remove('far'); 
+      icon.classList.add('fas'); 
+      btn.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'dark:bg-gray-700', 'dark:hover:bg-gray-600');
+      btn.classList.add('bg-red-100', 'hover:bg-red-200', 'dark:bg-red-700', 'dark:hover:bg-red-600');
+      btn.innerHTML = btn.innerHTML.replace('افزودن به علاقه‌مندی‌ها', 'حذف از علاقه‌مندی‌ها');
+    } else { 
+      icon.classList.remove('fas'); 
+      icon.classList.add('far'); 
+      btn.classList.remove('bg-red-100', 'hover:bg-red-200', 'dark:bg-red-700', 'dark:hover:bg-red-600');
+      btn.classList.add('bg-gray-100', 'hover:bg-gray-200', 'dark:bg-gray-700', 'dark:hover:bg-gray-600');
+      btn.innerHTML = btn.innerHTML.replace('حذف از علاقه‌مندی‌ها', 'افزودن به علاقه‌مندی‌ها');
+    }
+    btn.disabled = false;
+  } catch(e) { 
+    btn.disabled = false; 
+    console.error('Error toggling wishlist:', e);
+  }
+}
+</script>
+{% endblock %}
 
 <br>
 {% endblock %} 

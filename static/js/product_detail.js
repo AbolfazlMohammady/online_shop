@@ -312,31 +312,8 @@
       setTimeout(() => el.classList.remove('animate-pulse'), 600);
     }
 
-    if (addToWishlistBtn) {
-      addToWishlistBtn.addEventListener('click', async function() {
-        const productId = root.dataset.productId;
-        
-        // Use the addToWishlist function from main.js if available
-        if (typeof window.addToWishlist === 'function') {
-          window.addToWishlist(productId, { stopPropagation: () => {} });
-        } else {
-          // Fallback to local implementation
-          try {
-            const resp = await fetch('/shop/api/toggle-wishlist/', {
-              method: 'POST',
-              headers: { 'X-Requested-With': 'XMLHttpRequest' },
-              body: new URLSearchParams({ product_id: productId })
-            });
-            if (resp.ok) {
-              const data = await resp.json();
-              showNotification(data.added ? 'به علاقه‌مندی‌ها اضافه شد' : 'از علاقه‌مندی‌ها حذف شد', 'success');
-              return;
-            }
-          } catch (_) {}
-          showNotification('برای استفاده از علاقه‌مندی‌ها وارد شوید', 'error');
-        }
-      });
-    }
+    // Wishlist button functionality is now handled in the HTML template
+    // The button has onclick="toggleWishlistDetail('{{ product.id }}', this)" which calls the function defined in the template
   }
 
   document.addEventListener('DOMContentLoaded', wireUp);

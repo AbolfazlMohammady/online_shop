@@ -162,11 +162,21 @@ def product_detail(request, slug):
         is_active=True
     ).exclude(id=product.id).select_related('category', 'brand').prefetch_related('images')[:4]
     
+    # Check if product is in user's wishlist
+    is_in_wishlist = False
+    if request.user.is_authenticated:
+        try:
+            wishlist = Wishlist.objects.get(user=request.user)
+            is_in_wishlist = wishlist.products.filter(id=product.id).exists()
+        except Wishlist.DoesNotExist:
+            pass
+    
     context = {
         'product': product,
         'comments': comments,
         'related_products': related_products,
         'similar_products': similar_products,
+        'is_in_wishlist': is_in_wishlist,
     }
     
     return render(request, 'shop/product_detail.html', context)
