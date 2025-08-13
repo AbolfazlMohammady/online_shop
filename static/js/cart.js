@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">سبد خرید شما خالی است</h3>
           <p class="text-gray-500 text-sm mb-4">محصولات مورد نظر خود را به سبد خرید اضافه کنید</p>
-          <a href="/shop/products/" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                     <a href="/shop/products/" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
             <i class="fas fa-shopping-bag"></i>
             مشاهده محصولات
           </a>

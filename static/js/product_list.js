@@ -37,18 +37,43 @@ async function addToCartHome(productId, btn) {
 
 function addToCartLocalFromCard(productId, btn) {
   try {
-    const card = btn.closest('.product-card, .theme-card') || document;
-    
     // Find the product card that contains the button
-    const productCard = btn.closest('.product-card') || btn.closest('.theme-card');
+    const productCard = btn.closest('.product-card') || btn.closest('.theme-card') || btn.closest('.product-item');
     if (!productCard) {
-      console.error('Product card not found');
+      console.error('Product card not found for button:', btn);
+      console.log('Button parent elements:', btn.parentElement);
       return;
     }
     
-    const name = productCard.querySelector('h4, .product-title, .product-name')?.textContent?.trim() || 'محصول';
-    const priceText = (productCard.querySelector('.text-purple-600, .current-price, .product-price')?.textContent || '').replace(/[^\d]/g, '') || '0';
-    const price = parseInt(priceText) || 0;
+    console.log('Found product card:', productCard);
+    
+    // Try multiple selectors for product name
+    const nameSelectors = ['h3', '.product-name', 'h4', '.product-title', '.title'];
+    let name = 'محصول';
+    for (const selector of nameSelectors) {
+      const nameEl = productCard.querySelector(selector);
+      if (nameEl && nameEl.textContent.trim()) {
+        name = nameEl.textContent.trim();
+        console.log('Found product name:', name);
+        break;
+      }
+    }
+    
+    // Try multiple selectors for product price
+    const priceSelectors = ['.product-price', '.text-purple-600', '.current-price', '.price'];
+    let price = 0;
+    for (const selector of priceSelectors) {
+      const priceEl = productCard.querySelector(selector);
+      if (priceEl && priceEl.textContent) {
+        const priceText = priceEl.textContent.replace(/[^\d]/g, '');
+        if (priceText) {
+          price = parseInt(priceText);
+          console.log('Found product price:', price);
+          break;
+        }
+      }
+    }
+    
     const imgEl = productCard.querySelector('img');
     const image = imgEl ? imgEl.getAttribute('src') : null;
     const raw = localStorage.getItem('cart') || '[]';
@@ -187,7 +212,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.cart-button').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             const productId = parseInt(this.getAttribute('data-product-id'));
+            console.log('Cart button clicked, productId:', productId);
+            
             // Use the addToCart function from main.js
             if (typeof window.addToCart === 'function') {
                 window.addToCart(productId, e);
@@ -267,18 +295,43 @@ document.addEventListener('DOMContentLoaded', function() {
             filterProducts();
         });
     }
+    
+    // Initialize search functionality
+    initializeSearch();
+    
+    // Initialize price inputs
+    initializePriceInputs();
+    
+    // Initialize filter buttons
+    initializeFilterButtons();
+    
+    // Initialize filter pills
+    initializeFilterPills();
+    
+    // Load initial products
+    loadProducts();
+    
+    // Update cart count
+    updateCartCount();
 });
 
 function clearFilters() {
     console.log('Clearing all filters');
     
     // Reset all form elements
-    document.getElementById('search-input').value = '';
-    document.getElementById('min-price').value = '';
-    document.getElementById('max-price').value = '';
-    document.getElementById('sort-filter').value = 'default';
-    document.getElementById('category-filter').value = '';
-    document.getElementById('brand-filter').value = '';
+    const searchInput = document.getElementById('search-input');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    const sortFilter = document.getElementById('sort-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    const brandFilter = document.getElementById('brand-filter');
+    
+    if (searchInput) searchInput.value = '';
+    if (minPriceInput) minPriceInput.value = '';
+    if (maxPriceInput) maxPriceInput.value = '';
+    if (sortFilter) sortFilter.value = 'default';
+    if (categoryFilter) categoryFilter.value = '';
+    if (brandFilter) brandFilter.value = '';
     
     // Reset all filters
     activeFilters = {
@@ -342,19 +395,87 @@ function formatPriceInput(input) {
 }
 
 function applyPriceFilters() {
-    const minPrice = document.getElementById('min-price').value.replace(/[^\d]/g, '');
-    const maxPrice = document.getElementById('max-price').value.replace(/[^\d]/g, '');
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    
+    if (!minPriceInput || !maxPriceInput) {
+        console.error('Price input elements not found');
+        return;
+    }
+    
+    const minPrice = minPriceInput.value.replace(/[^\d]/g, '');
+    const maxPrice = maxPriceInput.value.replace(/[^\d]/g, '');
     
     activeFilters.minPrice = minPrice ? parseInt(minPrice) : null;
     activeFilters.maxPrice = maxPrice ? parseInt(maxPrice) : null;
     
+    console.log('Applying price filters:', activeFilters);
     filterProducts();
 }
 
 function filterProducts() {
-    // This is a placeholder - the actual filtering logic would be implemented here
     console.log('Filtering products with:', activeFilters);
-    // In a real implementation, this would make an AJAX call to get filtered products
+    
+    // Get all product cards
+    const productCards = document.querySelectorAll('.product-card');
+    
+    productCards.forEach(card => {
+        let shouldShow = true;
+        
+        // Filter by search
+        if (activeFilters.search) {
+            const productName = card.querySelector('h3, .product-name')?.textContent?.toLowerCase() || '';
+            if (!productName.includes(activeFilters.search.toLowerCase())) {
+                shouldShow = false;
+            }
+        }
+        
+        // Filter by category
+        if (activeFilters.category) {
+            const productCategory = card.getAttribute('data-category') || '';
+            if (productCategory !== activeFilters.category) {
+                shouldShow = false;
+            }
+        }
+        
+        // Filter by brand
+        if (activeFilters.brand) {
+            const productBrand = card.getAttribute('data-brand') || '';
+            if (productBrand !== activeFilters.brand) {
+                shouldShow = false;
+            }
+        }
+        
+        // Filter by price
+        if (activeFilters.minPrice || activeFilters.maxPrice) {
+            const priceElement = card.querySelector('.product-price');
+            if (priceElement) {
+                const price = parseInt(priceElement.textContent.replace(/[^\d]/g, '')) || 0;
+                
+                if (activeFilters.minPrice && price < activeFilters.minPrice) {
+                    shouldShow = false;
+                }
+                
+                if (activeFilters.maxPrice && price > activeFilters.maxPrice) {
+                    shouldShow = false;
+                }
+            }
+        }
+        
+        // Show/hide card
+        if (shouldShow) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Update results count
+    const visibleCards = document.querySelectorAll('.product-card:not([style*="display: none"])');
+    const resultsCount = document.getElementById('results-count');
+    if (resultsCount) {
+        resultsCount.textContent = `نمایش ${visibleCards.length} محصول`;
+    }
 }
 
 function setCategoryFilter(category) {
@@ -370,4 +491,99 @@ function setBrandFilter(brand) {
 function quickFilter(type) {
     activeFilters.quickFilter = type;
     filterProducts();
+}
+
+function initializeSearch() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            activeFilters.search = this.value;
+            filterProducts();
+        });
+    }
+}
+
+function initializePriceInputs() {
+    const minPriceInput = document.getElementById('min-price');
+    const maxPriceInput = document.getElementById('max-price');
+    
+    if (minPriceInput) {
+        minPriceInput.addEventListener('input', function() {
+            formatPriceInput(this);
+        });
+    }
+    
+    if (maxPriceInput) {
+        maxPriceInput.addEventListener('input', function() {
+            formatPriceInput(this);
+        });
+    }
+}
+
+function loadProducts() {
+    // This function would load products from the server
+    // For now, we'll just initialize the existing products
+    console.log('Loading products...');
+    
+    // Update cart count
+    updateCartCount();
+    
+    // Initialize filter pills
+    initializeFilterPills();
+}
+
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    const countElement = document.getElementById('cart-count');
+    if (countElement) {
+        countElement.textContent = count;
+    }
+}
+
+function initializeFilterPills() {
+    // Category pills
+    document.querySelectorAll('.category-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            
+            // Remove active class from all category pills
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            
+            // Add active class to clicked pill
+            this.classList.add('active');
+            
+            setCategoryFilter(category);
+        });
+    });
+    
+    // Brand pills
+    document.querySelectorAll('.brand-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            const brand = this.getAttribute('data-brand');
+            
+            // Remove active class from all brand pills
+            document.querySelectorAll('.brand-pill').forEach(p => p.classList.remove('active'));
+            
+            // Add active class to clicked pill
+            this.classList.add('active');
+            
+            setBrandFilter(brand);
+        });
+    });
+    
+    // Quick filter buttons
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filterType = this.getAttribute('data-quick-filter');
+            
+            // Remove active class from all quick filter buttons
+            document.querySelectorAll('.quick-filter-btn').forEach(b => b.classList.remove('active'));
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            quickFilter(filterType);
+        });
+    });
 }

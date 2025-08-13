@@ -696,7 +696,7 @@ function addToCart(productId, event) {
         const newItem = {
             id: product.id,
             name: product.name,
-            price: parseFloat(product.price) || 0,
+            price: parseFloat(product.price) || parseFloat(product.price.replace(/[^\d]/g, '')) || 0,
             quantity: 1,
             image: product.images && product.images.length > 0 ? product.images[0].image : null,
             color: 'from-pink-200 to-purple-200',
@@ -758,9 +758,9 @@ function renderCart() {
                 <i class="fas fa-shopping-cart text-4xl sm:text-6xl text-gray-300 mb-3 sm:mb-4"></i>
                 <h3 class="text-lg sm:text-xl font-bold mb-2 text-gray-900 dark:text-white">سبد خرید شما خالی است</h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">برای خرید محصولات به صفحه محصولات بروید</p>
-                <button onclick="showPage('products')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold transition-colors text-sm sm:text-base">
+                <a href="/shop/products/" class="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold transition-colors text-sm sm:text-base inline-block">
                     مشاهده محصولات
-                </button>
+                </a>
             </div>
         `;
     } else {
