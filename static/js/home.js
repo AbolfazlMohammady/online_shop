@@ -61,17 +61,54 @@ class WishlistManager {
 
     async init() {
         this.bindEvents();
+        
+        // Watch for new wishlist buttons being added to the DOM
+        this.observeNewButtons();
+    }
+    
+    observeNewButtons() {
+        // Use MutationObserver to watch for new wishlist buttons
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1) { // Element node
+                        const wishlistBtns = node.querySelectorAll ? node.querySelectorAll('.wishlist-btn') : [];
+                        wishlistBtns.forEach(btn => {
+                            btn.addEventListener('click', this.handleWishlistClick.bind(this));
+                        });
+                        
+                        // If the node itself is a wishlist button
+                        if (node.classList && node.classList.contains('wishlist-btn')) {
+                            node.addEventListener('click', this.handleWishlistClick.bind(this));
+                        }
+                    }
+                });
+            });
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
     }
 
     bindEvents() {
+        // Remove existing event listeners to avoid duplicates
         document.querySelectorAll('.wishlist-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const productId = btn.getAttribute('data-product-id');
-                this.toggleWishlist(productId, btn);
-            });
+            btn.removeEventListener('click', this.handleWishlistClick);
         });
+        
+        // Add event listeners to all wishlist buttons
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', this.handleWishlistClick.bind(this));
+        });
+    }
+    
+    handleWishlistClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const productId = e.target.closest('.wishlist-btn').getAttribute('data-product-id');
+        this.toggleWishlist(productId, e.target.closest('.wishlist-btn'));
     }
 
     async toggleWishlist(productId, btn) {
@@ -330,8 +367,8 @@ class CartManager {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize wishlist manager
-    new WishlistManager();
+    // Initialize wishlist manager and make it globally available
+    window.wishlistManager = new WishlistManager();
     
     // Initialize cart manager
     new CartManager();

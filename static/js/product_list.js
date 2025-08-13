@@ -139,42 +139,7 @@ function showNotification(message, type = 'info') {
   }
 }
 
-async function addToWishlist(productId, event) {
-    event.stopPropagation(); // Prevent card click
-    
-    const button = event.target.closest('.wishlist-btn');
-    const icon = button.querySelector('i');
-    
-    try {
-        const response = await fetch('/shop/api/toggle-wishlist/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': getCsrfToken()
-            },
-            body: `product_id=${productId}`
-        });
-        
-        const result = await response.json();
-        
-        if (result.added) {
-            // Add to wishlist
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-            button.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-            showNotification('محصول به علاقه‌مندی‌ها اضافه شد!', 'success');
-        } else {
-            // Remove from wishlist
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-            button.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
-            showNotification('محصول از علاقه‌مندی‌ها حذف شد!', 'info');
-        }
-    } catch (error) {
-        console.error('Error toggling wishlist:', error);
-        showNotification('خطا در به‌روزرسانی علاقه‌مندی‌ها', 'error');
-    }
-}
+// Removed local addToWishlist function - now using home page's WishlistManager
 
 function openProductDetail(productId) {
     window.location.href = `/shop/product/${productId}/`;
@@ -225,19 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Add event listeners for wishlist buttons
-    document.querySelectorAll('.wishlist-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-product-id');
-            // Use the addToWishlist function from main.js
-            if (typeof window.addToWishlist === 'function') {
-                window.addToWishlist(productId, e);
-            } else {
-                toggleWishlistHome(productId, this);
-            }
-        });
-    });
+    // Wishlist buttons are handled by WishlistManager from home.js
+    // No need to add event listeners here as they're handled globally
     
     const minPriceInput = document.getElementById('min-price');
     const maxPriceInput = document.getElementById('max-price');
@@ -360,16 +314,7 @@ function clearFilters() {
     filterProducts();
 }
 
-async function toggleWishlistHome(productId, btn) {
-  try {
-    btn.disabled = true;
-    const res = await postJson('{% url "shop:toggle_wishlist" %}', { product_id: productId });
-    const icon = btn.querySelector('i');
-    if (res.added) { icon.classList.remove('far'); icon.classList.add('fas'); }
-    else { icon.classList.remove('fas'); icon.classList.add('far'); }
-    btn.disabled = false;
-  } catch(e) { btn.disabled = false; }
-}
+// Removed toggleWishlistHome function - now using WishlistManager from home.js
 
 // Add missing functions
 let activeFilters = {

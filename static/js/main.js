@@ -2159,7 +2159,7 @@ function renderGridView(productsToRender, grid) {
                     
                     <!-- Action Buttons - Bottom Right -->
                     <div class="product-actions">
-                        <button onclick="addToWishlist(${product.id}, event)" class="wishlist-btn" data-product-id="${product.id}">
+                        <button class="wishlist-btn" data-product-id="${product.id}">
                             <i class="far fa-heart"></i>
                         </button>
                         <button onclick="addToCart(${product.id}, event)" class="cart-button" data-product-id="${product.id}">
