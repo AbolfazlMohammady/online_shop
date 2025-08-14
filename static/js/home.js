@@ -234,12 +234,28 @@ class CartManager {
 
     addToCartLocal(productId, btn) {
         try {
+            // Try to get product data from window.products (from main.js) first
+            let productData = null;
+            if (window.products && Array.isArray(window.products)) {
+                productData = window.products.find(p => p.id === productId);
+            }
+            
             const card = btn.closest('.theme-card, .product-card') || document;
             
-            // Extract product information
-            const name = this.extractProductName(card);
-            const price = this.extractProductPrice(card);
-            const image = this.extractProductImage(card);
+            // Extract product information - prefer API data over HTML extraction
+            let name, price, image;
+            
+            if (productData) {
+                // Use API data if available
+                name = productData.name;
+                price = Number(productData.price);
+                image = productData.images && productData.images.length > 0 ? productData.images[0].image : null;
+            } else {
+                // Fallback to HTML extraction
+                name = this.extractProductName(card);
+                price = this.extractProductPrice(card);
+                image = this.extractProductImage(card);
+            }
             
             const raw = localStorage.getItem('cart') || '[]';
             const cart = JSON.parse(raw);
@@ -284,16 +300,42 @@ class CartManager {
     }
 
     extractProductPrice(card) {
-        let priceText = card.querySelector('.text-purple-600, .current-price')?.textContent || '';
-        if (!priceText) {
-            const parentCard = card.closest('.theme-card');
-            if (parentCard) {
-                priceText = parentCard.querySelector('.text-purple-600')?.textContent || '0';
-            } else {
-                priceText = '0';
+        // Try multiple selectors for price
+        const priceSelectors = [
+            '.current-price',
+            '.text-purple-600', 
+            '.product-price .current-price',
+            '.product-price span:first-child'
+        ];
+        
+        let priceText = '';
+        for (const selector of priceSelectors) {
+            const priceEl = card.querySelector(selector);
+            if (priceEl && priceEl.textContent) {
+                priceText = priceEl.textContent.trim();
+                break;
             }
         }
-        return parseInt(priceText.replace(/[^\d]/g, '')) || 0;
+        
+        if (!priceText) {
+            const parentCard = card.closest('.theme-card, .product-card');
+            if (parentCard) {
+                for (const selector of priceSelectors) {
+                    const priceEl = parentCard.querySelector(selector);
+                    if (priceEl && priceEl.textContent) {
+                        priceText = priceEl.textContent.trim();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!priceText) {
+            priceText = '0';
+        }
+        
+        const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
+        return price;
     }
 
     extractProductImage(card) {

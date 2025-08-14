@@ -2,6 +2,12 @@
 let products = []; // Will be populated from API
 let filteredProducts = [];
 
+// Utility functions
+window.getCsrfToken = function() {
+    const match = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+}
+
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 let currentPage = 'home';
 let currentFilter = 'all';
@@ -28,7 +34,10 @@ let productsPerPage = 12;
 
 // Load products from API
 async function loadProducts(page = 1, append = false) {
-    console.log('Loading products page:', page, 'append:', append);
+    console.log('=== loadProducts called ===');
+    console.log('Page:', page);
+    console.log('Append:', append);
+    console.log('Current products count:', products.length);
     
     // Prevent multiple simultaneous requests
     if (window.isLoadingProducts) {
@@ -37,14 +46,18 @@ async function loadProducts(page = 1, append = false) {
     }
     
     window.isLoadingProducts = true;
+    console.log('Starting to load products...');
     
     try {
         const response = await fetch(`/shop/api/products/?page=${page}`);
-        const data = await response.json();
+        console.log('API response received:', response);
         
-        console.log('API response:', data);
+        const data = await response.json();
+        console.log('API response data:', data);
         
         if (data.products && Array.isArray(data.products)) {
+            console.log('Products array received, length:', data.products.length);
+            
             if (append) {
                 // Append new products to existing ones
                 products.push(...data.products);
@@ -55,6 +68,17 @@ async function loadProducts(page = 1, append = false) {
                 products = data.products;
                 filteredProducts = [...data.products];
                 console.log('Replaced products, total:', products.length);
+            }
+            
+            // Debug: Log first product structure
+            if (products.length > 0) {
+                console.log('=== First product data structure ===');
+                console.log('Product ID:', products[0].id);
+                console.log('Product name:', products[0].name);
+                console.log('Product price:', products[0].price);
+                console.log('Product price type:', typeof products[0].price);
+                console.log('Product slug:', products[0].slug);
+                console.log('Full product object:', products[0]);
             }
             
             // Make products globally available
@@ -657,13 +681,24 @@ function renderProducts(productsToRender = products) {
 }
 
 // Cart Functions
-function addToCart(productId, event) {
+window.addToCart = function(productId, event) {
+    console.log('=== addToCart called ===');
+    console.log('productId:', productId);
+    console.log('event:', event);
+    console.log('event.target:', event?.target);
+    console.log('event.currentTarget:', event?.currentTarget);
+    
     if (event) {
         event.stopPropagation(); // Prevent card click
+        event.preventDefault(); // Prevent any default behavior
+        console.log('Event propagation stopped and default prevented');
     }
     
     console.log('Adding to cart, productId:', productId);
     console.log('Available products:', products);
+    
+    // Make products available globally for other scripts
+    window.products = products;
     
     const product = products.find(p => p.id === productId);
     if (!product) {
@@ -672,6 +707,8 @@ function addToCart(productId, event) {
     }
     
     console.log('Found product:', product);
+    console.log('Product price:', product.price);
+    console.log('Product price type:', typeof product.price);
     
     // Check stock availability
     const stockQuantity = parseInt(product.stock_quantity) || 0;
@@ -696,12 +733,14 @@ function addToCart(productId, event) {
         const newItem = {
             id: product.id,
             name: product.name,
-            price: parseFloat(product.price) || parseFloat(product.price.replace(/[^\d]/g, '')) || 0,
+            price: Number(product.price),
             quantity: 1,
             image: product.images && product.images.length > 0 ? product.images[0].image : null,
             color: 'from-pink-200 to-purple-200',
             iconColor: 'text-gray-400'
         };
+        
+
         cart.push(newItem);
         console.log('Added new item to cart:', newItem);
         showNotification(`${product.name} به سبد خرید اضافه شد!`);
@@ -710,6 +749,8 @@ function addToCart(productId, event) {
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
     renderCart();
+    
+    console.log('=== addToCart completed ===');
 }
 
 function removeFromCart(productId) {
@@ -815,6 +856,7 @@ function renderCart() {
                             ${item.price.toLocaleString()} × ${item.quantity}
                         </div>
                     </div>
+
                     
                     <!-- Quantity Controls -->
                     <div class="flex items-center justify-between">
@@ -866,7 +908,7 @@ function checkout() {
 }
 
 // Notification Function
-function showNotification(message, type = 'success') {
+window.showNotification = function(message, type = 'success') {
     const container = document.getElementById('notification-container');
     const notification = document.createElement('div');
     
@@ -1160,7 +1202,7 @@ function addFilterTag(text, onRemove) {
 
 
 
-function toPersianNumber(num) {
+window.toPersianNumber = function(num) {
     const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
     // Add thousands separators first
     const formatted = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -2064,9 +2106,17 @@ function applyPriceFilters() {
 }
 
 function renderGridView(productsToRender, grid) {
+    console.log('=== renderGridView called ===');
+    console.log('productsToRender:', productsToRender);
+    console.log('grid element:', grid);
+    
     productsToRender.forEach(product => {
+        console.log('Rendering product:', product);
+        console.log('Product price:', product.price);
+        console.log('Product price type:', typeof product.price);
+        
         const productCard = `
-            <div class="product-card cursor-pointer" onclick="openProductDetail('${product.slug}')">
+            <div class="product-card cursor-pointer" data-product-slug="${product.slug}">
                 <!-- Badges -->
                 ${product.has_discount ? `
                     <div class="discount-badge">
@@ -2134,6 +2184,7 @@ function renderGridView(productsToRender, grid) {
                             <span class="current-price">${toPersianNumber(product.price)} تومان</span>
                             ${product.original_price ? `<span class="original-price">${toPersianNumber(product.original_price)} تومان</span>` : ''}
                         </div>
+
                     </div>
                     
                     <!-- Social Media Links -->
@@ -2162,41 +2213,145 @@ function renderGridView(productsToRender, grid) {
                         <button class="wishlist-btn" data-product-id="${product.id}">
                             <i class="far fa-heart"></i>
                         </button>
-                        <button onclick="addToCart(${product.id}, event)" class="cart-button" data-product-id="${product.id}">
+                        <button class="cart-button" data-product-id="${product.id}">
                             <i class="fas fa-shopping-cart"></i>
                         </button>
                     </div>
                 </div>
             </div>
         `;
+        
+        console.log('Generated product card HTML:', productCard);
         grid.innerHTML += productCard;
+        
+
     });
+    
+    // Event delegation is now handled by the consolidated handler below
+    
+    // Single consolidated event delegation handler
+    const handleGridClick = function(e) {
+        try {
+            
+            // Check if functions are available
+            if (typeof addToCart !== 'function') {
+                console.error('addToCart function is not defined!');
+                return;
+            }
+            if (typeof addToWishlist !== 'function') {
+                console.error('addToWishlist function is not defined!');
+                return;
+            }
+            if (typeof openProductDetail !== 'function') {
+                console.error('openProductDetail function is not defined!');
+                return;
+            }
+            
+            // Handle cart button clicks FIRST (highest priority)
+            if (e.target.closest('.cart-button')) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const button = e.target.closest('.cart-button');
+                const productId = parseInt(button.getAttribute('data-product-id'));
+                
+                if (isNaN(productId)) {
+                    console.error('Invalid product ID:', button.getAttribute('data-product-id'));
+                    return;
+                }
+                
+                addToCart(productId, e);
+                return; // IMPORTANT: Stop here, don't process further
+            }
+            
+            // Handle wishlist button clicks SECOND
+            if (e.target.closest('.wishlist-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const button = e.target.closest('.wishlist-btn');
+                const productId = parseInt(button.getAttribute('data-product-id'));
+                
+                if (isNaN(productId)) {
+                    console.error('Invalid product ID:', button.getAttribute('data-product-id'));
+                    return;
+                }
+                
+                addToWishlist(productId, e);
+                return; // IMPORTANT: Stop here, don't process further
+            }
+            
+            // Handle social media link clicks THIRD
+            if (e.target.closest('.product-social-links')) {
+                console.log('Social media link clicked, not navigating to product detail');
+                return; // Stop here, don't process further
+            }
+            
+            // Handle product card clicks LAST (lowest priority)
+            const productCard = e.target.closest('.product-card');
+            if (productCard) {
+                const slug = productCard.getAttribute('data-product-slug');
+                if (slug) {
+                    openProductDetail(slug);
+                }
+            }
+            
+        } catch (error) {
+            console.error('Error in consolidated event delegation:', error);
+        }
+    };
+    
+    // Remove any existing event listeners to avoid duplicates
+    grid.removeEventListener('click', handleGridClick);
+    grid.addEventListener('click', handleGridClick);
+    
+
 }
 
 
 
 // Product Functions
-function openProductDetail(productSlug) {
+window.openProductDetail = function(productSlug) {
     window.location.href = `/shop/product/${productSlug}/`;
 }
 
-function addToWishlist(productId, event) {
+window.addToWishlist = async function(productId, event) {
     event.stopPropagation(); // Prevent card click
     
-    const button = event.target.closest('.wishlist-btn, .wishlist-btn-list');
-    const icon = button.querySelector('i');
-    
-    if (icon.classList.contains('far')) {
-        // Add to wishlist
-        icon.classList.remove('far');
-        icon.classList.add('fas');
-        button.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
-        console.log('Added to wishlist:', productId);
-    } else {
-        // Remove from wishlist
-        icon.classList.remove('fas');
-        icon.classList.add('far');
-        button.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
-        console.log('Removed from wishlist:', productId);
+    try {
+        const button = event.target.closest('.wishlist-btn, .wishlist-btn-list');
+        const icon = button.querySelector('i');
+        
+        // Call the toggle wishlist API
+        const response = await fetch('/shop/api/toggle-wishlist/', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: new URLSearchParams({ product_id: productId })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (data.added) {
+                // Add to wishlist
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                console.log('Added to wishlist:', productId);
+            } else {
+                // Remove from wishlist
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.style.background = 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)';
+                console.log('Removed from wishlist:', productId);
+            }
+        } else {
+            console.error('Failed to toggle wishlist');
+        }
+    } catch (error) {
+        console.error('Error toggling wishlist:', error);
     }
 }

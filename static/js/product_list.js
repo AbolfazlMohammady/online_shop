@@ -141,9 +141,8 @@ function showNotification(message, type = 'info') {
 
 // Removed local addToWishlist function - now using home page's WishlistManager
 
-function openProductDetail(productId) {
-    window.location.href = `/shop/product/${productId}/`;
-}
+// openProductDetail function is now handled by main.js
+// No need to define it here
 
 // Add event listeners for price range
 document.addEventListener('DOMContentLoaded', function() {
@@ -173,25 +172,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Cart button styles:', btn.style.cssText);
     });
     
-    // Add event listeners for cart buttons
-    document.querySelectorAll('.cart-button').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const productId = parseInt(this.getAttribute('data-product-id'));
-            console.log('Cart button clicked, productId:', productId);
-            
-            // Use the addToCart function from main.js
-            if (typeof window.addToCart === 'function') {
-                window.addToCart(productId, e);
-            } else {
-                addToCartHome(productId, this);
-            }
-        });
-    });
-    
-    // Wishlist buttons are handled by WishlistManager from home.js
-    // No need to add event listeners here as they're handled globally
+    // Cart and wishlist buttons are now handled by event delegation in main.js
+    // No need to add event listeners here
     
     const minPriceInput = document.getElementById('min-price');
     const maxPriceInput = document.getElementById('max-price');

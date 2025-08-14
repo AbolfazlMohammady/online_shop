@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cart Functionality</title>
+    <style>
+        .product-card {
+            border: 2px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+            position: relative;
+            cursor: pointer;
+        }
+        .product-actions {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .cart-button, .wishlist-btn {
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .wishlist-btn {
+            background: #dc3545;
+        }
+        .debug-info {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #dee2e6;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Cart Functionality</h1>
+    
+    <div class="debug-info">
+        <h3>Debug Information</h3>
+        <div id="debug-output"></div>
+    </div>
+    
+    <div class="product-card" data-product-slug="test-product">
+        <h3>Test Product</h3>
+        <p>Price: 100,000 تومان</p>
+        <p>This is a test product to debug cart functionality</p>
+        
+        <div class="product-actions">
+            <button class="wishlist-btn" data-product-id="123">
+                <i class="far fa-heart"></i>
+            </button>
+            <button class="cart-button" data-product-id="123">
+                <i class="fas fa-shopping-cart"></i>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function log(message) {
+            const debugOutput = document.getElementById('debug-output');
+            debugOutput.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log(message);
+        }
+        
+        // Test event delegation
+        document.addEventListener('click', function(e) {
+            log('=== Global click event ===');
+            log('Target: ' + e.target.tagName + ' (class: ' + e.target.className + ')');
+            log('Current target: ' + e.currentTarget.tagName);
+            
+            // Handle cart button clicks
+            if (e.target.closest('.cart-button')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const button = e.target.closest('.cart-button');
+                const productId = button.getAttribute('data-product-id');
+                log('Cart button clicked! Product ID: ' + productId);
+                log('Event propagation stopped and default prevented');
+                return;
+            }
+            
+            // Handle wishlist button clicks
+            if (e.target.closest('.wishlist-btn')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const button = e.target.closest('.wishlist-btn');
+                const productId = button.getAttribute('data-product-id');
+                log('Wishlist button clicked! Product ID: ' + productId);
+                log('Event propagation stopped and default prevented');
+                return;
+            }
+            
+            // Handle product card clicks
+            const productCard = e.target.closest('.product-card');
+            if (productCard && !e.target.closest('.product-actions')) {
+                const slug = productCard.getAttribute('data-product-slug');
+                log('Product card clicked! Slug: ' + slug);
+                log('Would navigate to product detail page');
+            }
+        });
+        
+        log('Test page loaded. Click on buttons and product card to test event handling.');
+    </script>
+</body>
+</html>
+
