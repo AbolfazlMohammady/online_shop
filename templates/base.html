@@ -13,6 +13,19 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}" />
     <link rel="stylesheet" href="{% static 'css/home.css' %}" />
     {% block extra_css %}{% endblock %}
+    <script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                fontFamily: {
+                    'iranian': ['IRANSans', 'Tahoma', 'Arial', 'sans-serif']
+                }
+            }
+        }
+    }
+</script>
 </head>
 <body class="theme-bg-secondary">
     <!-- Animated Hearts Background -->
@@ -164,20 +177,44 @@
     
     <script>
         // Theme Toggle
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('theme-icon');
-            
-            body.classList.toggle('dark');
-            
-            if (body.classList.contains('dark')) {
-                icon.className = 'fas fa-sun text-lg';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                icon.className = 'fas fa-moon text-lg';
-                localStorage.setItem('theme', 'light');
+        // Theme Toggle
+function toggleTheme() {
+    const body = document.body;
+    const icon = document.getElementById('theme-icon');
+    
+    // توگل کردن کلاس dark برای فعال و غیرفعال کردن حالت شب
+    body.classList.toggle('dark');
+    
+    if (body.classList.contains('dark')) {
+        icon.className = 'fas fa-sun text-lg';
+        localStorage.setItem('theme', 'dark');
+        // در حالت شب، کلاس light را حذف کن
+        body.classList.remove('light');
+    } else {
+        icon.className = 'fas fa-moon text-lg';
+        localStorage.setItem('theme', 'light');
+        // در حالت روز، کلاس light را اضافه کن
+        body.classList.add('light');
+    }
+}
+
+// Load theme on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    const icon = document.getElementById('theme-icon');
+
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark');
+        // در حالت شب، کلاس light را حذف کن
+        document.body.classList.remove('light');
+        if (icon) {
+            icon.className = 'fas fa-sun text-lg';
             }
+        } else {
+            // در حالت روز، کلاس light را اضافه کن
+            document.body.classList.add('light');
         }
+    });
 
         // Load theme on page load
         document.addEventListener('DOMContentLoaded', function() {

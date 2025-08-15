@@ -1290,3 +1290,44 @@ body::before {
 .tab-content {
     display: none;
 }
+
+/* Custom Light Mode Background */
+.light-mode-purple-bg {
+    background-color: #2f0158; /* رنگ بنفش خیلی روشن */
+}
+
+/* Override default Tailwind colors */
+/* ایجاد طیف رنگی برای کلاس bg-gray-50 در حالت روز */
+.light .bg-gray-50 {
+    background-image: linear-gradient(to bottom, #ffffff, #e4d9fe) !important;
+}
+
+/* برای پس‌زمینه اصلی که از theme-bg-secondary استفاده می‌کند */
+.light .theme-bg-secondary {
+    background-image: linear-gradient(to bottom, #a287ba, #ffffff) !important;
+}
+
+.light .bg-white {
+    background-color: #ffffff !important;
+}
+
+/* برای کارت‌ها و المان‌های برجسته‌تر */
+ /* ایجاد طیف رنگی از بنفش ملایم به سفید برای کارت‌ها در حالت روز */
+.light .theme-card {
+    background-image: linear-gradient(to bottom, #ccb3e4, #ffffff) !important;
+}
+
+/* ایجاد طیف رنگی از بنفش کمرنگ به سفید در حالت روز */
+.light .theme-bg {
+    background-image: linear-gradient(to bottom, #f5ebff, #ffffff) !important;
+}
+
+/* برای پس‌زمینه اصلی صفحه نیز می‌توانید از این طیف استفاده کنید */
+.light .theme-bg-secondary {
+    background-image: linear-gradient(to bottom, #fcf9ff, #f8f4fc) !important;
+}
+
+/* برای هدر که از bg-white/95 استفاده می‌کند */
+body:not(.dark) .bg-white\/95 {
+    background-image: linear-gradient(to bottom, #e7dfee, #ffffff) !important;
+}
