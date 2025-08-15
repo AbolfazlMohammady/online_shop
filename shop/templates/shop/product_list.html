@@ -18,6 +18,11 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    // This makes the Django products data available to your JavaScript
+    const products = JSON.parse('{{ products_json|escapejs }}');
+</script>
+{% comment %} <script src="{% static 'js/main.js' %}"></script> {% endcomment %}
 <script src="{% static 'js/product_list.js' %}"></script>
 {% endblock %}
 
@@ -114,13 +119,13 @@
                         </div>
                         
                         <!-- Price Range -->
-                        <div class="mb-4">
+                        {% comment %} <div class="mb-4">
                             <h4 class="text-sm font-bold mb-2 text-center">قیمت</h4>
                             <div class="grid grid-cols-2 gap-2">
-                                <input type="text" id="min-price" placeholder="حداقل" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs" oninput="formatPriceInput(this)">
-                                <input type="text" id="max-price" placeholder="حداکثر" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs" oninput="formatPriceInput(this)">
+                                <input type="text" id="min-price" name="min_price" placeholder="حداقل" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs" oninput="formatPriceInput(this)">
+                                <input type="text" id="max-price" name="max_price" placeholder="حداکثر" class="p-2 border border-pink-200 dark:border-gray-600 bg-white/70 dark:bg-gray-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-pink-400 text-xs" oninput="formatPriceInput(this)">
                             </div>
-                        </div>
+                        </div> {% endcomment %}
                         
                         <!-- Sort -->
                         <div class="mb-4">
@@ -155,10 +160,10 @@
                         
                         <!-- Action Buttons -->
                         <div class="flex gap-2 justify-center">
-                            <button id="apply-price-filter" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
+                            {% comment %} <button id="apply-price-filter" onclick="applyPriceFilters()" class="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
                                 اعمال
-                            </button>
-                            <button id="clear-filters-btn" class="px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
+                            </button> {% endcomment %}
+                            <button id="clear-filters-btn" onclick="clearFilters()" class="px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white rounded-full font-semibold text-xs transition-all duration-300 transform hover:scale-105 shadow-lg">
                                 پاک کردن
                             </button>
                         </div>
