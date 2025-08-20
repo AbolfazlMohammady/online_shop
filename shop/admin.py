@@ -360,11 +360,38 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'status', 'total_amount', 'created_at']
-    list_filter = ['status', 'created_at']
-    search_fields = ['user__email']
+    list_display = ['id', 'user', 'status', 'total_amount', 'payment_status', 'created_at']
+    list_filter = ['status', 'created_at', 'payment_date']
+    search_fields = ['user__email', 'receiver_name', 'receiver_phone']
     inlines = [OrderItemInline]
-    readonly_fields = ['created_at']
+    readonly_fields = ['created_at', 'payment_date']
+    
+    fieldsets = (
+        ('اطلاعات سفارش', {
+            'fields': ('user', 'status', 'created_at')
+        }),
+        ('مبالغ', {
+            'fields': ('subtotal_amount', 'shipping_amount', 'total_amount')
+        }),
+        ('اطلاعات ارسال', {
+            'fields': ('receiver_name', 'receiver_phone', 'province_name', 'city_name', 'address_detail', 'postal_code')
+        }),
+        ('اطلاعات پرداخت', {
+            'fields': ('payment_authority', 'payment_ref_id', 'payment_status_code', 'payment_description', 'payment_date'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def payment_status(self, obj):
+        if obj.status == 'paid':
+            return format_html('<span style="color: green;">✓ پرداخت شده</span>')
+        elif obj.status == 'payment_failed':
+            return format_html('<span style="color: red;">✗ پرداخت ناموفق</span>')
+        elif obj.status == 'pending':
+            return format_html('<span style="color: orange;">⏳ در انتظار پرداخت</span>')
+        else:
+            return obj.get_status_display()
+    payment_status.short_description = "وضعیت پرداخت"
 
 
 @admin.register(Settings)

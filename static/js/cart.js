@@ -2,10 +2,28 @@
 
 document.addEventListener('DOMContentLoaded', function() {
   let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-  const shippingSettings = {
-    shippingCost: 70000,
+  let shippingSettings = {
+    shippingCost: 0, // Default to 0 instead of 70000
     freeShippingThreshold: 500000
   };
+
+  // Get shipping settings from server
+  fetch('/shop/api/shipping-settings/')
+    .then(response => response.json())
+    .then(data => {
+      shippingSettings = {
+        shippingCost: parseInt(data.shipping_cost) || 0,
+        freeShippingThreshold: parseInt(data.free_shipping_threshold) || 500000
+      };
+      console.log('Shipping settings loaded:', shippingSettings);
+      updateCartSummary(); // Update cart summary with new shipping settings
+    })
+    .catch(error => {
+      console.error('Error fetching shipping settings:', error);
+      // Use default values if fetch fails
+      shippingSettings.shippingCost = 0;
+      shippingSettings.freeShippingThreshold = 500000;
+    });
 
   // Initialize cart
   renderCartItems();

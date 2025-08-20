@@ -39,6 +39,12 @@ urlpatterns = [
     path('process-order/', views.process_order, name='process_order'),
     path('order/<int:order_id>/', views.order_detail, name='order_detail'),
     path('order/<int:order_id>/pay/', views.pay_order, name='pay_order'),
+    
+    # Payment gateway URLs
+    path('order/<int:order_id>/initiate-payment/', views.initiate_payment, name='initiate_payment'),
+    path('order/<int:order_id>/payment-callback/', views.payment_callback, name='payment_callback'),
+    path('order/<int:order_id>/payment-status/', views.payment_status, name='payment_status'),
+    
     # Shipping settings API
     path('api/shipping-settings/', views.get_shipping_settings_api, name='shipping_settings_api'),
     

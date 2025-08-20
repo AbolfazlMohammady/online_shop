@@ -32,7 +32,13 @@
             </div>
             <div class="flex justify-between text-sm sm:text-base">
               <span>هزینه ارسال:</span>
-              <span id="shipping">۷۰,۰۰۰ تومان</span>
+              <span id="shipping">
+                {% if shipping_settings.shipping_cost == 0 %}
+                  رایگان
+                {% else %}
+                  {{ shipping_settings.shipping_cost|floatformat:0|add_commas }} تومان
+                {% endif %}
+              </span>
             </div>
             <hr class="theme-border">
             <div class="flex justify-between text-base sm:text-lg font-bold">

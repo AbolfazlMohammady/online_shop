@@ -30,14 +30,51 @@
               {% elif order.status == 'processing' %}bg-blue-100 text-blue-800
               {% elif order.status == 'shipped' %}bg-purple-100 text-purple-800
               {% elif order.status == 'delivered' %}bg-green-100 text-green-800
+              {% elif order.status == 'payment_failed' %}bg-red-100 text-red-800
               {% else %}bg-red-100 text-red-800{% endif %}">
               {{ order.get_status_display }}
             </span>
           </div>
           <div class="text-sm text-gray-600 dark:text-gray-300">
             <p>تاریخ ثبت سفارش: {{ order.created_at|jalali_datetime }}</p>
+            {% if order.payment_date %}
+            <p>تاریخ پرداخت: {{ order.payment_date|jalali_datetime }}</p>
+            {% endif %}
           </div>
         </div>
+
+        <!-- Payment Information -->
+        {% if order.payment_authority or order.payment_ref_id %}
+        <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
+          <h3 class="text-lg sm:text-xl font-bold mb-4 sm:mb-6">اطلاعات پرداخت</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {% if order.payment_authority %}
+            <div>
+              <label class="block font-semibold mb-1 text-sm">شناسه مرجع:</label>
+              <p class="text-gray-700 dark:text-gray-300 font-mono text-sm">{{ order.payment_authority }}</p>
+            </div>
+            {% endif %}
+            {% if order.payment_ref_id %}
+            <div>
+              <label class="block font-semibold mb-1 text-sm">شماره تراکنش:</label>
+              <p class="text-gray-700 dark:text-gray-300 font-mono text-sm">{{ order.payment_ref_id }}</p>
+            </div>
+            {% endif %}
+            {% if order.payment_status_code %}
+            <div>
+              <label class="block font-semibold mb-1 text-sm">کد وضعیت:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.payment_status_code }}</p>
+            </div>
+            {% endif %}
+            {% if order.payment_description %}
+            <div>
+              <label class="block font-semibold mb-1 text-sm">توضیحات:</label>
+              <p class="text-gray-700 dark:text-gray-300">{{ order.payment_description }}</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Order Items -->
         <div class="theme-card rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6">
@@ -116,9 +153,20 @@
               <span class="text-purple-600">{{ order.total_amount|floatformat:0|add_commas }} تومان</span>
             </div>
             {% if order.status == 'pending' %}
-            <a href="{% url 'shop:pay_order' order.id %}" class="block w-full bg-green-600 hover:bg-green-700 text-white text-center py-3 rounded-lg font-semibold transition-colors">
-              پرداخت سفارش
+            <a href="{% url 'shop:initiate_payment' order.id %}" class="block w-full bg-green-600 hover:bg-green-700 text-white text-center py-3 rounded-lg font-semibold transition-colors">
+              <i class="fas fa-credit-card ml-2"></i>
+              پرداخت با زرین‌پال
             </a>
+            {% elif order.status == 'payment_failed' %}
+            <a href="{% url 'shop:initiate_payment' order.id %}" class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center py-3 rounded-lg font-semibold transition-colors">
+              <i class="fas fa-redo ml-2"></i>
+              تلاش مجدد پرداخت
+            </a>
+            {% elif order.status == 'paid' %}
+            <div class="text-center py-3 bg-green-100 text-green-800 rounded-lg">
+              <i class="fas fa-check-circle ml-2"></i>
+              پرداخت شده
+            </div>
             {% endif %}
           </div>
 

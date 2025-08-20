@@ -13,10 +13,26 @@ from django.views import View
 from .models import Category, Product, ProductImage, Brand, Comment
 from django.contrib import messages
 from django.db import transaction
+from .payment_gateway import payment_gateway
+from django.urls import reverse
+from django.utils import timezone
+from .models import ShippingSettings
 
 
 def get_shipping_settings():
     """دریافت تنظیمات هزینه ارسال"""
+    try:
+        # ابتدا از مدل ShippingSettings استفاده کن
+        shipping_setting = ShippingSettings.objects.first()
+        if shipping_setting:
+            return {
+                'shipping_cost': int(shipping_setting.shipping_cost),
+                'free_shipping_threshold': int(shipping_setting.free_shipping_threshold)
+            }
+    except:
+        pass
+    
+    # اگر ShippingSettings موجود نبود، از Settings استفاده کن
     shipping_cost = int(Settings.get_value('shipping_cost', '70000'))
     free_shipping_threshold = int(Settings.get_value('free_shipping_threshold', '500000'))
     return {
@@ -751,3 +767,170 @@ def pay_order(request, order_id):
     
     messages.success(request, f'پرداخت سفارش #{order.id} با موفقیت انجام شد.')
     return redirect('shop:order_detail', order_id=order.id)
+
+
+@login_required
+def initiate_payment(request, order_id):
+    """شروع فرآیند پرداخت با زرین‌پال"""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # بررسی وضعیت سفارش
+    if not order.can_pay:
+        if order.is_paid:
+            messages.info(request, 'این سفارش قبلاً پرداخت شده است.')
+        else:
+            messages.error(request, 'این سفارش قابل پرداخت نیست.')
+        return redirect('shop:order_detail', order_id=order.id)
+    
+    try:
+        # ایجاد آدرس بازگشت
+        callback_url = request.build_absolute_uri(
+            reverse('shop:payment_callback', kwargs={'order_id': order.id})
+        )
+        
+        # ایجاد درخواست پرداخت
+        payment_result = payment_gateway.create_payment_request(order, callback_url)
+        
+        if payment_result['success']:
+            # ارسال پیام موفقیت به ترمینال
+            print(f"💳 درخواست پرداخت ایجاد شد!")
+            print(f"   شماره سفارش: #{order.id}")
+            print(f"   مشتری: {order.receiver_name}")
+            print(f"   شماره تماس: {order.receiver_phone}")
+            print(f"   آدرس: {order.province_name} - {order.city_name}")
+            print(f"   جزئیات آدرس: {order.address_detail}")
+            print(f"   کد پستی: {order.postal_code}")
+            print(f"   مبلغ کل: {order.total_amount:,} تومان")
+            print(f"   هزینه ارسال: {order.shipping_amount:,} تومان")
+            print(f"   Authority: {payment_result['authority']}")
+            print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            print("   محصولات سفارش:")
+            for item in order.items.all():
+                print(f"     - {item.product.name} (تعداد: {item.quantity}) - قیمت واحد: {item.unit_price:,} تومان")
+            print("=" * 60)
+            
+            # هدایت کاربر به درگاه پرداخت
+            return redirect(payment_result['payment_url'])
+        else:
+            # خطا در ایجاد درخواست پرداخت
+            messages.error(request, f'خطا در ایجاد درخواست پرداخت: {payment_result["message"]}')
+            return redirect('shop:order_detail', order_id=order.id)
+            
+    except Exception as e:
+        print(f"خطا در شروع پرداخت برای سفارش #{order.id}: {e}")
+        messages.error(request, 'خطا در شروع فرآیند پرداخت. لطفاً دوباره تلاش کنید.')
+        return redirect('shop:order_detail', order_id=order.id)
+
+
+@login_required
+def payment_callback(request, order_id):
+    """بازگشت از درگاه پرداخت زرین‌پال"""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # دریافت پارامترهای بازگشت
+    authority = request.GET.get('Authority')
+    status = request.GET.get('Status')
+    
+    if not authority:
+        messages.error(request, 'شناسه مرجع پرداخت یافت نشد.')
+        return redirect('shop:order_detail', order_id=order.id)
+    
+    try:
+        if status == 'OK':
+            # تایید پرداخت
+            verification_result = payment_gateway.verify_payment(authority, order.total_amount)
+            
+            if verification_result['success']:
+                # پرداخت موفق
+                ref_id = verification_result['ref_id']
+                order.mark_as_paid(ref_id, authority)
+                
+                # ارسال پیام موفقیت به ترمینال
+                print(f"✅ پرداخت موفق!")
+                print(f"   شماره سفارش: #{order.id}")
+                print(f"   مشتری: {order.receiver_name}")
+                print(f"   شماره تماس: {order.receiver_phone}")
+                print(f"   آدرس: {order.province_name} - {order.city_name}")
+                print(f"   جزئیات آدرس: {order.address_detail}")
+                print(f"   کد پستی: {order.postal_code}")
+                print(f"   مبلغ کل: {order.total_amount:,} تومان")
+                print(f"   هزینه ارسال: {order.shipping_amount:,} تومان")
+                print(f"   Authority: {authority}")
+                print(f"   RefID: {ref_id}")
+                print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                print("   محصولات سفارش:")
+                for item in order.items.all():
+                    print(f"     - {item.product.name} (تعداد: {item.quantity}) - قیمت واحد: {item.unit_price:,} تومان")
+                print("=" * 60)
+                
+                messages.success(request, f'پرداخت سفارش #{order.id} با موفقیت انجام شد.')
+                messages.success(request, f'شماره تراکنش: {ref_id}')
+                
+            else:
+                # خطا در تایید پرداخت
+                error_message = verification_result['message']
+                order.mark_as_payment_failed(
+                    verification_result.get('error_code', -1),
+                    error_message
+                )
+                
+                print(f"❌ تایید پرداخت ناموفق!")
+                print(f"   شماره سفارش: #{order.id}")
+                print(f"   مشتری: {order.receiver_name}")
+                print(f"   شماره تماس: {order.receiver_phone}")
+                print(f"   آدرس: {order.province_name} - {order.city_name}")
+                print(f"   جزئیات آدرس: {order.address_detail}")
+                print(f"   کد پستی: {order.postal_code}")
+                print(f"   مبلغ کل: {order.total_amount:,} تومان")
+                print(f"   هزینه ارسال: {order.shipping_amount:,} تومان")
+                print(f"   Authority: {authority}")
+                print(f"   خطا: {error_message}")
+                print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                print("   محصولات سفارش:")
+                for item in order.items.all():
+                    print(f"     - {item.product.name} (تعداد: {item.quantity}) - قیمت واحد: {item.unit_price:,} تومان")
+                print("=" * 60)
+                
+                messages.error(request, f'خطا در تایید پرداخت: {error_message}')
+                
+        else:
+            # کاربر پرداخت را لغو کرده
+            order.mark_as_payment_failed(200, "کاربر پرداخت را لغو کرده")
+            
+            print(f"🚫 پرداخت لغو شد!")
+            print(f"   شماره سفارش: #{order.id}")
+            print(f"   مشتری: {order.receiver_name}")
+            print(f"   شماره تماس: {order.receiver_phone}")
+            print(f"   آدرس: {order.province_name} - {order.city_name}")
+            print(f"   جزئیات آدرس: {order.address_detail}")
+            print(f"   کد پستی: {order.postal_code}")
+            print(f"   مبلغ کل: {order.total_amount:,} تومان")
+            print(f"   هزینه ارسال: {order.shipping_amount:,} تومان")
+            print(f"   Authority: {authority}")
+            print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            print("   محصولات سفارش:")
+            for item in order.items.all():
+                print(f"     - {item.product.name} (تعداد: {item.quantity}) - قیمت واحد: {item.unit_price:,} تومان")
+            print("=" * 60)
+            
+            messages.warning(request, 'پرداخت لغو شد.')
+            
+    except Exception as e:
+        print(f"خطا در تایید پرداخت برای سفارش #{order.id}: {e}")
+        order.mark_as_payment_failed(-1, f"خطای غیرمنتظره: {str(e)}")
+        messages.error(request, 'خطا در تایید پرداخت. لطفاً با پشتیبانی تماس بگیرید.')
+    
+    return redirect('shop:order_detail', order_id=order.id)
+
+
+@login_required
+def payment_status(request, order_id):
+    """نمایش وضعیت پرداخت سفارش"""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    context = {
+        'order': order,
+        'payment_gateway': payment_gateway
+    }
+    
+    return render(request, 'shop/payment_status.html', context)

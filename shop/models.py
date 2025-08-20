@@ -358,6 +358,7 @@ class Order(models.Model):
         ('shipped', 'ارسال شد'),
         ('delivered', 'تحویل شد'),
         ('canceled', 'لغو شده'),
+        ('payment_failed', 'پرداخت ناموفق'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders', verbose_name="کاربر")
@@ -375,6 +376,13 @@ class Order(models.Model):
     address_detail = models.CharField(max_length=300, verbose_name="آدرس کامل")
     postal_code = models.CharField(max_length=20, verbose_name="کد پستی")
 
+    # Payment information
+    payment_authority = models.CharField(max_length=100, blank=True, null=True, verbose_name="شناسه مرجع پرداخت")
+    payment_ref_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="شماره تراکنش")
+    payment_status_code = models.IntegerField(blank=True, null=True, verbose_name="کد وضعیت پرداخت")
+    payment_description = models.TextField(blank=True, verbose_name="توضیحات پرداخت")
+    payment_date = models.DateTimeField(blank=True, null=True, verbose_name="تاریخ پرداخت")
+
     class Meta:
         verbose_name = "سفارش"
         verbose_name_plural = "سفارش‌ها"
@@ -382,6 +390,32 @@ class Order(models.Model):
 
     def __str__(self):
         return f"سفارش #{self.id} - {self.user}"
+
+    @property
+    def is_paid(self):
+        """بررسی اینکه آیا سفارش پرداخت شده است"""
+        return self.status == 'paid'
+
+    @property
+    def can_pay(self):
+        """بررسی اینکه آیا سفارش قابل پرداخت است"""
+        return self.status == 'pending'
+
+    def mark_as_paid(self, ref_id, authority):
+        """علامت‌گذاری سفارش به عنوان پرداخت شده"""
+        from django.utils import timezone
+        self.status = 'paid'
+        self.payment_ref_id = ref_id
+        self.payment_authority = authority
+        self.payment_date = timezone.now()
+        self.save(update_fields=['status', 'payment_ref_id', 'payment_authority', 'payment_date'])
+
+    def mark_as_payment_failed(self, status_code, description=""):
+        """علامت‌گذاری سفارش به عنوان پرداخت ناموفق"""
+        self.status = 'payment_failed'
+        self.payment_status_code = status_code
+        self.payment_description = description
+        self.save(update_fields=['status', 'payment_status_code', 'payment_description'])
 
 
 class OrderItem(models.Model):
