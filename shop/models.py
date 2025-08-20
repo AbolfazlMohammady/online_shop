@@ -198,6 +198,50 @@ class Product(models.Model):
             self.rating = 0
             self.review_count = 0
         self.save(update_fields=['rating', 'review_count'])
+    
+    @property
+    def is_out_of_stock(self):
+        """بررسی اینکه آیا محصول موجودی ندارد"""
+        return self.stock_quantity <= 0
+    
+    @property
+    def is_low_stock(self):
+        """بررسی اینکه آیا محصول موجودی کمی دارد"""
+        return 0 < self.stock_quantity <= self.min_stock_alert
+    
+    def reserve_stock(self, quantity):
+        """رزرو کردن موجودی (بدون کاهش)"""
+        if self.stock_quantity >= quantity:
+            return True
+        return False
+    
+    def get_stock_status_display(self):
+        """نمایش وضعیت موجودی"""
+        if self.is_out_of_stock:
+            return "ناموجود"
+        elif self.is_low_stock:
+            return f"کم موجودی ({self.stock_quantity})"
+        else:
+            return f"موجود ({self.stock_quantity})"
+    
+    def get_stock_status_class(self):
+        """دریافت کلاس CSS برای نمایش وضعیت موجودی"""
+        if self.is_out_of_stock:
+            return "danger"
+        elif self.is_low_stock:
+            return "warning"
+        else:
+            return "success"
+    
+    def can_order(self, quantity=1):
+        """بررسی اینکه آیا می‌توان این تعداد را سفارش داد"""
+        return self.is_active and self.stock_quantity >= quantity
+    
+    def reserve_stock_for_order(self, quantity):
+        """رزرو کردن موجودی برای سفارش (بدون کاهش)"""
+        if not self.can_order(quantity):
+            return False, f"موجودی کافی نیست. موجودی: {self.stock_quantity}, درخواستی: {quantity}"
+        return True, "موجودی کافی است"
 
 class ProductImage(models.Model):
     """تصاویر محصول"""
@@ -396,19 +440,58 @@ class Order(models.Model):
         """بررسی اینکه آیا سفارش پرداخت شده است"""
         return self.status == 'paid'
 
-    @property
+    def check_stock_availability(self):
+        """بررسی موجودی محصولات سفارش (بدون کاهش موجودی)"""
+        unavailable_items = []
+        
+        for item in self.items.select_related('product').all():
+            product = item.product
+            if product.stock_quantity < item.quantity:
+                unavailable_items.append({
+                    'product': product.name,
+                    'requested': item.quantity,
+                    'available': product.stock_quantity
+                })
+        
+        return {
+            'available': len(unavailable_items) == 0,
+            'unavailable_items': unavailable_items
+        }
+    
     def can_pay(self):
         """بررسی اینکه آیا سفارش قابل پرداخت است"""
-        return self.status == 'pending'
+        if self.status != 'pending':
+            return False
+        
+        # بررسی موجودی محصولات
+        stock_check = self.check_stock_availability()
+        if not stock_check['available']:
+            return False
+        
+        return True
 
     def mark_as_paid(self, ref_id, authority):
-        """علامت‌گذاری سفارش به عنوان پرداخت شده"""
+        """علامت‌گذاری سفارش به عنوان پرداخت شده و کاهش موجودی محصولات"""
         from django.utils import timezone
-        self.status = 'paid'
-        self.payment_ref_id = ref_id
-        self.payment_authority = authority
-        self.payment_date = timezone.now()
-        self.save(update_fields=['status', 'payment_ref_id', 'payment_authority', 'payment_date'])
+        from django.db import transaction
+        
+        with transaction.atomic():
+            # تغییر وضعیت سفارش
+            self.status = 'paid'
+            self.payment_ref_id = ref_id
+            self.payment_authority = authority
+            self.payment_date = timezone.now()
+            self.save(update_fields=['status', 'payment_ref_id', 'payment_authority', 'payment_date'])
+            
+            # کاهش موجودی محصولات
+            for item in self.items.select_related('product').all():
+                product = item.product
+                if product.stock_quantity >= item.quantity:
+                    product.stock_quantity -= item.quantity
+                    product.save(update_fields=['stock_quantity'])
+                else:
+                    # اگر موجودی کافی نباشد، خطا ایجاد کن
+                    raise ValueError(f"موجودی محصول '{product.name}' کافی نیست. موجودی: {product.stock_quantity}, درخواستی: {item.quantity}")
 
     def mark_as_payment_failed(self, status_code, description=""):
         """علامت‌گذاری سفارش به عنوان پرداخت ناموفق"""
@@ -416,6 +499,14 @@ class Order(models.Model):
         self.payment_status_code = status_code
         self.payment_description = description
         self.save(update_fields=['status', 'payment_status_code', 'payment_description'])
+    
+    def cancel_order(self, reason=""):
+        """لغو سفارش"""
+        # موجودی محصول در این مرحله برگردانده نمی‌شود
+        # چون از ابتدا کم نشده بود
+        self.status = 'canceled'
+        self.payment_description = f"سفارش لغو شد: {reason}"
+        self.save(update_fields=['status', 'payment_description'])
 
 
 class OrderItem(models.Model):

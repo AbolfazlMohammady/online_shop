@@ -301,7 +301,8 @@ class ZarinPalPaymentGateway:
 
 # تنظیمات درگاه پرداخت
 ZARINPAL_MERCHANT_ID = '44a8726a-97be-43b4-ad67-d4e7fe4eae72'
-ZARINPAL_SANDBOX = False  # در محیط تولید False کنید
+ZARINPAL_SANDBOX = True  # در محیط تست True کنید، در محیط تولید False کنید
+ZARINPAL_CALLBACK_URL = 'http://127.0.0.1:8000/checkout/zarinpal/callback/'
 
 # ایجاد نمونه درگاه پرداخت
 payment_gateway = ZarinPalPaymentGateway(

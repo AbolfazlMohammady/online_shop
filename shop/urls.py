@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/brands/', views.get_brands_json, name='get_brands_json'),
     path('api/add-to-cart/', views.add_to_cart, name='add_to_cart'),
     path('api/toggle-wishlist/', views.toggle_wishlist, name='toggle_wishlist'),
+    path('api/check-stock/', views.check_stock_api, name='check_stock_api'),
     # Cart page
     path('cart/', views.cart_view, name='cart'),
     path('checkout/', views.checkout, name='checkout'),
@@ -45,9 +46,16 @@ urlpatterns = [
     path('order/<int:order_id>/payment-callback/', views.payment_callback, name='payment_callback'),
     path('order/<int:order_id>/payment-status/', views.payment_status, name='payment_status'),
     
+    # ZarinPal specific callback URL
+    path('checkout/zarinpal/callback/', views.zarinpal_callback, name='zarinpal_callback'),
+    
     # Shipping settings API
     path('api/shipping-settings/', views.get_shipping_settings_api, name='shipping_settings_api'),
     
     # Test view
     path('test/', views.test_products, name='test_products'),
+    
+    # Payment testing
+    path('test-payment/', views.test_payment_page, name='test_payment_page'),
+    path('create-test-order/', views.create_test_order, name='create_test_order'),
 ] 

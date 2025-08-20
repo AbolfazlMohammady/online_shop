@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
-from django.db.models import Q
+from django.db.models import Q, F
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -17,6 +17,25 @@ from .payment_gateway import payment_gateway
 from django.urls import reverse
 from django.utils import timezone
 from .models import ShippingSettings
+
+
+def check_real_time_stock(product_id, quantity):
+    """بررسی موجودی محصول در زمان واقعی"""
+    try:
+        product = Product.objects.get(id=product_id, is_active=True)
+        return {
+            'available': product.stock_quantity >= quantity,
+            'current_stock': product.stock_quantity,
+            'requested': quantity,
+            'product_name': product.name
+        }
+    except Product.DoesNotExist:
+        return {
+            'available': False,
+            'current_stock': 0,
+            'requested': quantity,
+            'product_name': 'محصول نامشخص'
+        }
 
 
 def get_shipping_settings():
@@ -63,7 +82,7 @@ def product_list(request):
     
     
     # Base queryset
-    products = Product.objects.filter(is_active=True).select_related('category', 'brand').prefetch_related('images')
+    products = Product.objects.filter(is_active=True, stock_quantity__gt=0).select_related('category', 'brand').prefetch_related('images')
     
     # Apply category filter
     if category_slug:
@@ -132,7 +151,8 @@ def product_list(request):
     # Get featured products for sidebar
     featured_products = Product.objects.filter(
         is_active=True, 
-        is_featured=True
+        is_featured=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images')[:6]
     
     context = {
@@ -216,6 +236,42 @@ def add_to_cart(request):
     })
 
 
+@csrf_exempt
+@require_POST
+def check_stock_api(request):
+    """API برای بررسی موجودی محصول در زمان واقعی"""
+    try:
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity', 1))
+        
+        if not product_id:
+            return JsonResponse({
+                'success': False,
+                'message': 'شناسه محصول الزامی است.'
+            })
+        
+        stock_info = check_real_time_stock(product_id, quantity)
+        
+        return JsonResponse({
+            'success': True,
+            'available': stock_info['available'],
+            'current_stock': stock_info['current_stock'],
+            'requested': stock_info['requested'],
+            'product_name': stock_info['product_name']
+        })
+        
+    except ValueError:
+        return JsonResponse({
+            'success': False,
+            'message': 'تعداد باید عدد باشد.'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'خطا در بررسی موجودی: {str(e)}'
+        })
+
+
 def get_shipping_settings_api(request):
     """API برای دریافت تنظیمات هزینه ارسال"""
     settings = get_shipping_settings()
@@ -245,7 +301,8 @@ def category_products(request, slug):
     category = get_object_or_404(Category, slug=slug, is_active=True)
     products = Product.objects.filter(
         category=category,
-        is_active=True
+        is_active=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images')
     
     # Pagination
@@ -266,7 +323,8 @@ def brand_products(request, slug):
     brand = get_object_or_404(Brand, slug=slug, is_active=True)
     products = Product.objects.filter(
         brand=brand,
-        is_active=True
+        is_active=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images')
     
     # Pagination
@@ -286,7 +344,8 @@ def featured_products(request):
     """نمایش محصولات ویژه"""
     products = Product.objects.filter(
         is_active=True,
-        is_featured=True
+        is_featured=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images')
     
     # Pagination
@@ -306,7 +365,8 @@ def new_products(request):
     """نمایش محصولات جدید"""
     products = Product.objects.filter(
         is_active=True,
-        is_new=True
+        is_new=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images')
     
     # Pagination
@@ -326,7 +386,8 @@ def bestseller_products(request):
     """نمایش محصولات پرفروش"""
     products = Product.objects.filter(
         is_active=True,
-        is_bestseller=True
+        is_bestseller=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images')
     
     # Pagination
@@ -345,7 +406,8 @@ def bestseller_products(request):
 def most_viewed_products(request):
     """نمایش محصولات پربازدید"""
     products = Product.objects.filter(
-        is_active=True
+        is_active=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images').order_by('-view_count')
     
     # Pagination
@@ -372,7 +434,8 @@ def search_products(request):
         Q(description__icontains=query) |
         Q(brand__name__icontains=query) |
         Q(category__name__icontains=query),
-        is_active=True
+        is_active=True,
+        stock_quantity__gt=0
     ).select_related('category', 'brand').prefetch_related('images')
     
     # Pagination
@@ -391,7 +454,7 @@ def search_products(request):
 
 def get_products_json(request):
     """API endpoint برای دریافت محصولات به صورت JSON"""
-    products = Product.objects.filter(is_active=True).select_related('category', 'brand').prefetch_related('images')
+    products = Product.objects.filter(is_active=True, stock_quantity__gt=0).select_related('category', 'brand').prefetch_related('images')
     
     # Pagination for infinite scroll
     page = request.GET.get('page', 1)
@@ -487,7 +550,7 @@ def get_brands_json(request):
 
 def test_products(request):
     """تست نمایش محصولات"""
-    products = Product.objects.filter(is_active=True).select_related('category', 'brand')
+    products = Product.objects.filter(is_active=True, stock_quantity__gt=0).select_related('category', 'brand')
     
     context = {
         'products': products,
@@ -649,11 +712,11 @@ def process_order(request):
                 try:
                     product = Product.objects.get(id=item['id'], is_active=True)
                     
-                    # بررسی موجودی
+                    # بررسی موجودی در زمان واقعی
                     if product.stock_quantity < item['quantity']:
                         return JsonResponse({
                             'success': False,
-                            'message': f'موجودی محصول "{product.name}" کافی نیست. موجودی: {product.stock_quantity}'
+                            'message': f'موجودی محصول "{product.name}" کافی نیست. موجودی: {product.stock_quantity}, درخواستی: {item["quantity"]}'
                         })
                     
                     # محاسبه قیمت
@@ -696,7 +759,7 @@ def process_order(request):
                 postal_code=postal_code
             )
             
-            # ایجاد آیتم‌های سفارش و کاهش موجودی
+            # ایجاد آیتم‌های سفارش (بدون کاهش موجودی)
             for item_data in order_items_data:
                 OrderItem.objects.create(
                     order=order,
@@ -706,10 +769,8 @@ def process_order(request):
                     total_price=item_data['total_price']
                 )
                 
-                # کاهش موجودی محصول
-                product = item_data['product']
-                product.stock_quantity -= item_data['quantity']
-                product.save()
+                # موجودی محصول در این مرحله کم نمی‌شود
+                # موجودی فقط زمانی کم می‌شود که پرداخت موفق باشد
             
             # ارسال پیام موفقیت
             messages.success(request, f'سفارش شما با شماره #{order.id} با موفقیت ثبت شد.')
@@ -770,30 +831,167 @@ def pay_order(request, order_id):
 
 
 @login_required
+def zarinpal_callback(request):
+    """بازگشت از درگاه پرداخت زرین‌پال - URL عمومی"""
+    # دریافت پارامترهای بازگشت
+    authority = request.GET.get('Authority')
+    status = request.GET.get('Status')
+    
+    if not authority:
+        messages.error(request, 'شناسه مرجع پرداخت یافت نشد.')
+        return redirect('shop:cart')
+    
+    try:
+        # پیدا کردن سفارش بر اساس Authority
+        order = Order.objects.filter(payment_authority=authority).first()
+        
+        if not order:
+            messages.error(request, 'سفارش مربوط به این پرداخت یافت نشد.')
+            return redirect('shop:cart')
+        
+        # بررسی مالکیت سفارش
+        if order.user != request.user:
+            messages.error(request, 'شما مجاز به مشاهده این سفارش نیستید.')
+            return redirect('shop:cart')
+        
+        if status == 'OK':
+            # تایید پرداخت
+            verification_result = payment_gateway.verify_payment(authority, order.total_amount)
+            
+            if verification_result['success']:
+                try:
+                    # پرداخت موفق - کاهش موجودی محصولات
+                    ref_id = verification_result['ref_id']
+                    order.mark_as_paid(ref_id, authority)
+                    
+                    # ارسال پیام موفقیت به ترمینال
+                    print(f"✅ پرداخت موفق!")
+                    print(f"   شماره سفارش: #{order.id}")
+                    print(f"   مشتری: {order.receiver_name}")
+                    print(f"   شماره تماس: {order.receiver_phone}")
+                    print(f"   آدرس: {order.province_name} - {order.city_name}")
+                    print(f"   جزئیات آدرس: {order.address_detail}")
+                    print(f"   کد پستی: {order.postal_code}")
+                    print(f"   مبلغ کل: {order.total_amount:,} تومان")
+                    print(f"   هزینه ارسال: {order.shipping_amount:,} تومان")
+                    print(f"   Authority: {authority}")
+                    print(f"   RefID: {ref_id}")
+                    print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                    print("   محصولات سفارش:")
+                    for item in order.items.all():
+                        print(f"     - {item.product.name} (تعداد: {item.quantity}) - قیمت واحد: {item.unit_price:,} تومان")
+                    print("   ✅ موجودی محصولات با موفقیت کاهش یافت")
+                    print("=" * 60)
+                    
+                    messages.success(request, f'پرداخت سفارش #{order.id} با موفقیت انجام شد.')
+                    messages.success(request, f'شماره تراکنش: {ref_id}')
+                    
+                except ValueError as e:
+                    # خطا در کاهش موجودی
+                    error_message = str(e)
+                    order.mark_as_payment_failed(-1, f"خطا در کاهش موجودی: {error_message}")
+                    
+                    print(f"❌ خطا در کاهش موجودی محصولات!")
+                    print(f"   شماره سفارش: #{order.id}")
+                    print(f"   خطا: {error_message}")
+                    print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                    print("=" * 60)
+                    
+                    messages.error(request, f'خطا در پردازش سفارش: {error_message}')
+                    messages.warning(request, 'لطفاً با پشتیبانی تماس بگیرید.')
+                    
+            else:
+                # خطا در تایید پرداخت
+                error_message = verification_result['message']
+                order.mark_as_payment_failed(
+                    verification_result.get('error_code', -1),
+                    error_message
+                )
+                
+                print(f"❌ تایید پرداخت ناموفق!")
+                print(f"   شماره سفارش: #{order.id}")
+                print(f"   مشتری: {order.receiver_name}")
+                print(f"   شماره تماس: {order.receiver_phone}")
+                print(f"   آدرس: {order.province_name} - {order.city_name}")
+                print(f"   جزئیات آدرس: {order.address_detail}")
+                print(f"   کد پستی: {order.postal_code}")
+                print(f"   مبلغ کل: {order.total_amount:,} تومان")
+                print(f"   هزینه ارسال: {order.shipping_amount:,} تومان")
+                print(f"   Authority: {authority}")
+                print(f"   خطا: {error_message}")
+                print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                print("   محصولات سفارش:")
+                for item in order.items.all():
+                    print(f"     - {item.product.name} (تعداد: {item.quantity}) - قیمت واحد: {item.unit_price:,} تومان")
+                print("=" * 60)
+                
+                messages.error(request, f'خطا در تایید پرداخت: {error_message}')
+                
+        else:
+            # کاربر پرداخت را لغو کرده
+            if order:
+                order.mark_as_payment_failed(200, "کاربر پرداخت را لغو کرده")
+                
+                print(f"🚫 پرداخت لغو شد!")
+                print(f"   شماره سفارش: #{order.id}")
+                print(f"   مشتری: {order.receiver_name}")
+                print(f"   شماره تماس: {order.receiver_phone}")
+                print(f"   آدرس: {order.province_name} - {order.city_name}")
+                print(f"   جزئیات آدرس: {order.address_detail}")
+                print(f"   کد پستی: {order.postal_code}")
+                print(f"   مبلغ کل: {order.total_amount:,} تومان")
+                print(f"   هزینه ارسال: {order.shipping_amount:,} تومان")
+                print(f"   Authority: {authority}")
+                print(f"   تاریخ: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                print("   محصولات سفارش:")
+                for item in order.items.all():
+                    print(f"     - {item.product.name} (تعداد: {item.quantity}) - قیمت واحد: {item.unit_price:,} تومان")
+                print("=" * 60)
+            
+            messages.warning(request, 'پرداخت لغو شد.')
+        
+    except Exception as e:
+        print(f"خطا در تایید پرداخت - Authority: {authority}: {e}")
+        if order:
+            order.mark_as_payment_failed(-1, f"خطای غیرمنتظره: {str(e)}")
+        messages.error(request, 'خطا در تایید پرداخت. لطفاً با پشتیبانی تماس بگیرید.')
+    
+    # هدایت به صفحه سبد خرید
+    return redirect('shop:cart')
+
+
+@login_required
 def initiate_payment(request, order_id):
-    """شروع فرآیند پرداخت با زرین‌پال"""
+    """شروع فرآیند پرداخت برای سفارش"""
     order = get_object_or_404(Order, id=order_id, user=request.user)
     
-    # بررسی وضعیت سفارش
     if not order.can_pay:
-        if order.is_paid:
-            messages.info(request, 'این سفارش قبلاً پرداخت شده است.')
-        else:
+        # بررسی دلیل عدم امکان پرداخت
+        if order.status != 'pending':
             messages.error(request, 'این سفارش قابل پرداخت نیست.')
+        else:
+            stock_check = order.check_stock_availability()
+            if not stock_check['available']:
+                error_msg = "موجودی برخی محصولات کافی نیست: "
+                for item in stock_check['unavailable_items']:
+                    error_msg += f"{item['product']} (درخواستی: {item['requested']}, موجودی: {item['available']}), "
+                error_msg = error_msg.rstrip(', ')
+                messages.error(request, error_msg)
+            else:
+                messages.error(request, 'این سفارش قابل پرداخت نیست.')
+        
         return redirect('shop:order_detail', order_id=order.id)
     
     try:
-        # ایجاد آدرس بازگشت
-        callback_url = request.build_absolute_uri(
-            reverse('shop:payment_callback', kwargs={'order_id': order.id})
-        )
+        # استفاده از callback URL مشخص شده
+        callback_url = 'http://127.0.0.1:8000/checkout/zarinpal/callback/'
         
         # ایجاد درخواست پرداخت
         payment_result = payment_gateway.create_payment_request(order, callback_url)
         
         if payment_result['success']:
-            # ارسال پیام موفقیت به ترمینال
-            print(f"💳 درخواست پرداخت ایجاد شد!")
+            # ارسال اطلاعات سفارش به ترمینال
+            print(f"🚀 شروع پرداخت!")
             print(f"   شماره سفارش: #{order.id}")
             print(f"   مشتری: {order.receiver_name}")
             print(f"   شماره تماس: {order.receiver_phone}")
@@ -934,3 +1132,78 @@ def payment_status(request, order_id):
     }
     
     return render(request, 'shop/payment_status.html', context)
+
+
+@login_required
+def test_payment_page(request):
+    """صفحه تست سیستم پرداخت"""
+    from django.utils import timezone
+    
+    context = {
+        'current_time': timezone.now()
+    }
+    
+    return render(request, 'shop/test_payment.html', context)
+
+
+@login_required
+def create_test_order(request):
+    """ایجاد سفارش تست برای پرداخت"""
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        description = request.POST.get('description')
+        
+        try:
+            amount = int(amount)
+            if amount < 1000:
+                messages.error(request, 'مبلغ باید حداقل 1000 تومان باشد.')
+                return redirect('shop:test_payment_page')
+            
+            # بررسی وجود محصول
+            product = Product.objects.first()
+            if not product:
+                messages.error(request, 'هیچ محصولی در سیستم موجود نیست.')
+                return redirect('shop:test_payment_page')
+            
+            # بررسی موجودی محصول
+            if product.stock_quantity < 1:
+                messages.error(request, f'موجودی محصول "{product.name}" کافی نیست.')
+                return redirect('shop:test_payment_page')
+            
+            # ایجاد سفارش تست
+            with transaction.atomic():
+                # ایجاد سفارش
+                order = Order.objects.create(
+                    user=request.user,
+                    status='pending',
+                    subtotal_amount=amount,
+                    shipping_amount=0,
+                    total_amount=amount,
+                    receiver_name=request.user.get_full_name() or request.user.username,
+                    receiver_phone=request.user.phone if hasattr(request.user, 'phone') else '09123456789',
+                    province_name='تهران',
+                    city_name='تهران',
+                    address_detail='آدرس تست',
+                    postal_code='1234567890'
+                )
+                
+                # ایجاد آیتم سفارش تست
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=1,
+                    unit_price=amount,
+                    total_price=amount
+                )
+                
+                messages.success(request, f'سفارش تست #{order.id} با مبلغ {amount:,} تومان ایجاد شد.')
+                return redirect('shop:pay_order', order_id=order.id)
+                
+        except ValueError:
+            messages.error(request, 'مبلغ وارد شده معتبر نیست.')
+            return redirect('shop:test_payment_page')
+        except Exception as e:
+            messages.error(request, f'خطا در ایجاد سفارش تست: {str(e)}')
+            return redirect('shop:test_payment_page')
+    
+    return redirect('shop:test_payment_page')

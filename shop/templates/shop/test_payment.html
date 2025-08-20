@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تست سیستم پرداخت{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">تست سیستم پرداخت زرین‌پال</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5>اطلاعات درگاه پرداخت:</h5>
+                        <ul class="mb-0">
+                            <li><strong>Merchant ID:</strong> 44a8726a-97be-43b4-ad67-d4e7fe4eae72</li>
+                            <li><strong>Callback URL:</strong> http://127.0.0.1:8000/checkout/zarinpal/callback/</li>
+                            <li><strong>وضعیت:</strong> <span class="badge bg-success">فعال</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>سفارش تست</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" action="{% url 'shop:create_test_order' %}">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="amount" class="form-label">مبلغ (تومان)</label>
+                                            <input type="number" class="form-control" id="amount" name="amount" value="10000" min="1000" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">توضیحات</label>
+                                            <input type="text" class="form-control" id="description" name="description" value="سفارش تست سیستم پرداخت" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">ایجاد سفارش تست</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>وضعیت سیستم</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-2">
+                                        <strong>درگاه پرداخت:</strong> 
+                                        <span class="badge bg-success">زرین‌پال</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>محیط:</strong> 
+                                        <span class="badge bg-warning">Sandbox (تست)</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>وضعیت اتصال:</strong> 
+                                        <span class="badge bg-success">متصل</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>آخرین بروزرسانی:</strong> 
+                                        <span class="text-muted">{{ current_time|date:"Y-m-d H:i:s" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5>نحوه استفاده:</h5>
+                        <ol>
+                            <li>مبلغ مورد نظر را وارد کنید</li>
+                            <li>روی "ایجاد سفارش تست" کلیک کنید</li>
+                            <li>به درگاه پرداخت زرین‌پال هدایت می‌شوید</li>
+                            <li>پرداخت را انجام دهید یا لغو کنید</li>
+                            <li>به سایت بازگشت می‌کنید و نتیجه در ترمینال نمایش داده می‌شود</li>
+                        </ol>
+                    </div>
+
+                    {% if messages %}
+                    <div class="mt-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

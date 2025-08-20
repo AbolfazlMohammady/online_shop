@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "11cf7b71be6462b0efd229a4d64db2fe5a5dd54d9592662c900049f50cdfbc72"
+            "sha256": "88bc3b121bbd826092f95cd07475d52298a175fd6faa20217ddf68c996e9fee4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -133,6 +133,23 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==3.10"
+        },
+        "jalali-core": {
+            "hashes": [
+                "sha256:84e6f5090eadfb35234f24fad084be831d00da3c0b238ee001e8a1fd49bf7924",
+                "sha256:f4287c70c630323dcf0a3ab26df905ba4d451e230ac1f65b3bb2f77797894a2b"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==1.0.0"
+        },
+        "jdatetime": {
+            "hashes": [
+                "sha256:c81d5898717b82b609a3ce2a73f8b8d3230b0c757e5c0de9d6b1acfdc224f551",
+                "sha256:d4aa73543e4e6c0e6122b58743773168edee5efe5c5acf05d1dc8c90524ca71c"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.9'",
+            "version": "==5.2.0"
         },
         "pillow": {
             "hashes": [

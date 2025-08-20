@@ -392,6 +392,39 @@ class OrderAdmin(admin.ModelAdmin):
         else:
             return obj.get_status_display()
     payment_status.short_description = "وضعیت پرداخت"
+    
+    def save_model(self, request, obj, form, change):
+        """هنگام ذخیره سفارش در پنل ادمین"""
+        if change:  # اگر سفارش در حال ویرایش است
+            old_obj = Order.objects.get(pk=obj.pk)
+            old_status = old_obj.status
+            new_status = obj.status
+            
+            # اگر وضعیت از غیر پرداخت شده به پرداخت شده تغییر کرده
+            if old_status != 'paid' and new_status == 'paid':
+                try:
+                    # کاهش موجودی محصولات
+                    obj.mark_as_paid(
+                        ref_id=f"ADMIN_{obj.id}_{timezone.now().strftime('%Y%m%d%H%M%S')}",
+                        authority=f"ADMIN_{obj.id}"
+                    )
+                    self.message_user(
+                        request, 
+                        f'وضعیت سفارش #{obj.id} به "پرداخت شده" تغییر یافت و موجودی محصولات کاهش یافت.',
+                        level='SUCCESS'
+                    )
+                except ValueError as e:
+                    # خطا در کاهش موجودی
+                    self.message_user(
+                        request, 
+                        f'خطا در کاهش موجودی: {str(e)}. وضعیت سفارش تغییر نکرد.',
+                        level='ERROR'
+                    )
+                    # برگرداندن وضعیت قبلی
+                    obj.status = old_status
+                    return
+        
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Settings)
