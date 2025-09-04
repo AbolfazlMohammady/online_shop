@@ -1027,12 +1027,12 @@ html.dark .heart {
     position: fixed;
     display: none;
     color: #fbbf24;
-    animation: twinkle 3s ease-in-out infinite;
+    animation: starGlow 4s ease-in-out infinite;
     pointer-events: none;
     font-size: 20px;
-    filter: drop-shadow(0 0 10px #fbbf24);
+    filter: drop-shadow(0 0 20px #fbbf24) drop-shadow(0 0 40px rgba(251, 191, 36, 0.4));
     z-index: 0;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 html.dark .star,
@@ -1169,16 +1169,6 @@ html.dark .lantern,
     }
 }
 
-@keyframes twinkle {
-    0%, 100% {
-        opacity: 0.3;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.2);
-    }
-}
 
 @keyframes moonGlow {
     0%, 100% {
@@ -1188,6 +1178,17 @@ html.dark .lantern,
     50% {
         opacity: 1;
         text-shadow: 0 0 30px #fbbf24, 0 0 60px #fbbf24, 0 0 80px #fbbf24;
+    }
+}
+
+@keyframes starGlow {
+    0%, 100% {
+        opacity: 0.8;
+        text-shadow: 0 0 15px #fbbf24, 0 0 30px #fbbf24;
+    }
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 25px #fbbf24, 0 0 50px #fbbf24, 0 0 70px #fbbf24;
     }
 }
 

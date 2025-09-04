@@ -1359,7 +1359,7 @@ function initHeartsBackground() {
     if (!heartsContainer) return;
     
     const heartCount = 25; // Number of hearts
-    const starCount = 30; // Number of stars - increased for better visibility
+    const starCount = 15; // Number of stars - reduced for better balance
     
     // Clear existing content
     heartsContainer.innerHTML = '';
