@@ -436,37 +436,8 @@ window.toggleWishlistHome = function(productId, btn) {
     wishlistManager.toggleWishlist(productId, btn);
 };
 
-// مدیریت حالت تاریک/روشن و انیمیشن فوتر
+// مدیریت انیمیشن فوتر و آیکون‌های اجتماعی (حالت تاریک/روشن به صورت مرکزی در base.html مدیریت می‌شود)
 document.addEventListener('DOMContentLoaded', function() {
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const html = document.documentElement;
-    
-    // بررسی حالت ذخیره شده
-    const savedTheme = localStorage.getItem('theme');
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-        html.classList.add('dark');
-        if (darkModeToggle) {
-            darkModeToggle.innerHTML = '<span class="text-xl">☀️</span>';
-        }
-    }
-    
-    // تغییر حالت
-    if (darkModeToggle) {
-        darkModeToggle.addEventListener('click', function() {
-            html.classList.toggle('dark');
-            
-            if (html.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-                this.innerHTML = '<span class="text-xl">☀️</span>';
-            } else {
-                localStorage.setItem('theme', 'light');
-                this.innerHTML = '<span class="text-xl">🌙</span>';
-            }
-        });
-    }
-    
     // انیمیشن آیکون‌های اجتماعی
     const socialIcons = document.querySelectorAll('.social-icon');
     

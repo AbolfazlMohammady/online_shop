@@ -425,9 +425,11 @@ function updateMobileNav(activePageId) {
 
 // Theme Toggle
 function toggleTheme() {
+    const html = document.documentElement;
     const body = document.body;
     const icon = document.getElementById('theme-icon');
     
+    html.classList.toggle('dark');
     body.classList.toggle('dark');
     
     if (body.classList.contains('dark')) {
@@ -437,6 +439,15 @@ function toggleTheme() {
         icon.className = 'fas fa-moon text-lg';
         localStorage.setItem('theme', 'light');
     }
+    
+    // Update theme visibility after a short delay
+    setTimeout(() => {
+        updateThemeVisibility();
+        // Force refresh night mode elements
+        if (body.classList.contains('dark')) {
+            initHeartsBackground();
+        }
+    }, 100);
 }
 
 let previousPage = 'home';
@@ -1308,10 +1319,14 @@ function createLantern() {
     `;
     
     // Random position
-    lantern.style.left = Math.random() * 100 + '%';
+    lantern.style.left = Math.random() * 80 + 10 + '%'; // 10% to 90%
     
     // Random animation delay
     lantern.style.animationDelay = Math.random() * 12 + 's';
+    
+    // Ensure visibility
+    lantern.style.display = 'block';
+    lantern.style.opacity = '0.9';
     
     return lantern;
 }
@@ -1322,23 +1337,32 @@ function createStar() {
     star.innerHTML = '✨';
     
     // Random size
-    const size = Math.random() * 15 + 10; // 10px to 25px
+    const size = Math.random() * 15 + 15; // 15px to 30px
     star.style.fontSize = size + 'px';
     
     // Random position
-    star.style.left = Math.random() * 100 + '%';
-    star.style.top = Math.random() * 100 + '%';
+    star.style.left = Math.random() * 90 + 5 + '%'; // 5% to 95%
+    star.style.top = Math.random() * 80 + 10 + '%'; // 10% to 90%
     
     // Random animation delay
     star.style.animationDelay = Math.random() * 3 + 's';
+    
+    // Ensure visibility
+    star.style.display = 'block';
+    star.style.opacity = '0.8';
     
     return star;
 }
 
 function initHeartsBackground() {
     const heartsContainer = document.getElementById('hearts-bg');
+    if (!heartsContainer) return;
+    
     const heartCount = 25; // Number of hearts
-    const starCount = 15; // Number of stars
+    const starCount = 30; // Number of stars - increased for better visibility
+    
+    // Clear existing content
+    heartsContainer.innerHTML = '';
     
     // Create hearts
     for (let i = 0; i < heartCount; i++) {
@@ -1353,16 +1377,23 @@ function initHeartsBackground() {
     }
     
     // Create lanterns for dark mode
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 8; i++) {
         const lantern = createLantern();
         heartsContainer.appendChild(lantern);
     }
+    
+    // Update theme visibility after initialization
+    setTimeout(() => {
+        updateThemeVisibility();
+    }, 100);
 }
 
 // Continuously create new lanterns in dark mode
 function startLanternAnimation() {
     setInterval(() => {
-        if (document.body.classList.contains('dark')) {
+        // Check if dark mode is active on either html or body
+        const isDarkMode = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+        if (isDarkMode) {
             const heartsContainer = document.getElementById('hearts-bg');
             const lantern = createLantern();
             heartsContainer.appendChild(lantern);
@@ -1935,6 +1966,89 @@ function initializeCartCount() {
   }
 }
 
+// Function to manually create night mode elements
+window.createNightElements = function() {
+    console.log('Manually creating night mode elements...');
+    initHeartsBackground();
+    setTimeout(() => {
+        updateThemeVisibility();
+    }, 100);
+};
+
+// Function to update theme visibility for stars, moon, and hearts
+window.updateThemeVisibility = function() {
+    const isDarkMode = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');
+    const heartsContainer = document.getElementById('hearts-bg');
+    
+    console.log('Updating theme visibility, isDarkMode:', isDarkMode);
+    
+    if (heartsContainer) {
+        const stars = heartsContainer.querySelectorAll('.star');
+        const moon = document.querySelector('.moon');
+        const lanterns = heartsContainer.querySelectorAll('.lantern');
+        const hearts = heartsContainer.querySelectorAll('.heart');
+        
+        console.log('Found elements:', {
+            stars: stars.length,
+            moon: !!moon,
+            lanterns: lanterns.length,
+            hearts: hearts.length
+        });
+        
+        console.log('Dark mode status:', isDarkMode);
+        
+        // Show/hide stars based on theme
+        stars.forEach((star, index) => {
+            if (isDarkMode) {
+                star.style.display = 'block';
+                star.style.opacity = '0.8';
+                console.log(`Star ${index} made visible`);
+            } else {
+                star.style.display = 'none';
+                star.style.opacity = '0';
+            }
+        });
+        
+        // Show/hide moon based on theme
+        if (moon) {
+            if (isDarkMode) {
+                moon.style.display = 'block';
+                moon.style.opacity = '0.9';
+            } else {
+                moon.style.display = 'none';
+                moon.style.opacity = '0';
+            }
+        }
+        
+        // Show/hide lanterns based on theme
+        lanterns.forEach((lantern, index) => {
+            if (isDarkMode) {
+                lantern.style.display = 'block';
+                lantern.style.opacity = '0.9';
+                console.log(`Lantern ${index} made visible`);
+            } else {
+                lantern.style.display = 'none';
+                lantern.style.opacity = '0';
+            }
+        });
+        
+        // Show/hide hearts based on theme
+        hearts.forEach(heart => {
+            if (isDarkMode) {
+                heart.style.display = 'none';
+                heart.style.opacity = '0';
+            } else {
+                heart.style.display = 'block';
+                heart.style.opacity = '1';
+            }
+        });
+        
+        console.log('Theme visibility updated');
+    } else {
+        console.log('Hearts container not found');
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -1959,9 +2073,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load theme
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
         document.body.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        document.body.classList.remove('light');
         document.getElementById('theme-icon').className = 'fas fa-sun text-lg';
+    } else {
+        document.documentElement.classList.add('light');
+        document.body.classList.add('light');
+        document.documentElement.classList.remove('dark');
+        document.body.classList.remove('dark');
+        document.getElementById('theme-icon').className = 'fas fa-moon text-lg';
     }
+    
+    // Update theme visibility after loading
+    setTimeout(() => {
+        updateThemeVisibility();
+        // Force create night mode elements if dark mode is active
+        if (document.body.classList.contains('dark')) {
+            console.log('Dark mode detected, creating night elements...');
+            initHeartsBackground();
+        }
+    }, 200);
     
     // Check if we're on the products page based on URL
     if (window.location.pathname.includes('/shop/products/') || window.location.hash === '#products') {

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Mode Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/css/main.css" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="theme-bg-secondary">
+    <!-- Animated Hearts Background -->
+    <div class="hearts-background" id="hearts-bg"></div>
+    
+    <!-- Moon for dark mode -->
+    <div class="moon">🌙</div>
+    
+    <!-- Test Content -->
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">تست حالت شب</h1>
+        
+        <div class="text-center mb-8 space-x-4">
+            <button onclick="toggleTheme()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                <i id="theme-icon" class="fas fa-moon text-lg ml-2"></i>
+                تغییر حالت
+            </button>
+            <button onclick="createNightElements()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-magic text-lg ml-2"></i>
+                ایجاد عناصر شب
+            </button>
+        </div>
+        
+        <div class="theme-card rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">محتوای تست</h2>
+            <p class="theme-text-secondary mb-4">این یک متن تست برای بررسی حالت شب است.</p>
+            <div class="flex gap-4">
+                <div class="bg-purple-100 dark:bg-purple-900 p-4 rounded-lg">
+                    <i class="fas fa-star text-purple-600 text-2xl"></i>
+                </div>
+                <div class="bg-pink-100 dark:bg-pink-900 p-4 rounded-lg">
+                    <i class="fas fa-heart text-pink-600 text-2xl"></i>
+                </div>
+                <div class="bg-blue-100 dark:bg-blue-900 p-4 rounded-lg">
+                    <i class="fas fa-moon text-blue-600 text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/main.js"></script>
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            
+            html.classList.toggle('dark');
+            body.classList.toggle('dark');
+            
+            if (body.classList.contains('dark')) {
+                icon.className = 'fas fa-sun text-lg ml-2';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.className = 'fas fa-moon text-lg ml-2';
+                localStorage.setItem('theme', 'light');
+            }
+            
+            // Update theme visibility after a short delay
+            setTimeout(() => {
+                updateThemeVisibility();
+            }, 100);
+        }
+
+        // Initialize theme on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.body.classList.add('dark');
+                document.getElementById('theme-icon').className = 'fas fa-sun text-lg ml-2';
+            } else {
+                document.documentElement.classList.add('light');
+                document.body.classList.add('light');
+                document.getElementById('theme-icon').className = 'fas fa-moon text-lg ml-2';
+            }
+            
+            // Initialize hearts background
+            initHeartsBackground();
+            
+            // Update theme visibility after loading
+            setTimeout(() => {
+                updateThemeVisibility();
+            }, 200);
+        });
+    </script>
+</body>
+</html>

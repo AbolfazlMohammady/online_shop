@@ -14,6 +14,24 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}" />
     <link rel="stylesheet" href="{% static 'css/home.css' %}" />
     {% block extra_css %}{% endblock %}
+    <script>
+        // Early theme application to prevent flash of incorrect theme
+        (function() {
+            try {
+                var saved = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var enableDark = saved === 'dark' || (!saved && prefersDark);
+                var html = document.documentElement;
+                if (enableDark) {
+                    html.classList.add('dark');
+                    html.classList.remove('light');
+                } else {
+                    html.classList.add('light');
+                    html.classList.remove('dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
 <script>
     tailwind.config = {
@@ -177,53 +195,68 @@
     {% block extra_js %}{% endblock %}
     
     <script>
-        // Theme Toggle
-        // Theme Toggle
-function toggleTheme() {
-    const body = document.body;
-    const icon = document.getElementById('theme-icon');
-    
-    // توگل کردن کلاس dark برای فعال و غیرفعال کردن حالت شب
-    body.classList.toggle('dark');
-    
-    if (body.classList.contains('dark')) {
-        icon.className = 'fas fa-sun text-lg';
-        localStorage.setItem('theme', 'dark');
-        // در حالت شب، کلاس light را حذف کن
-        body.classList.remove('light');
-    } else {
-        icon.className = 'fas fa-moon text-lg';
-        localStorage.setItem('theme', 'light');
-        // در حالت روز، کلاس light را اضافه کن
-        body.classList.add('light');
-    }
-}
+        // Unified Theme Toggle and Initialization
+        function toggleTheme() {
+            const html = document.documentElement;
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
 
-// Load theme on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const savedTheme = localStorage.getItem('theme');
-    const icon = document.getElementById('theme-icon');
-
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.body.classList.add('dark');
-        // در حالت شب، کلاس light را حذف کن
-        document.body.classList.remove('light');
-        if (icon) {
-            icon.className = 'fas fa-sun text-lg';
+            const enableDark = !html.classList.contains('dark');
+            if (enableDark) {
+                html.classList.add('dark');
+                body.classList.add('dark');
+                html.classList.remove('light');
+                body.classList.remove('light');
+                localStorage.setItem('theme', 'dark');
+                if (icon) icon.className = 'fas fa-sun text-lg';
+            } else {
+                html.classList.remove('dark');
+                body.classList.remove('dark');
+                html.classList.add('light');
+                body.classList.add('light');
+                localStorage.setItem('theme', 'light');
+                if (icon) icon.className = 'fas fa-moon text-lg';
             }
-        } else {
-            // در حالت روز، کلاس light را اضافه کن
-            document.body.classList.add('light');
+            
+            // Update theme visibility for stars, moon, and hearts
+            console.log('Theme toggled, calling updateThemeVisibility');
+            setTimeout(() => {
+                if (typeof updateThemeVisibility === 'function') {
+                    updateThemeVisibility();
+                } else {
+                    console.log('updateThemeVisibility function not found');
+                }
+            }, 100);
         }
-    });
 
-        // Load theme on page load
         document.addEventListener('DOMContentLoaded', function() {
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark');
-                document.getElementById('theme-icon').className = 'fas fa-sun text-lg';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const html = document.documentElement;
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+
+            const enableDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+            if (enableDark) {
+                html.classList.add('dark');
+                body.classList.add('dark');
+                html.classList.remove('light');
+                body.classList.remove('light');
+                if (icon) icon.className = 'fas fa-sun text-lg';
+            } else {
+                html.classList.remove('dark');
+                body.classList.remove('dark');
+                html.classList.add('light');
+                body.classList.add('light');
+                if (icon) icon.className = 'fas fa-moon text-lg';
             }
+            
+            // Update theme visibility after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                if (typeof updateThemeVisibility === 'function') {
+                    updateThemeVisibility();
+                }
+            }, 100);
         });
 
         // Product Modal Functions

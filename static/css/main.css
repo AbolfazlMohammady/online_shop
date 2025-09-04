@@ -94,13 +94,16 @@
 }
 
 /* Background improvements for both light and dark modes */
-body {
+/* Light mode background on <html>.light or absence of .dark */
+html.light body,
+body:not(.dark) {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
     position: relative;
     min-height: 100vh;
 }
 
-body::before {
+html.light body::before,
+body:not(.dark)::before {
     content: '';
     position: fixed;
     top: 0;
@@ -117,23 +120,27 @@ body::before {
 }
 
 /* Dark mode improvements for product detail */
+/* Dark mode background applies if either html or body has .dark */
+html.dark,
 .dark {
     background: radial-gradient(ellipse at center, #1e1b4b 0%, #0f172a 40%, #000000 100%);
     color: white;
     position: relative;
 }
 
+html.dark::before,
 .dark::before {
     content: '';
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(ellipse 800px 400px at 50% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse 600px 300px at 80% 60%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
-        radial-gradient(ellipse 400px 200px at 20% 80%, rgba(147, 51, 234, 0.1) 0%, transparent 50%);
+    width: 100vw;
+    height: 100vh;
+    background:
+        radial-gradient(ellipse 900px 500px at 60% 10%, rgba(139, 92, 246, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 350px at 80% 70%, rgba(236, 72, 153, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 250px at 20% 80%, rgba(34, 197, 94, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at center, #1e1b4b 0%, #0f172a 40%, #000000 100%);
     z-index: -2;
     pointer-events: none;
     backdrop-filter: blur(10px);
@@ -977,17 +984,14 @@ body::before {
 /* Animated Hearts Background */
 .hearts-background {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 1;
     pointer-events: none;
-    z-index: -1;
-    overflow: hidden;
 }
 
 .heart {
     position: absolute;
+    display: block;
     transition: opacity 0.3s ease;
     filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 30px currentColor);
     animation: heartFloat 6s ease-in-out infinite;
@@ -1013,57 +1017,71 @@ body::before {
     animation-delay: 4.5s;
 }
 
-.dark .heart {
-    display: none;
+.dark .heart,
+html.dark .heart {
+    display: none !important;
 }
 
-/* Stars and Moon for dark mode */
+/* Stars for dark mode - work with both html.dark and .dark */
 .star {
-    position: absolute;
+    position: fixed;
     display: none;
     color: #fbbf24;
     animation: twinkle 3s ease-in-out infinite;
+    pointer-events: none;
+    font-size: 20px;
+    filter: drop-shadow(0 0 10px #fbbf24);
+    z-index: 2;
+    opacity: 0.8;
 }
 
+html.dark .star,
 .dark .star {
-    display: block;
+    display: block !important;
 }
 
 .moon {
     position: fixed;
-    top: 15%;
-    right: 8%;
+    top: 10%;
+    right: 10%;
     display: none;
-    font-size: 80px;
+    font-size: 100px;
     color: #fbbf24;
     animation: moonGlow 4s ease-in-out infinite;
-    z-index: -1;
+    z-index: 3;
     filter: drop-shadow(0 0 30px #fbbf24) drop-shadow(0 0 60px rgba(251, 191, 36, 0.4));
+    pointer-events: none;
+    opacity: 0.9;
 }
 
+html.dark .moon,
 .dark .moon {
-    display: block;
+    display: block !important;
 }
 
-/* Lanterns for dark mode */
+/* Lanterns for dark mode - work with both html.dark and .dark */
 .lantern {
-    position: absolute;
+    position: fixed;
     display: none;
     animation: rise 15s linear infinite;
     transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.9;
 }
 
+html.dark .lantern,
 .dark .lantern {
-    display: block;
+    display: block !important;
 }
 
 .lantern-body {
-    width: 35px;
-    height: 50px;
+    width: 40px;
+    height: 55px;
     background: linear-gradient(135deg, #dc2626, #ea580c, #f59e0b);
-    border-radius: 12px 12px 6px 6px;
+    border-radius: 15px 15px 8px 8px;
     position: relative;
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.3);
     border: 2px solid #92400e;
 }
 
@@ -1330,4 +1348,38 @@ body::before {
 /* برای هدر که از bg-white/95 استفاده می‌کند */
 body:not(.dark) .bg-white\/95 {
     background-image: linear-gradient(to bottom, #e7dfee, #ffffff) !important;
+}
+
+/* بک‌گراند شب مطابق نمونه text.txt */
+html.dark, .dark {
+    background: radial-gradient(ellipse at center, #1a0b3d 0%, #0f172a 40%, #000000 100%) !important;
+    color: white !important;
+}
+
+html.dark::before,
+.dark::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background:
+        radial-gradient(ellipse 900px 500px at 60% 10%, rgba(139, 92, 246, 0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 700px 350px at 80% 70%, rgba(236, 72, 153, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 500px 250px at 20% 80%, rgba(34, 197, 94, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at center, #1a0b3d 0%, #0f172a 40%, #000000 100%);
+    z-index: -2;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+}
+
+.theme-card,
+.blog-post-card,
+.product-card,
+.order-card,
+.cart-card,
+.wishlist-card {
+    position: relative;
+    z-index: 10;
 }
