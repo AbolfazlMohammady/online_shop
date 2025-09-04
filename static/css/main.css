@@ -985,7 +985,7 @@ html.dark::before,
 .hearts-background {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    z-index: 1;
+    z-index: 0;
     pointer-events: none;
 }
 
@@ -1031,7 +1031,7 @@ html.dark .heart {
     pointer-events: none;
     font-size: 20px;
     filter: drop-shadow(0 0 10px #fbbf24);
-    z-index: 2;
+    z-index: 0;
     opacity: 0.8;
 }
 
@@ -1048,7 +1048,7 @@ html.dark .star,
     font-size: 100px;
     color: #fbbf24;
     animation: moonGlow 4s ease-in-out infinite;
-    z-index: 3;
+    z-index: 0;
     filter: drop-shadow(0 0 30px #fbbf24) drop-shadow(0 0 60px rgba(251, 191, 36, 0.4));
     pointer-events: none;
     opacity: 0.9;
@@ -1066,7 +1066,7 @@ html.dark .moon,
     animation: rise 15s linear infinite;
     transition: opacity 0.3s ease;
     pointer-events: none;
-    z-index: 2;
+    z-index: 0;
     opacity: 0.9;
 }
 
@@ -1350,9 +1350,9 @@ body:not(.dark) .bg-white\/95 {
     background-image: linear-gradient(to bottom, #e7dfee, #ffffff) !important;
 }
 
-/* بک‌گراند شب مطابق نمونه text.txt */
+/* بک‌گراند شب مطابق نمونه text.txt - رنگ کهکشانی */
 html.dark, .dark {
-    background: radial-gradient(ellipse at center, #1a0b3d 0%, #0f172a 40%, #000000 100%) !important;
+    background: radial-gradient(ellipse at center, #1e3a8a 0%, #1e40af 25%, #1e1b4b 50%, #000000 100%) !important;
     color: white !important;
 }
 
@@ -1365,10 +1365,11 @@ html.dark::before,
     width: 100vw;
     height: 100vh;
     background:
-        radial-gradient(ellipse 900px 500px at 60% 10%, rgba(139, 92, 246, 0.25) 0%, transparent 60%),
-        radial-gradient(ellipse 700px 350px at 80% 70%, rgba(236, 72, 153, 0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 500px 250px at 20% 80%, rgba(34, 197, 94, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at center, #1a0b3d 0%, #0f172a 40%, #000000 100%);
+        radial-gradient(ellipse 1400px 700px at 50% 15%, rgba(59, 130, 246, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 1000px 500px at 75% 70%, rgba(96, 165, 250, 0.3) 0%, transparent 60%),
+        radial-gradient(ellipse 800px 400px at 25% 85%, rgba(147, 197, 253, 0.2) 0%, transparent 60%),
+        radial-gradient(ellipse 600px 300px at 80% 30%, rgba(191, 219, 254, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at center, #1e3a8a 0%, #1e40af 25%, #1e1b4b 50%, #000000 100%);
     z-index: -2;
     pointer-events: none;
     backdrop-filter: blur(10px);
@@ -1380,6 +1381,21 @@ html.dark::before,
 .order-card,
 .cart-card,
 .wishlist-card {
+    position: relative;
+    z-index: 10;
+}
+
+/* Ensure footer and header are above background elements */
+footer,
+header {
+    position: relative;
+    z-index: 20;
+}
+
+/* Ensure main content is above background elements */
+main,
+.container,
+.content {
     position: relative;
     z-index: 10;
 }
