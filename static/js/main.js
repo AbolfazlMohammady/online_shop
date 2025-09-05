@@ -1358,8 +1358,12 @@ function initHeartsBackground() {
     const heartsContainer = document.getElementById('hearts-bg');
     if (!heartsContainer) return;
     
-    const heartCount = 25; // Number of hearts
-    const starCount = 15; // Number of stars - reduced for better balance
+    // Check if mobile device
+    const isMobile = window.innerWidth <= 768;
+    
+    const heartCount = isMobile ? 10 : 25; // Reduced hearts on mobile
+    const starCount = isMobile ? 8 : 15; // Reduced stars on mobile
+    const lanternCount = isMobile ? 0 : 8; // No lanterns on mobile
     
     // Clear existing content
     heartsContainer.innerHTML = '';
@@ -1376,10 +1380,12 @@ function initHeartsBackground() {
         heartsContainer.appendChild(star);
     }
     
-    // Create lanterns for dark mode
-    for (let i = 0; i < 8; i++) {
-        const lantern = createLantern();
-        heartsContainer.appendChild(lantern);
+    // Create lanterns for dark mode (only on desktop)
+    if (!isMobile) {
+        for (let i = 0; i < lanternCount; i++) {
+            const lantern = createLantern();
+            heartsContainer.appendChild(lantern);
+        }
     }
     
     // Update theme visibility after initialization
@@ -1390,6 +1396,10 @@ function initHeartsBackground() {
 
 // Continuously create new lanterns in dark mode
 function startLanternAnimation() {
+    // Check if mobile device - disable on mobile
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) return;
+    
     setInterval(() => {
         // Check if dark mode is active on either html or body
         const isDarkMode = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark');

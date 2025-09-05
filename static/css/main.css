@@ -1035,6 +1035,15 @@ html.dark .heart {
     opacity: 0.9;
 }
 
+/* Mobile optimization - disable star animations on mobile */
+@media (max-width: 768px) {
+    .star {
+        animation: none;
+        filter: drop-shadow(0 0 10px #fbbf24);
+        opacity: 0.8;
+    }
+}
+
 html.dark .star,
 .dark .star {
     display: block !important;
@@ -1054,6 +1063,16 @@ html.dark .star,
     opacity: 0.9;
 }
 
+/* Mobile optimization - disable moon animation on mobile */
+@media (max-width: 768px) {
+    .moon {
+        animation: none;
+        filter: drop-shadow(0 0 15px #fbbf24);
+        font-size: 80px;
+        opacity: 0.8;
+    }
+}
+
 html.dark .moon,
 .dark .moon {
     display: block !important;
@@ -1068,6 +1087,13 @@ html.dark .moon,
     pointer-events: none;
     z-index: 0;
     opacity: 0.9;
+}
+
+/* Mobile optimization - disable lanterns on mobile */
+@media (max-width: 768px) {
+    .lantern {
+        display: none !important;
+    }
 }
 
 html.dark .lantern,
@@ -1373,7 +1399,16 @@ html.dark::before,
         radial-gradient(ellipse at center, #1e3a8a 0%, #1e40af 25%, #1e1b4b 50%, #000000 100%);
     z-index: -2;
     pointer-events: none;
-    backdrop-filter: blur(10px);
+    /* backdrop-filter removed for mobile performance */
+}
+
+/* Mobile optimization - disable heavy effects on mobile */
+@media (max-width: 768px) {
+    html.dark::before,
+    .dark::before {
+        background: radial-gradient(ellipse at center, #1e3a8a 0%, #1e40af 25%, #1e1b4b 50%, #000000 100%);
+        /* Simplified background for mobile */
+    }
 }
 
 .theme-card,
