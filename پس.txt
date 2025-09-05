@@ -1,1 +1,33 @@
-درست نشد ببین تنها کاری که باید بکنی اینه که پروژّ رو دقیق برسی کنی و با این @text.txt فایل حالت شبو دوباره برگردونی بک گراند شبو درست کن عین این فایل  یعنی مو نزنه با این متوجه ای بک گراند الان یه تصوریر سیا نشون میده اما باید اینطوری باشه که تو این فایل برات فرستادم پش کل پروژه رو برسی کن ببین مشکلش چیه باشه
+User-agent: *
+Disallow:
+
+Sitemap: https://abolfazlmohammadiy.ir/sitemap.xml
+robots.txt
+
+
+<?php
+echo <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <script src="js/jquery-1.11.2.min.js" type="text/javascript"></script>
+    <script src="js/app.js" type="text/javascript"></script>
+	<meta http-equiv="conent-type" content="text/html; charset=utf-8" />
+	<title>سرویس شما ایجاد شد</title>
+</head>
+<body>
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/tmxpptql/public_html/resume"
+PassengerBaseURI "/"
+PassengerPython "/home/tmxpptql/virtualenv/public_html/resume/3.11/bin/python"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+SetEnv DJANGO_SETTINGS_MODULE config.settings
+SetEnv PYTHONPATH /home/tmxpptql/public_html/resume
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
+
+source /home3/npoyupuw/virtualenv/public_html/onlin_shop/3.11/bin/activate && cd /home3/npoyupuw/public_html/onlin_shop
